@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\UMKM;
+use App\Models\Umkm;
 use App\Models\Produk;
 use Illuminate\Http\Request;
 use App\Notifications\PeringatanUmkmNotification;
@@ -15,9 +15,9 @@ class AdminUmkmController extends Controller
      */
     public function index()
     {
-        $approvedUmkms = UMKM::where('status', 'approved')->latest()->get();
-        $pendingUmkms = UMKM::where('status', 'pending')->latest()->get();
-        $rejectedUmkms = UMKM::where('status', 'rejected')->latest()->get();
+        $approvedUmkms = Umkm::where('status', 'approved')->latest()->get();
+        $pendingUmkms = Umkm::where('status', 'pending')->latest()->get();
+        $rejectedUmkms = Umkm::where('status', 'rejected')->latest()->get();
 
         return view('admin.umkm.index', compact('approvedUmkms', 'pendingUmkms', 'rejectedUmkms'));
     }
@@ -27,7 +27,7 @@ class AdminUmkmController extends Controller
      */
     public function approve($id)
     {
-        $umkm = UMKM::findOrFail($id);
+        $umkm = Umkm::findOrFail($id);
         $umkm->update(['status' => 'approved']);
 
         return redirect()->route('admin.umkm.index')->with('success', 'UMKM berhasil disetujui.');
@@ -38,7 +38,7 @@ class AdminUmkmController extends Controller
      */
     public function reject($id)
     {
-        $umkm = UMKM::findOrFail($id);
+        $umkm = Umkm::findOrFail($id);
         $umkm->update(['status' => 'rejected']);
 
         return redirect()->route('admin.umkm.index')->with('error', 'UMKM telah ditolak.');
@@ -49,7 +49,7 @@ class AdminUmkmController extends Controller
      */
     public function show($id)
     {
-        $umkm = UMKM::with(['user', 'produks'])->findOrFail($id);
+        $umkm = Umkm::with(['user', 'produks'])->findOrFail($id);
 
         return view('admin.umkm.show', compact('umkm'));
     }
@@ -59,7 +59,7 @@ class AdminUmkmController extends Controller
      */
     public function products($id)
     {
-        $umkm = UMKM::findOrFail($id);
+        $umkm = Umkm::findOrFail($id);
         $products = Produk::where('umkm_id', $id)->latest()->get();
 
         return view('admin.umkm.products', compact('umkm', 'products'));
@@ -70,7 +70,7 @@ class AdminUmkmController extends Controller
      */
     public function destroy($id)
     {
-        $umkm = UMKM::findOrFail($id);
+        $umkm = Umkm::findOrFail($id);
 
         if ($umkm->status !== 'rejected') {
             return redirect()->route('admin.umkm.index')->with('error', 'Hanya UMKM yang sudah ditolak yang bisa dihapus.');
@@ -111,7 +111,7 @@ class AdminUmkmController extends Controller
             'message' => 'required|string|max:1000',
         ]);
 
-        $umkm = UMKM::with('user')->findOrFail($id);
+        $umkm = Umkm::with('user')->findOrFail($id);
 
         if (!$umkm->user) {
             return back()->with('error', 'UMKM tidak memiliki pemilik user.');
