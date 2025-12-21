@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Penjual;
 
 use App\Http\Controllers\Controller;
 use App\Models\Produk;
-use App\Models\UMKM;
+use App\Models\Umkm;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,7 +20,7 @@ class DashboardPenjualController extends Controller
         $user = Auth::user();
 
         // Ambil UMKM milik user penjual
-        $umkm = UMKM::where('user_id', $user->id)->first();
+        $umkm = Umkm::where('user_id', $user->id)->first();
 
         // Inisialisasi variabel default
         $produks = collect();
