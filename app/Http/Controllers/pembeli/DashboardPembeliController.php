@@ -53,10 +53,10 @@ class DashboardPembeliController extends Controller
 
         // SOLUSI 1: Menggunakan withSum() - Paling direkomendasikan
         $produkTerlaris = Produk::withSum([
-                'orders as total_jumlah_pesanan' => function ($query) {
-                    $query->where('status', 'complete');
-                }
-            ], 'jumlah')
+            'order as total_jumlah_pesanan' => function ($query) {
+                $query->where('status', 'complete');
+            }
+        ], 'jumlah')
             ->having('total_jumlah_pesanan', '>=', 10)
             ->orderByDesc('total_jumlah_pesanan')
             ->limit(8)
