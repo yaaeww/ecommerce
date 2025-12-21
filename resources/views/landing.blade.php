@@ -135,6 +135,7 @@ body {
 .hero-content {
     position: relative;
     z-index: 2;
+    padding-top: 10px;
 }
 
 .hero h1 {
@@ -148,6 +149,8 @@ body {
     background-clip: text;
     text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
     animation: fadeInUp 1s ease-out;
+    padding-top: 10px;
+
 }
 
 .hero p {
@@ -548,9 +551,6 @@ footer small {
                         <p>Platform modern untuk memajukan produk lokal UMKM Indramayu melalui katalog online yang mudah, efisien, dan terpercaya.</p>
                         <div class="mt-4">
                             <a href="#produk" class="btn btn-explore"><i class="fas fa-rocket me-2"></i>Jelajahi Produk</a>
-                            <a href="#tentang" class="btn-video">
-                                <i class="fas fa-play-circle me-2"></i>Pelajari Lebih Lanjut
-                            </a>
                         </div>
                     </div>
                 </div>
