@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Penjual;
 
 use App\Http\Controllers\Controller;
-use App\Models\UMKM;
+use App\Models\Umkm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -16,7 +16,7 @@ class PenjualUmkmController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $umkm = UMKM::where('user_id', $user->id)->first();
+        $umkm = Umkm::where('user_id', $user->id)->first();
 
         return view('penjual.umkm.index', compact('umkm'));
     }
