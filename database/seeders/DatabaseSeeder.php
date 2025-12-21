@@ -61,7 +61,7 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Sari Wijaya',
                 'email' => 'sari@gmail.com',
                 'password' => Hash::make('11111111'),
-                'role' => 'pembeli',
+                'role' => 'penjuai',
                 'avatar' => 'storage/avatars/sari.png',
             ],
             [
@@ -310,7 +310,7 @@ class DatabaseSeeder extends Seeder
                 'nama' => 'Tas Rajut Handmade Premium',
                 'deskripsi' => 'Kerajinan tangan buatan Jo Craft dengan desain modern dan bahan berkualitas tinggi. Tahan lama dan stylish.',
                 'harga' => 125000,
-                'gambar' => 'storage/produks/tas-rajut.jpg',
+                'gambar' => 'storage/produks/tasrajut.jpg',
                 'user_id' => $umkm2->user_id,
                 'stok' => 45,
                 'rating' => 4.9,

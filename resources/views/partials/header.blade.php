@@ -20,7 +20,7 @@
                             <i class="bi bi-person-circle" style="color: var(--gold); font-size: 1.5rem;"></i>
                         @endif
                     </div>
-                    <span class="user-name">
+                    <span class="user-name text-white">
                         {{ Auth::user()->name }}
                         @if(Auth::user()->role === 'admin')
                             <span class="admin-badge">Admin</span>

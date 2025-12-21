@@ -31,12 +31,7 @@
         }
 
         /* TEMA UTAMA */
-        body.theme-light {
-            background: #ffffff;
-            color: #212529;
-        }
-
-        body.theme-dark {
+        body {
             background: linear-gradient(135deg, var(--dark-blue) 0%, var(--medium-blue) 100%);
             color: #e0e0e0;
         }
@@ -47,11 +42,6 @@
             backdrop-filter: blur(10px);
             border-bottom: 2px solid var(--gold);
             box-shadow: 0 4px 20px rgba(255, 215, 0, 0.2);
-        }
-
-        body.theme-light .header {
-            background: #f8f9fa !important;
-            border-bottom: 2px solid var(--gold);
         }
 
         .navbar-logo {
@@ -75,11 +65,6 @@
             border-right: 2px solid var(--gold);
         }
 
-        body.theme-light .left-sidebar {
-            background: #f8f9fa !important;
-            border-right: 2px solid var(--gold);
-        }
-
         .sidebar-menu>li>a {
             color: #e0e0e0 !important;
             font-weight: 500;
@@ -87,10 +72,6 @@
             border-radius: 6px;
             margin: 5px 10px;
             transition: all 0.3s ease;
-        }
-
-        body.theme-light .sidebar-menu>li>a {
-            color: #212529 !important;
         }
 
         .sidebar-menu>li>a:hover,
@@ -119,11 +100,6 @@
             backdrop-filter: blur(10px);
         }
 
-        body.theme-light .page-header {
-            background: rgba(248, 249, 250, 0.9);
-            border: 2px solid rgba(255, 215, 0, 0.3);
-        }
-
         .page-title {
             font-weight: 700;
             font-size: 2rem;
@@ -145,11 +121,6 @@
             backdrop-filter: blur(10px);
         }
 
-        body.theme-light .card {
-            background: linear-gradient(135deg, rgba(248, 249, 250, 0.9) 0%, rgba(222, 226, 230, 0.9) 100%);
-            border: 2px solid rgba(255, 215, 0, 0.3);
-        }
-
         .card:hover {
             transform: translateY(-10px) scale(1.02);
             box-shadow: 0 15px 40px rgba(255, 215, 0, 0.4);
@@ -160,10 +131,6 @@
             color: var(--gold) !important;
             font-weight: 600;
             font-size: 1.2rem;
-        }
-
-        body.theme-light .card-title {
-            color: var(--dark-blue) !important;
         }
 
         /* BUTTON STYLING */
@@ -210,10 +177,6 @@
             backdrop-filter: blur(10px);
         }
 
-        body.theme-light .table {
-            background: rgba(248, 249, 250, 0.9);
-        }
-
         .table th {
             background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
             color: var(--dark-blue) !important;
@@ -228,19 +191,10 @@
             border-color: rgba(255, 215, 0, 0.2);
         }
 
-        body.theme-light .table td {
-            color: #212529;
-        }
-
         /* RIGHT SIDEBAR THEME SETTINGS */
         .right-sidebar {
             background: rgba(10, 22, 40, 0.95) !important;
             backdrop-filter: blur(10px);
-            border-left: 2px solid var(--gold);
-        }
-
-        body.theme-light .right-sidebar {
-            background: #f8f9fa !important;
             border-left: 2px solid var(--gold);
         }
 
@@ -259,22 +213,11 @@
             padding: 10px 15px;
         }
 
-        body.theme-light .form-control {
-            background: #ffffff;
-            border: 2px solid rgba(255, 215, 0, 0.3);
-            color: #212529;
-        }
-
         .form-control:focus {
             border-color: var(--gold);
             box-shadow: 0 0 0 0.2rem rgba(255, 215, 0, 0.25);
             background: rgba(26, 58, 95, 0.8);
             color: #e0e0e0;
-        }
-
-        body.theme-light .form-control:focus {
-            background: #ffffff;
-            color: #212529;
         }
 
         /* FOOTER STYLING */
@@ -286,11 +229,6 @@
             color: var(--gold);
         }
 
-        body.theme-light footer {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            color: var(--dark-blue);
-        }
-
         /* SCROLLBAR STYLING */
         ::-webkit-scrollbar {
             width: 12px;
@@ -298,10 +236,6 @@
 
         ::-webkit-scrollbar-track {
             background: var(--dark-blue);
-        }
-
-        body.theme-light ::-webkit-scrollbar-track {
-            background: #f1f1f1;
         }
 
         ::-webkit-scrollbar-thumb {
@@ -370,7 +304,7 @@
     @stack('style')
 </head>
 
-<body id="body" class="theme-dark">
+<body id="body">
     @include('partials.header')
     @includeIf('partials.sidebar-' . $role)
 
@@ -378,7 +312,6 @@
         <div class="pd-ltr-20">
             <div class="page-header d-flex justify-content-between align-items-center mb-4">
                 <h4 class="page-title">
-                    
                     @yield('title', 'Dashboard')
                 </h4>
                 <div class="sparkle"></div>
@@ -402,18 +335,10 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const body = document.getElementById('body');
-            const savedTheme = localStorage.getItem('theme') || 'theme-dark';
-            body.classList.add(savedTheme);
-
+            
             const toggleBtn = document.querySelector('[data-toggle="right-sidebar"]');
             const closeBtn = document.querySelector('[data-toggle="right-sidebar-close"]');
             const sidebar = document.querySelector('.right-sidebar');
-
-            const btnHeaderWhite = document.querySelector('.header-white');
-            const btnHeaderDark = document.querySelector('.header-dark');
-            const btnSidebarLight = document.querySelector('.sidebar-light');
-            const btnSidebarDark = document.querySelector('.sidebar-dark');
-            const resetBtn = document.getElementById('reset-settings');
 
             // Sidebar toggle
             toggleBtn?.addEventListener('click', () => {
@@ -422,44 +347,6 @@
             closeBtn?.addEventListener('click', () => {
                 sidebar?.classList.remove('right-sidebar-visible');
             });
-
-            // Theme Switch Header
-            btnHeaderWhite?.addEventListener('click', () => {
-                setTheme('theme-light');
-                setActive(btnHeaderWhite, [btnHeaderWhite, btnHeaderDark]);
-            });
-
-            btnHeaderDark?.addEventListener('click', () => {
-                setTheme('theme-dark');
-                setActive(btnHeaderDark, [btnHeaderWhite, btnHeaderDark]);
-            });
-
-            // Sidebar (visual only toggle active state)
-            btnSidebarLight?.addEventListener('click', () => {
-                setActive(btnSidebarLight, [btnSidebarLight, btnSidebarDark]);
-            });
-
-            btnSidebarDark?.addEventListener('click', () => {
-                setActive(btnSidebarDark, [btnSidebarLight, btnSidebarDark]);
-            });
-
-            // Reset to default theme
-            resetBtn?.addEventListener('click', () => {
-                setTheme('theme-dark');
-                setActive(btnHeaderDark, [btnHeaderWhite, btnHeaderDark]);
-                setActive(btnSidebarDark, [btnSidebarLight, btnSidebarDark]);
-            });
-
-            function setTheme(theme) {
-                body.classList.remove('theme-light', 'theme-dark');
-                body.classList.add(theme);
-                localStorage.setItem('theme', theme);
-            }
-
-            function setActive(activeBtn, allBtns) {
-                allBtns.forEach(btn => btn?.classList.remove('active'));
-                activeBtn?.classList.add('active');
-            }
 
             // Add sparkle animation
             setInterval(() => {
