@@ -20,7 +20,7 @@ class DashboardPembeliController extends Controller
         $kategoriAktif = null;
         $subkategoris = collect();
         $kategoris = KategoriProduk::whereNull('parent_id')->orderBy('nama')->get();
-        $produks = Produk::query(); // base query
+        $produksQuery = Produk::query(); // base query
 
         // Jika ada filter kategori
         if ($kategoriId && is_numeric($kategoriId)) {
@@ -31,13 +31,13 @@ class DashboardPembeliController extends Controller
 
                 $kategoriIds = $this->getAllKategoriIds($kategoriAktif);
 
-                $produks = Produk::whereIn('kategori_produk_id', $kategoriIds);
+                $produksQuery->whereIn('kategori_produk_id', $kategoriIds);
 
                 if ($search) {
-                    $produks->where('nama', 'like', '%' . $search . '%');
+                    $produksQuery->where('nama', 'like', '%' . $search . '%');
                 }
 
-                $produks = $produks->with('kategori')->latest()->paginate(12);
+                $produks = $produksQuery->with('kategori')->latest()->paginate(12);
             } else {
                 // Kategori tidak ditemukan, tampilkan produk kosong dengan pagination
                 $produks = Produk::whereRaw('0 = 1')->paginate(12);
@@ -45,23 +45,34 @@ class DashboardPembeliController extends Controller
         } else {
             // Jika tidak ada kategori dipilih
             if ($search) {
-                $produks->where('nama', 'like', '%' . $search . '%');
+                $produksQuery->where('nama', 'like', '%' . $search . '%');
             }
 
-            $produks = $produks->with('kategori')->latest()->paginate(12);
+            $produks = $produksQuery->with('kategori')->latest()->paginate(12);
         }
 
-        // Produk Terlaris (minimal 10 pesanan dengan status 'complete')
-        $produkTerlaris = Produk::select('produks.*', DB::raw('SUM(orders.jumlah) as total_jumlah_pesanan'))
-            ->leftJoin('orders', function ($join) {
-                $join->on('orders.produk_id', '=', 'produks.id')
-                    ->where('orders.status', '=', 'complete');
-            })
-            ->groupBy('produks.id')
+        // SOLUSI 1: Menggunakan withSum() - Paling direkomendasikan
+        $produkTerlaris = Produk::withSum([
+                'orders as total_jumlah_pesanan' => function ($query) {
+                    $query->where('status', 'complete');
+                }
+            ], 'jumlah')
             ->having('total_jumlah_pesanan', '>=', 10)
             ->orderByDesc('total_jumlah_pesanan')
             ->limit(8)
             ->get();
+
+        // SOLUSI 2: Subquery alternatif
+        // $produkTerlaris = Produk::select('produks.*')
+        //     ->addSelect([
+        //         'total_jumlah_pesanan' => Order::selectRaw('COALESCE(SUM(jumlah), 0)')
+        //             ->whereColumn('produk_id', 'produks.id')
+        //             ->where('status', 'complete')
+        //     ])
+        //     ->having('total_jumlah_pesanan', '>=', 10)
+        //     ->orderByDesc('total_jumlah_pesanan')
+        //     ->limit(8)
+        //     ->get();
 
         $notifikasiDikirim = collect();
         if (Auth::check()) {
