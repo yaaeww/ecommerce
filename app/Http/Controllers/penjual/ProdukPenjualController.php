@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Penjual;
 use App\Http\Controllers\Controller;
 use App\Models\Produk;
 use App\Models\Diskon; // import model Diskon
-use App\Models\UMKM;
+use App\Models\Umkm;
 use App\Models\KategoriProduk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -209,7 +209,7 @@ class ProdukPenjualController extends Controller
 
     private function ensureUserHasUMKM()
     {
-        if (!UMKM::where('user_id', Auth::id())->exists()) {
+        if (!Umkm::where('user_id', Auth::id())->exists()) {
             return redirect()->route('penjual.umkm.index')->with('error', 'Silakan buat UMKM terlebih dahulu.');
         }
         return null;
