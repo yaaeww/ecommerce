@@ -74,6 +74,16 @@ class Produk extends Model
     // ACCESSORS & SCOPES
     // =======================
 
+    public function getGambarAttribute($value)
+    {
+        if (!$value) return null;
+        $clean = ltrim($value, '/');
+        if (str_starts_with($clean, 'storage/')) {
+            return substr($clean, 8);
+        }
+        return $clean;
+    }
+
     public function getHargaFormattedAttribute()
     {
         return 'Rp ' . number_format($this->harga, 0, ',', '.');
