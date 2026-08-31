@@ -16,6 +16,7 @@ class Chat extends Model
         'umkm_id',
         'message',
         'is_ai',
+        'is_read',
     ];
 
     // Accessor untuk membaca pesan terdekripsi

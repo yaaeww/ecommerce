@@ -36,7 +36,7 @@ class PenjualUmkmController extends Controller
     {
         $request->validate([
             'nama_toko'  => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
+            'deskripsi' => 'nullable|string|max:5000',
             'alamat'    => 'required|string|max:255',
             'no_telp'   => 'nullable|string|max:255',
             'logo'      => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -89,7 +89,7 @@ class PenjualUmkmController extends Controller
 
         $request->validate([
             'nama_toko'  => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
+            'deskripsi' => 'nullable|string|max:5000',
             'alamat'    => 'required|string|max:255',
             'no_telp'   => 'nullable|string|max:255',
             'logo'      => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',

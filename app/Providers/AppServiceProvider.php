@@ -38,18 +38,28 @@ class AppServiceProvider extends ServiceProvider
             $view->with('totalKeranjang', $totalKeranjang);
         });
 
-        // Notifikasi pesanan "dikirim" untuk pembeli
-        View::composer('layouts.pembeli-navbar', function ($view) {
+        // Notifikasi pesanan "dikirim" & chat baru untuk pembeli
+        View::composer('layouts.public', function ($view) {
             $notifikasiDikirim = collect(); // default kosong
+            $jumlahChatBaru = 0;
 
-            if (Auth::check() && Auth::user()->role === 'pembeli') {
-                $notifikasiDikirim = Order::where('user_id', Auth::id())
-                    ->where('status_pesanan', 'dikirim')
-                    ->latest()
-                    ->get();
+            if (Auth::check()) {
+                if (Auth::user()->role === 'pembeli') {
+                    $notifikasiDikirim = Order::where('user_id', Auth::id())
+                        ->where('status_pesanan', 'dikirim')
+                        ->latest()
+                        ->get();
+                }
+                $jumlahChatBaru = \App\Models\Chat::where('receiver_id', Auth::id())
+                    ->where('is_ai', false)
+                    ->where('is_read', false)
+                    ->count();
             }
 
-            $view->with('notifikasiDikirim', $notifikasiDikirim);
+            $view->with([
+                'notifikasiDikirim' => $notifikasiDikirim,
+                'jumlahChatBaru' => $jumlahChatBaru,
+            ]);
         });
 
         // Notifikasi pesanan untuk penjual

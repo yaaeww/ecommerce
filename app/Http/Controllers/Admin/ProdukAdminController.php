@@ -7,17 +7,10 @@ use App\Models\Produk;
 
 class ProdukAdminController extends Controller
 {
-    // ✅ Dashboard Admin - List Semua Produk
-    public function dashboard()
-    {
-        $produks = Produk::latest()->paginate(10);
-        return view('admin.dashboard', compact('produks'));
-    }
-
-    // ✅ CRUD Produk (Admin bisa manage produk kalau mau)
+    // ✅ List Semua Produk Marketplace
     public function index()
     {
-        $produks = Produk::latest()->paginate(10);
+        $produks = Produk::with(['umkm', 'kategori', 'diskon'])->latest()->paginate(15);
         return view('admin.produk.index', compact('produks'));
     }
 
@@ -26,6 +19,6 @@ class ProdukAdminController extends Controller
         $produk = Produk::findOrFail($id);
         $produk->delete();
 
-        return redirect()->route('admin.produk.index')->with('success', 'Produk berhasil dihapus.');
+        return redirect()->route('admin.produk.index')->with('success', 'Produk berhasil dihapus dari marketplace.');
     }
 }

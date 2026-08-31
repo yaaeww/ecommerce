@@ -2,492 +2,274 @@
 
 @section('page_title', 'Dashboard')
 
-@section('title')
-    <i class="bi bi-house-fill" style="color: var(--gold);"></i> Home Admin
-@endsection
-
-@push('style')
-    <style>
-        :root {
-            --dark-blue: #0a1628;
-            --medium-blue: #1a3a5f;
-            --light-blue: #2a4a7f;
-            --gold: #ffd700;
-            --gold-light: #ffed4e;
-            --gold-dark: #d4af37;
-            --text-primary: #ffffff;
-            --text-secondary: #a0aec0;
-        }
-
-        body {
-            background: linear-gradient(135deg, var(--dark-blue) 0%, var(--medium-blue) 70%, var(--light-blue) 100%) !important;
-            color: var(--text-primary);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        /* Card Styling */
-        .card-box {
-            background: linear-gradient(135deg, rgba(10, 22, 40, 0.95) 0%, rgba(26, 58, 95, 0.9) 100%) !important;
-            border: 2px solid var(--gold);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(255, 215, 0, 0.15);
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card-box::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--gold), transparent);
-            animation: shimmer 3s infinite;
-        }
-
-        @keyframes shimmer {
-
-            0%,
-            100% {
-                opacity: 0;
-            }
-
-            50% {
-                opacity: 1;
-            }
-        }
-
-        .card-box:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(255, 215, 0, 0.25);
-            border-color: var(--gold-light);
-        }
-
-        /* Welcome Banner */
-        .welcome-banner {
-            background: linear-gradient(135deg, rgba(10, 22, 40, 0.95) 0%, rgba(26, 58, 95, 0.9) 100%);
-            border: 2px solid var(--gold);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(255, 215, 0, 0.15);
-            backdrop-filter: blur(10px);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .welcome-banner::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--gold), transparent);
-            animation: shimmer 3s infinite;
-        }
-
-        .banner-img {
-            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.3));
-            border-radius: 15px;
-            transition: transform 0.3s ease;
-        }
-
-        .banner-img:hover {
-            transform: scale(1.05);
-        }
-
-        /* Widget Styling */
-        .widget-style3 {
-            background: linear-gradient(135deg, rgba(10, 22, 40, 0.95) 0%, rgba(26, 58, 95, 0.9) 100%) !important;
-            border: 2px solid var(--gold);
-            border-radius: 15px;
-            box-shadow: 0 6px 25px rgba(255, 215, 0, 0.15);
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .widget-style3::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--gold), transparent);
-        }
-
-        .widget-style3:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(255, 215, 0, 0.25);
-        }
-
-        /* Text Styling */
-        .font-20 {
-            font-size: 1.25rem !important;
-            font-weight: 600;
-        }
-
-        .font-24 {
-            font-size: 1.5rem !important;
-            font-weight: 700;
-        }
-
-        .font-30 {
-            font-size: 1.875rem !important;
-            font-weight: 800;
-        }
-
-        .font-18 {
-            font-size: 1.125rem !important;
-        }
-
-        .font-14 {
-            font-size: 0.875rem !important;
-        }
-
-        .weight-500 {
-            font-weight: 500 !important;
-        }
-
-        .weight-600 {
-            font-weight: 600 !important;
-        }
-
-        .weight-700 {
-            font-weight: 700 !important;
-        }
-
-        .text-blue {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .text-dark {
-            color: var(--text-primary) !important;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .text-secondary {
-            color: var(--text-secondary) !important;
-        }
-
-        /* Icon Styling */
-        .widget-icon .icon {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-size: 2.5rem;
-            opacity: 0.9;
-        }
-
-        .icon-copy {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* Greeting Text */
-        .greeting-text {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-weight: 700;
-        }
-
-        .user-name {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-weight: 800;
-            text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
-        }
-
-        .welcome-message {
-            color: var(--text-secondary);
-            line-height: 1.6;
-        }
-
-        /* Sparkle Effect */
-        .sparkle {
-            position: absolute;
-            width: 3px;
-            height: 3px;
-            background: var(--gold);
-            border-radius: 50%;
-            box-shadow: 0 0 10px var(--gold);
-            animation: sparkleFloat 2s forwards;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        @keyframes sparkleFloat {
-
-            0%,
-            100% {
-                transform: translateY(0) scale(1);
-                opacity: 0;
-            }
-
-            50% {
-                transform: translateY(-20px) scale(1.5);
-                opacity: 1;
-            }
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-
-            .card-box,
-            .widget-style3 {
-                margin-bottom: 1rem !important;
-            }
-
-            .font-30 {
-                font-size: 1.5rem !important;
-            }
-
-            .font-24 {
-                font-size: 1.25rem !important;
-            }
-
-            .banner-img {
-                max-width: 200px;
-                margin-bottom: 1rem;
-            }
-        }
-
-        /* Grid Layout */
-        .row {
-            margin: 0 -10px;
-        }
-
-        .col-xl-3,
-        .col-lg-3,
-        .col-md-6 {
-            padding: 0 10px;
-        }
-
-        /* Height adjustments */
-        .height-100-p {
-            height: auto !important;
-            min-height: 200px;
-        }
-
-        .mb-30 {
-            margin-bottom: 2rem !important;
-        }
-
-        .mb-20 {
-            margin-bottom: 1.5rem !important;
-        }
-
-        .pb-10 {
-            padding-bottom: 1rem !important;
-        }
-
-        .pd-20 {
-            padding: 2rem !important;
-        }
-
-        /* Flex alignment */
-        .d-flex {
-            display: flex !important;
-        }
-
-        .flex-wrap {
-            flex-wrap: wrap !important;
-        }
-
-        .align-items-center {
-            align-items: center !important;
-        }
-
-        .text-capitalize {
-            text-transform: capitalize !important;
-        }
-
-        .max-width-600 {
-            max-width: 600px !important;
-        }
-    </style>
-@endpush
-
 @section('content')
-    <div class="welcome-banner pd-20 height-100-p mb-30">
-        <div class="row align-items-center">
-            <div class="col-md-4">
-                <img src="{{ asset('aset/admin.png') }}" alt="Admin Banner" class="banner-img"
-                    style="max-width: 100%;">
-            </div>
-            <div class="col-md-8">
-                @php
-                    $time = now()->format('H');
-                    if ($time < 12) {
-                        $greeting = 'Selamat pagi';
-                    } elseif ($time < 15) {
-                        $greeting = 'Selamat siang';
-                    } elseif ($time < 18) {
-                        $greeting = 'Selamat sore';
-                    } else {
-                        $greeting = 'Selamat malam';
-                    }
-                @endphp
+<div class="space-y-8">
+    
+    <!-- Welcome Header Banner -->
+    <div class="relative p-6 sm:p-8 rounded-3xl bg-white border border-slate-200/80 shadow-sm overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <!-- Subtle Glow -->
+        <div class="absolute -top-12 -right-12 w-64 h-64 bg-brand-50 rounded-full blur-3xl pointer-events-none"></div>
 
-                <h4 class="font-20 weight-500 mb-3 text-capitalize greeting-text">
-                    {{ $greeting }},
-                </h4>
-                <div class="weight-600 font-30 user-name mb-3">
-                    {{ auth()->user()->name }}!
-                </div>
-                <p class="font-18 max-width-600 welcome-message">
-                    @if(auth()->user()->isAdmin())
-                        Selamat datang di dashboard Admin. Anda dapat mengelola seluruh sistem dari sini dengan mudah dan
-                        efisien.
-                    @elseif(auth()->user()->isPenjual())
-                        Selamat berjualan! Pantau produk dan penjualan Anda di dashboard ini.
-                    @else
-                        Selamat berbelanja! Temukan produk terbaik untuk kebutuhan Anda.
-                    @endif
-                </p>
+        <div class="space-y-2 relative z-10 max-w-2xl">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-xs font-bold uppercase tracking-wider">
+                <span class="w-2 h-2 rounded-full bg-brand-600 animate-pulse"></span>
+                Pusat Kendali Superadmin
             </div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight font-display">
+                Selamat Datang, {{ Auth::user()->name }}! 👋
+            </h2>
+            <p class="text-slate-500 text-xs sm:text-sm leading-relaxed">
+                Pantau seluruh aktivitas transaksi, verifikasi kemitraan toko UMKM, serta kelola katalog komoditas mangga dan olahan pangan se-Kabupaten Indramayu.
+            </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3 relative z-10 shrink-0">
+            <a 
+                href="{{ route('admin.kategori.create') }}" 
+                class="px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs rounded-xl transition shadow-sm hover:shadow flex items-center gap-2"
+            >
+                <i class="fas fa-plus text-xs"></i> Tambah Kategori
+            </a>
+            <a 
+                href="{{ route('admin.umkm.index') }}" 
+                class="px-4 py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-bold text-xs rounded-xl transition flex items-center gap-2"
+            >
+                <i class="fas fa-store text-xs text-slate-400"></i> Kelola Toko UMKM
+            </a>
         </div>
     </div>
 
-    @php
-        use App\Models\Produk;
-        use App\Models\KategoriProduk;
-        use App\Models\User;
-        use App\Models\Umkm;
-        use App\Models\Order;
+    <!-- 4 Key Stat Cards (White Bento Cards with Sleek Indigo Accent) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        
+        <!-- Stat 1: Total Produk -->
+        <div class="card p-6 bg-white border border-slate-200/80 shadow-sm hover:border-brand-300 transition-all">
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Produk</span>
+                <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center text-base">
+                    <i class="fas fa-boxes-stacked"></i>
+                </div>
+            </div>
+            <p class="text-3xl font-extrabold text-slate-900 font-display tracking-tight">{{ $totalProduk }}</p>
+            <div class="flex items-center gap-2 mt-2 text-xs font-semibold text-slate-500">
+                <span class="text-brand-600 flex items-center gap-1">
+                    <i class="fas fa-check-circle"></i> Aktif
+                </span>
+                <span>di seluruh marketplace</span>
+            </div>
+        </div>
 
-        // Jumlah semua produk yang dimiliki UMKM
-        $totalProduk = Produk::whereHas('umkm')->count();
+        <!-- Stat 2: Kategori & Subkategori -->
+        <div class="card p-6 bg-white border border-slate-200/80 shadow-sm hover:border-brand-300 transition-all">
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Kategori Produk</span>
+                <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-base">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+            </div>
+            <p class="text-3xl font-extrabold text-slate-900 font-display tracking-tight">{{ $jumlahKategori }}</p>
+            <div class="flex items-center gap-2 mt-2 text-xs font-semibold text-slate-500">
+                <span class="text-indigo-600 font-bold">+{{ $totalSubkategori }}</span>
+                <span>subkategori terdaftar</span>
+            </div>
+        </div>
 
-        // Jumlah kategori produk
-        $jumlahKategori = KategoriProduk::count();
+        <!-- Stat 3: Mitra UMKM & Penjual -->
+        <div class="card p-6 bg-white border border-slate-200/80 shadow-sm hover:border-brand-300 transition-all">
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Mitra Toko UMKM</span>
+                <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-base">
+                    <i class="fas fa-store"></i>
+                </div>
+            </div>
+            <p class="text-3xl font-extrabold text-slate-900 font-display tracking-tight">{{ $totalUmkm }}</p>
+            <div class="flex items-center gap-2 mt-2 text-xs font-semibold text-slate-500">
+                @if($umkmPending > 0)
+                    <span class="text-amber-600 font-bold flex items-center gap-1">
+                        <i class="fas fa-clock"></i> {{ $umkmPending }} Menunggu
+                    </span>
+                @else
+                    <span class="text-emerald-600 font-bold flex items-center gap-1">
+                        <i class="fas fa-badge-check"></i> {{ $umkmApproved }} Terverifikasi
+                    </span>
+                @endif
+            </div>
+        </div>
 
-        // Jumlah penjual yang sudah punya data di UMKM
-        $totalPenjual = User::where('role', 'penjual')
-            ->whereHas('umkm')
-            ->count();
+        <!-- Stat 4: Total Pendapatan -->
+        <div class="card p-6 bg-white border border-slate-200/80 shadow-sm hover:border-brand-300 transition-all">
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Pendapatan</span>
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-base">
+                    <i class="fas fa-wallet"></i>
+                </div>
+            </div>
+            <p class="text-2xl sm:text-3xl font-extrabold text-slate-900 font-display tracking-tight">
+                Rp{{ number_format($totalPendapatan, 0, ',', '.') }}
+            </p>
+            <div class="flex items-center gap-2 mt-2 text-xs font-semibold text-slate-500">
+                <span class="text-emerald-600 font-bold">
+                    <i class="fas fa-arrow-trend-up"></i> Terintegrasi
+                </span>
+                <span>via Midtrans</span>
+            </div>
+        </div>
 
-        // Ambil total harga dari semua order yang status-nya 'complete'
-        $totalPendapatan = Order::where('status', 'complete')->sum('total_harga');
-        $pendapatanAdmin = $totalPendapatan * 0.2;
-    @endphp
+    </div>
 
-    <div class="row pb-10">
-        <div class="col-xl-3 col-lg-3 col-md-6 mb-20">
-            <div class="card-box height-100-p widget-style3">
-                <div class="d-flex flex-wrap">
-                    <div class="widget-data flex-grow-1">
-                        <div class="weight-700 font-24 text-dark">{{ number_format($totalProduk) }}</div>
-                        <div class="font-14 text-secondary weight-500">Total Produk</div>
+    <!-- 2 Columns: Recent UMKM Stores & Latest Products -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Left: Recent UMKM Registrations (7 cols) -->
+        <div class="lg:col-span-7 card bg-white border border-slate-200/80 shadow-sm overflow-hidden flex flex-col justify-between">
+            <div>
+                <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900">Toko Mitra UMKM</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Daftar toko dan kebun binaan terdaftar</p>
                     </div>
-                    <div class="widget-icon">
-                        <div class="icon">
-                            <i class="fa fa-cubes"></i>
-                        </div>
-                    </div>
+                    <a href="{{ route('admin.umkm.index') }}" class="text-xs font-bold text-brand-600 hover:underline">
+                        Lihat Semua <i class="fas fa-arrow-right text-[10px]"></i>
+                    </a>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="table w-full text-left">
+                        <thead>
+                            <tr>
+                                <th>Toko / Pemilik</th>
+                                <th>Alamat</th>
+                                <th>Status</th>
+                                <th class="text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            @forelse($recentUmkms as $umkm)
+                                <tr class="hover:bg-slate-50/60 transition">
+                                    <td>
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-600 font-bold text-xs flex items-center justify-center shrink-0 border border-slate-200">
+                                                <i class="fas fa-store text-xs"></i>
+                                            </div>
+                                            <div>
+                                                <p class="font-bold text-xs text-slate-900">{{ $umkm->nama_toko }}</p>
+                                                <p class="text-[11px] text-slate-400">{{ $umkm->user->name ?? 'Penjual' }}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="text-xs text-slate-600 truncate max-w-xs block">
+                                            {{ $umkm->alamat ?? 'Indramayu' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if($umkm->status === 'approved')
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                Disetujui
+                                            </span>
+                                        @elseif($umkm->status === 'pending')
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                                Menunggu
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">
+                                                {{ ucfirst($umkm->status) }}
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="text-right">
+                                        <a href="{{ route('admin.umkm.index') }}" class="p-1.5 text-slate-400 hover:text-brand-600 transition">
+                                            <i class="fas fa-eye text-xs"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="text-center py-8 text-slate-400 text-xs">
+                                        Belum ada toko UMKM terdaftar.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-3 col-lg-3 col-md-6 mb-20">
-            <div class="card-box height-100-p widget-style3">
-                <div class="d-flex flex-wrap">
-                    <div class="widget-data flex-grow-1">
-                        <div class="weight-700 font-24 text-dark">{{ number_format($jumlahKategori) }}</div>
-                        <div class="font-14 text-secondary weight-500">Kategori Produk</div>
+        <!-- Right: Recent Products Catalog (5 cols) -->
+        <div class="lg:col-span-5 card bg-white border border-slate-200/80 shadow-sm overflow-hidden flex flex-col justify-between">
+            <div>
+                <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900">Produk Terbaru</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Komoditas yang baru ditambahkan</p>
                     </div>
-                    <div class="widget-icon">
-                        <div class="icon">
-                            <i class="fa fa-tags"></i>
+                    <a href="{{ route('admin.produk.index') }}" class="text-xs font-bold text-brand-600 hover:underline">
+                        Semua <i class="fas fa-arrow-right text-[10px]"></i>
+                    </a>
+                </div>
+
+                <div class="p-4 space-y-3">
+                    @forelse($recentProduks as $item)
+                        <div class="p-3 rounded-2xl bg-slate-50/70 border border-slate-200/60 flex items-center justify-between gap-3 hover:bg-slate-100/70 transition">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 text-slate-400 flex items-center justify-center text-sm shrink-0">
+                                    <i class="fas fa-box-open text-brand-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-xs text-slate-900 line-clamp-1">{{ $item->nama }}</h4>
+                                    <p class="text-[11px] text-slate-400">{{ $item->umkm->nama_toko ?? 'Kebun Mitra' }}</p>
+                                </div>
+                            </div>
+                            <div class="text-right shrink-0">
+                                <p class="text-xs font-bold text-slate-900">Rp{{ number_format($item->harga, 0, ',', '.') }}</p>
+                                <span class="text-[10px] text-slate-400">Stok: {{ $item->stok }}</span>
+                            </div>
                         </div>
-                    </div>
+                    @empty
+                        <div class="text-center py-8 text-slate-400 text-xs">
+                            Belum ada produk terdaftar.
+                        </div>
+                    @endforelse
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-3 col-lg-3 col-md-6 mb-20">
-            <div class="card-box height-100-p widget-style3">
-                <div class="d-flex flex-wrap">
-                    <div class="widget-data flex-grow-1">
-                        <div class="weight-700 font-24 text-dark">{{ number_format($totalPenjual) }}</div>
-                        <div class="font-14 text-secondary weight-500">Total Penjual</div>
-                    </div>
-                    <div class="widget-icon">
-                        <div class="icon">
-                            <i class="fa fa-users"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    </div>
 
-        <div class="col-xl-3 col-lg-3 col-md-6 mb-20">
-            <div class="card-box height-100-p widget-style3">
-                <div class="d-flex flex-wrap">
-                    <div class="widget-data flex-grow-1">
-                        <div class="weight-700 font-24 text-dark">
-                            Rp {{ number_format($pendapatanAdmin, 0, ',', '.') }}
-                        </div>
-                        <div class="font-14 text-secondary weight-500">Pendapatan Admin</div>
-                    </div>
-                    <div class="widget-icon">
-                        <div class="icon">
-                            <i class="fa fa-money"></i>
-                        </div>
-                    </div>
+    <!-- Quick Management Shortcut Cards -->
+    <div class="card p-6 bg-white border border-slate-200/80 shadow-sm">
+        <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4">Pintasan Cepat Manajemen</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <a href="{{ route('admin.kategori.index') }}" class="p-4 rounded-2xl bg-slate-50 hover:bg-brand-50 border border-slate-200 hover:border-brand-200 text-slate-700 hover:text-brand-700 transition flex flex-col items-center text-center gap-2 group">
+                <div class="w-10 h-10 rounded-xl bg-white text-slate-600 group-hover:text-brand-600 flex items-center justify-center text-lg shadow-sm">
+                    <i class="fas fa-layer-group"></i>
                 </div>
-            </div>
+                <span class="text-xs font-bold">Kategori Produk</span>
+            </a>
+
+            <a href="{{ route('admin.umkm.index') }}" class="p-4 rounded-2xl bg-slate-50 hover:bg-brand-50 border border-slate-200 hover:border-brand-200 text-slate-700 hover:text-brand-700 transition flex flex-col items-center text-center gap-2 group">
+                <div class="w-10 h-10 rounded-xl bg-white text-slate-600 group-hover:text-brand-600 flex items-center justify-center text-lg shadow-sm">
+                    <i class="fas fa-store"></i>
+                </div>
+                <span class="text-xs font-bold">Daftar UMKM</span>
+            </a>
+
+            <a href="{{ route('admin.penjual.index') }}" class="p-4 rounded-2xl bg-slate-50 hover:bg-brand-50 border border-slate-200 hover:border-brand-200 text-slate-700 hover:text-brand-700 transition flex flex-col items-center text-center gap-2 group">
+                <div class="w-10 h-10 rounded-xl bg-white text-slate-600 group-hover:text-brand-600 flex items-center justify-center text-lg shadow-sm">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <span class="text-xs font-bold">Akun Penjual</span>
+            </a>
+
+            <a href="{{ route('admin.pembeli.index') }}" class="p-4 rounded-2xl bg-slate-50 hover:bg-brand-50 border border-slate-200 hover:border-brand-200 text-slate-700 hover:text-brand-700 transition flex flex-col items-center text-center gap-2 group">
+                <div class="w-10 h-10 rounded-xl bg-white text-slate-600 group-hover:text-brand-600 flex items-center justify-center text-lg shadow-sm">
+                    <i class="fas fa-users"></i>
+                </div>
+                <span class="text-xs font-bold">Akun Pembeli</span>
+            </a>
         </div>
     </div>
+
+</div>
 @endsection
-
-@push('script')
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Sparkle animation for cards
-            function createSparkle() {
-                const cards = document.querySelectorAll('.card-box, .widget-style3');
-                cards.forEach(card => {
-                    if (Math.random() > 0.7) { // 30% chance to create sparkle
-                        const sparkle = document.createElement('div');
-                        sparkle.className = 'sparkle';
-                        sparkle.style.left = Math.random() * 100 + '%';
-                        sparkle.style.top = Math.random() * 100 + '%';
-                        sparkle.style.animationDelay = Math.random() * 2 + 's';
-
-                        card.appendChild(sparkle);
-
-                        setTimeout(() => {
-                            if (sparkle.parentNode) {
-                                sparkle.parentNode.removeChild(sparkle);
-                            }
-                        }, 2000);
-                    }
-                });
-            }
-
-            // Create sparkles every second
-            setInterval(createSparkle, 1000);
-
-            // Initial sparkles
-            createSparkle();
-        });
-    </script>
-@endpush

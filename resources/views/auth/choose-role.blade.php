@@ -1,245 +1,150 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="h-full bg-brand-cream">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pilih Peran - Lanjutkan dengan Google</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Pilih Peran Akun — Juragan Pelem</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        display: ['"Outfit"', 'sans-serif'],
+                    },
+                    colors: {
+                        'brand-green': '#1B4D3E',
+                        'brand-green-dark': '#12352A',
+                        'brand-green-light': '#2D6A4F',
+                        'brand-amber': '#E88D14',
+                        'brand-cream': '#FAFAF7',
+                        'brand-slate': '#1E293B',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        /* CSS Tema Gelap Elegan dengan Animasi (Aksen Biru) */
-        :root {
-            --dark-bg: #121212; /* Latar belakang sangat gelap */
-            --card-bg: #1e1e1e; /* Warna card gelap */
-            --text-light: #e0e0e0; /* Teks terang */
-            --text-muted-dark: #a0a0a0; /* Teks redup */
-            --accent-color: #1a73e8; /* Akses warna Biru Google */
-            --accent-light: #4285f4; /* Biru Google yang sedikit lebih terang */
-            --shadow-glow: #4285f4; /* Shadow glow biru */
-            --google-border: #363636; /* Border gelap */
+        .role-card.active {
+            border-color: #1B4D3E;
+            background-color: rgba(27, 77, 62, 0.04);
+            box-shadow: 0 4px 14px rgba(27, 77, 62, 0.1);
         }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            background: linear-gradient(135deg, var(--dark-bg) 0%, #000000 100%);
-            color: var(--text-light);
-        }
-        
-        /* ------------------------------------------- */
-        /* 1. CONTAINER & MAIN LAYOUT */
-        /* ------------------------------------------- */
-        .auth-wrapper {
-            min-height: 100vh;
-            background-color: transparent;
-        }
-
-        .auth-card {
-            width: 100%;
-            max-width: 450px;
-            border: 1px solid var(--google-border);
-            border-radius: 20px;
-            background-color: var(--card-bg);
-            padding: 40px !important;
-            /* Box Shadow Glow (Animasi) */
-            box-shadow: 0 0 15px rgba(26, 115, 232, 0.4); /* Biru */
-            transition: all 0.5s ease-in-out; 
-        }
-
-        .auth-card:hover {
-            box-shadow: 0 0 25px rgba(26, 115, 232, 0.6), 0 0 5px rgba(66, 133, 244, 0.2); /* Biru */
-            transform: scale(1.01);
-        }
-
-        /* ------------------------------------------- */
-        /* 2. HEADER & LOGO */
-        /* ------------------------------------------- */
-        .logo-container img {
-            width: 70px;
-            margin-bottom: 24px;
-            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.3));
-        }
-
-        .main-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--text-light);
-            margin-bottom: 8px;
-            letter-spacing: 1px;
-        }
-
-        .welcome-message {
-            font-size: 0.95rem;
-            color: var(--text-muted-dark);
-            margin-bottom: 24px;
-        }
-        .welcome-message strong {
-            color: var(--accent-light);
-        }
-
-
-        /* ------------------------------------------- */
-        /* 3. ROLE SELECTION BUTTONS */
-        /* ------------------------------------------- */
-        .role-btn {
-            border-radius: 12px;
-            padding: 16px 8px;
-            font-size: 1rem;
-            font-weight: 500;
-            text-align: center;
-            background-color: var(--card-bg);
-            border: 1px solid var(--google-border);
-            color: var(--text-light);
+        .role-card.active .role-check {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
-        }
-
-        .role-btn img {
-            height: 50px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            object-fit: cover;
-            filter: brightness(0.9); 
-        }
-
-        .role-btn.active {
-            border: 2px solid var(--accent-light); /* Biru */
-            background-color: rgba(26, 115, 232, 0.2); /* Biru transparan */
-            color: var(--accent-light);
-            box-shadow: 0 0 10px rgba(26, 115, 232, 0.6); /* Biru */
-            transform: scale(1.05);
-        }
-
-        .role-btn:hover:not(.active) {
-            background-color: #2a2a2a; 
-            border-color: var(--accent-color);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-        }
-
-        /* ------------------------------------------- */
-        /* 4. SUBMIT BUTTON & FOOTER */
-        /* ------------------------------------------- */
-        .btn-primary {
-            background: linear-gradient(90deg, var(--accent-color) 0%, var(--accent-light) 100%) !important;
-            border: none !important;
-            font-weight: 600;
-            border-radius: 8px;
-            transition: all 0.3s;
-            color: white;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            background: linear-gradient(90deg, var(--accent-light) 0%, var(--accent-color) 100%) !important;
-            box-shadow: 0 0 15px rgba(26, 115, 232, 0.8); /* Biru */
-            transform: translateY(-1px);
-        }
-
-        .btn-primary:disabled {
-            background-color: #3d3d3d !important;
-            border-color: #3d3d3d !important;
-            color: #888;
-            cursor: not-allowed;
-            opacity: 0.8;
-        }
-        
-        /* ------------------------------------------- */
-        /* PERUBAHAN WARNA TEKS FOOTER */
-        /* ------------------------------------------- */
-
-        /* Warna teks biasa di footer menjadi putih */
-        .text-light-override {
-            color: var(--text-light) !important;
-        }
-
-        /* Warna tautan Keluar menjadi Biru */
-        .footer-link {
-            color: var(--accent-light) !important; /* Warna Biru */
-            font-weight: 500;
-            transition: color 0.2s;
-        }
-        .footer-link:hover {
-            color: var(--accent-color) !important; /* Biru yang sedikit lebih gelap untuk hover */
         }
     </style>
 </head>
 
-<body>
-    <div class="d-flex align-items-center justify-content-center auth-wrapper">
-        <div class="auth-card shadow-lg p-5">
-            <div class="text-center mb-4 logo-container">
-                <img src="{{ asset('aset/google.png') }}" alt="Google Logo">
-                <h1 class="main-title">Pilih Peran</h1>
-                <p class="welcome-message">
-                    Lanjutkan sebagai <strong>{{ data_get(session('google_user'), 'name', 'Pengguna') }}</strong>
-                    ({{ data_get(session('google_user'), 'email', 'email@contoh.com') }}).
-                    <br>Tentukan peran kamu untuk mengakses fitur yang sesuai.
-                </p>
+<body class="h-full flex items-center justify-center p-4 sm:p-6 bg-brand-cream font-sans">
+    <div class="max-w-lg w-full bg-white p-8 sm:p-10 rounded-3xl border border-slate-200/80 shadow-xl relative">
+        
+        <!-- Brand Header -->
+        <div class="text-center mb-8">
+            <a href="{{ route('landing') }}" class="inline-flex items-center gap-2.5 mb-4 group">
+                <div class="w-10 h-10 rounded-xl bg-white shadow-sm border border-slate-100 p-1.5 flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <img src="{{ asset('aset/finalisasi logo.png') }}" alt="Juragan Pelem" class="h-full w-auto object-contain">
+                </div>
+                <span class="text-xl font-bold font-display text-brand-green">Juragan<span class="text-brand-amber">Pelem</span></span>
+            </a>
+            
+            <h1 class="text-2xl font-extrabold text-brand-slate font-display tracking-tight">Pilih Peran Akun Anda</h1>
+            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+                Akun Google Anda berhasil terhubung. Silakan tentukan bagaimana Anda ingin menggunakan platform ini.
+            </p>
+        </div>
+
+        @if ($errors->any())
+            <div class="mb-5 p-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl text-xs font-semibold">
+                @foreach ($errors->all() as $error)
+                    <p>{{ $error }}</p>
+                @endforeach
             </div>
+        @endif
 
-            <form method="POST" action="{{ route('auth.google.saveRole') }}">
-                @csrf
+        <form method="POST" action="{{ route('auth.google.store-role') }}" class="space-y-6">
+            @csrf
+            <input type="hidden" name="role" id="roleInput" value="pembeli">
 
-                <div class="d-flex justify-content-between mb-4 gap-3">
-                    <button type="button" class="role-btn flex-fill me-2" data-role="penjual">
-                        <img src="{{ asset('aset/iconpenjual.png') }}" alt="Ikon Penjual">
-                        Penjual
-                    </button>
-                    <button type="button" class="role-btn flex-fill ms-2" data-role="pembeli">
-                        <img src="{{ asset('aset/iconpembeli.jpg') }}" alt="Ikon Pembeli">
-                        Pembeli
-                    </button>
+            <div class="space-y-4">
+                <!-- Option 1: Pembeli -->
+                <div 
+                    id="roleCardPembeli" 
+                    onclick="selectRole('pembeli')" 
+                    class="role-card active cursor-pointer p-5 rounded-2xl border-2 border-slate-200 bg-white transition relative flex items-center justify-between gap-4"
+                >
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-brand-green flex items-center justify-center text-xl shrink-0">
+                            <i class="fas fa-bag-shopping"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-sm text-brand-slate">Sebagai Pembeli</h3>
+                            <p class="text-xs text-slate-500 mt-0.5">Belanja mangga segar dan aneka produk olahan UMKM.</p>
+                        </div>
+                    </div>
+                    <div class="role-check w-6 h-6 rounded-full bg-brand-green text-white flex items-center justify-center text-xs shrink-0">
+                        <i class="fas fa-check"></i>
+                    </div>
                 </div>
 
-                <input type="hidden" name="role" id="roleInput" value="">
+                <!-- Option 2: Penjual -->
+                <div 
+                    id="roleCardPenjual" 
+                    onclick="selectRole('penjual')" 
+                    class="role-card cursor-pointer p-5 rounded-2xl border-2 border-slate-200 bg-white transition relative flex items-center justify-between gap-4"
+                >
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-50 text-brand-amber flex items-center justify-center text-xl shrink-0">
+                            <i class="fas fa-store"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-sm text-brand-slate">Sebagai Penjual / Mitra UMKM</h3>
+                            <p class="text-xs text-slate-500 mt-0.5">Buka toko digital, jual hasil panen, dan kelola produk.</p>
+                        </div>
+                    </div>
+                    <div class="role-check hidden w-6 h-6 rounded-full bg-brand-green text-white items-center justify-center text-xs shrink-0">
+                        <i class="fas fa-check"></i>
+                    </div>
+                </div>
+            </div>
 
-                <button type="submit" class="btn btn-primary w-100 py-2 mt-3" disabled
-                    id="continueBtn">Lanjutkan</button>
-            </form>
+            <button 
+                type="submit" 
+                class="w-full py-3.5 bg-brand-green hover:bg-brand-green-dark text-white font-bold text-sm rounded-xl transition shadow-lg shadow-brand-green/20 hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center gap-2"
+            >
+                Lanjutkan Masuk <i class="fas fa-arrow-right text-xs"></i>
+            </button>
+        </form>
 
-            <p class="text-center mt-4 small text-light-override">
-                Bukan kamu?
-                <a href="{{ route('logout') }}" class="text-decoration-none footer-link"
-                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                    Keluar dan login dengan akun lain
-                </a>
-
-            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                @csrf
-            </form>
-            </p>
-
-        </div>
     </div>
 
     <script>
-        const roleButtons = document.querySelectorAll('.role-btn');
-        const roleInput = document.getElementById('roleInput');
-        const continueBtn = document.getElementById('continueBtn');
+        function selectRole(role) {
+            document.getElementById('roleInput').value = role;
+            const cardPembeli = document.getElementById('roleCardPembeli');
+            const cardPenjual = document.getElementById('roleCardPenjual');
 
-        // Tombol Lanjutkan dinonaktifkan secara default
-        continueBtn.disabled = true;
-
-        roleButtons.forEach(btn => {
-            btn.addEventListener('click', function () {
-                // Hapus active dari semua
-                roleButtons.forEach(b => b.classList.remove('active'));
-
-                // Set active di button yang diklik
-                this.classList.add('active');
-
-                // Set value input hidden
-                roleInput.value = this.dataset.role;
-
-                // Aktifkan tombol Lanjutkan
-                continueBtn.disabled = false;
-            });
-        });
+            if (role === 'pembeli') {
+                cardPembeli.classList.add('active');
+                cardPenjual.classList.remove('active');
+            } else {
+                cardPenjual.classList.add('active');
+                cardPembeli.classList.remove('active');
+            }
+        }
     </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

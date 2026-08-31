@@ -39,6 +39,12 @@ class PenjualChatController extends Controller
     {
         $userId = Auth::id();
 
+        // Tandai pesan dari pembeli ini sebagai sudah dibaca
+        Chat::where('sender_id', $receiverId)
+            ->where('receiver_id', $userId)
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
         $chats = Chat::where(function ($q) use ($userId, $receiverId) {
             $q->where('sender_id', $userId)
                 ->where('receiver_id', $receiverId);
@@ -47,8 +53,13 @@ class PenjualChatController extends Controller
                 ->where('receiver_id', $userId);
         })->orderBy('created_at', 'asc')->get();
 
+        $totalUnread = Chat::where('receiver_id', $userId)
+            ->where('is_read', false)
+            ->count();
+
         return response()->json([
             'chats' => $chats,
+            'total_unread' => $totalUnread,
         ]);
     }
 

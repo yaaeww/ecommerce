@@ -1,372 +1,173 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="h-full bg-brand-cream">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - UMKM Indramayu</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <title>Masuk — Juragan Pelem | Marketplace Mangga & UMKM Indramayu</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        display: ['"Outfit"', 'sans-serif'],
+                    },
+                    colors: {
+                        'brand-green': '#1B4D3E',
+                        'brand-green-dark': '#12352A',
+                        'brand-green-light': '#2D6A4F',
+                        'brand-amber': '#E88D14',
+                        'brand-amber-light': '#F3A638',
+                        'brand-cream': '#FAFAF7',
+                        'brand-slate': '#1E293B',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
     <style>
-        :root {
-            --dark-blue: #0a1628;
-            --medium-blue: #1a3a5f;
-            --light-blue: #2a4a7f;
-            --gold: #ffd700;
-            --gold-light: #ffed4e;
-            --gold-dark: #d4af37;
-        }
-
-        body,
-        html {
-            height: 100%;
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--dark-blue) 0%, var(--medium-blue) 50%, var(--light-blue) 100%);
-        }
-
-        .bg-cover {
-            min-height: 100vh;
-            position: relative;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem 1rem;
-        }
-
-        .animated-bg {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: 0;
-        }
-
-        .animated-bg::before,
-        .animated-bg::after {
-            content: '';
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.15;
-            animation: float 20s infinite ease-in-out;
-        }
-
-        .animated-bg::before {
-            background: linear-gradient(45deg, var(--gold), var(--gold-light));
-            top: -10%;
-            left: -10%;
-            animation-delay: 0s;
-        }
-
-        .animated-bg::after {
-            background: linear-gradient(45deg, var(--light-blue), var(--medium-blue));
-            bottom: -10%;
-            right: -10%;
-            animation-delay: 5s;
-        }
-
-        @keyframes float {
-
-            0%,
-            100% {
-                transform: translate(0, 0) scale(1);
-            }
-
-            33% {
-                transform: translate(30px, -30px) scale(1.1);
-            }
-
-            66% {
-                transform: translate(-20px, 20px) scale(0.9);
-            }
-        }
-
-        .login-container {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            max-width: 440px;
-        }
-
-        .login-form {
-            background: rgba(30, 30, 46, 0.7);
-            border-radius: 24px;
-            padding: 3rem 2.5rem;
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-        }
-
-        .logo-container {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .logo-container img {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 1rem;
-            filter: drop-shadow(0 4px 12px rgba(255, 215, 0, 0.3));
-        }
-
-        .logo-container h2 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin: 0;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .form-control {
-            background-color: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: white;
-            padding: 0.875rem 1.25rem;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            font-size: 0.95rem;
-        }
-
-        .form-control:focus {
-            background-color: rgba(255, 255, 255, 0.08);
-            border-color: var(--gold);
-            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.15);
-            color: white;
-        }
-
-        .form-control::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        .form-control.is-invalid {
-            border-color: #ef4444;
-        }
-
-        .btn-login {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            border: none;
-            padding: 0.875rem;
-            width: 100%;
-            font-weight: 600;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            font-size: 1rem;
-            letter-spacing: 0.5px;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
-            color: var(--dark-blue);
-        }
-
-        .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
-            background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
-            color: var(--dark-blue);
-        }
-
-        .divider {
-            display: flex;
-            align-items: center;
-            text-align: center;
-            margin: 1.5rem 0;
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.875rem;
-        }
-
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .divider span {
-            padding: 0 1rem;
-        }
-
-        .btn-google {
-            background: rgba(255, 255, 255, 0.05);
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            width: 100%;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 0.875rem;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-        }
-
-        .btn-google:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .btn-google img {
-            width: 20px;
-            height: 20px;
-        }
-
-        .top-nav {
-            position: absolute;
-            top: 2rem;
-            right: 2rem;
-            display: flex;
-            gap: 1.5rem;
-            z-index: 10;
-        }
-
-        .top-nav a {
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: color 0.3s ease;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .top-nav a:hover {
-            color: var(--gold);
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .bottom-links {
-            font-size: 0.875rem;
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .bottom-links a {
-            color: var(--gold);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .bottom-links a:hover {
-            color: var(--gold-light);
-            text-decoration: underline;
-        }
-
-        .checkbox-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .checkbox-wrapper input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: var(--gold);
-            cursor: pointer;
-        }
-
-        .checkbox-wrapper label {
-            margin: 0;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .alert {
-            border-radius: 12px;
-            border: none;
-            padding: 1rem;
-            font-size: 0.875rem;
-        }
-
-        .alert-danger {
-            background: rgba(239, 68, 68, 0.15);
-            color: #fca5a5;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
-
-        .signup-link {
-            text-align: center;
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        /* Sparkle effect */
-        .sparkle {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            overflow: hidden;
-        }
-
-        @keyframes sparkleFloat {
-
-            0%,
-            100% {
-                transform: translateY(0) scale(1);
-                opacity: 0;
-            }
-
-            50% {
-                transform: translateY(-30px) scale(1.5);
-                opacity: 1;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .login-form {
-                padding: 2rem 1.5rem;
-            }
-
-            .top-nav {
-                top: 1rem;
-                right: 1rem;
-                gap: 0.75rem;
-            }
-
-            .top-nav a {
-                font-size: 0.85rem;
-                padding: 0.4rem 0.75rem;
-            }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #FAFAF7;
         }
     </style>
 </head>
 
-<body>
-    <div class="bg-cover">
-        <div class="animated-bg"></div>
-        <div class="sparkle"></div>
+<body class="h-full flex min-h-[100dvh]">
+    <div class="flex-1 flex flex-col lg:flex-row min-h-full">
+        
+        <!-- Left Side: Brand Showcase Panel (Visible on LG screens) -->
+        <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-brand-green-dark via-brand-green to-emerald-900 p-12 text-white flex-col justify-between relative overflow-hidden">
+            <!-- Subtle Radial Glows -->
+            <div class="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute bottom-0 left-0 w-96 h-96 bg-brand-amber/10 rounded-full blur-3xl pointer-events-none"></div>
 
-        <!-- Top Nav -->
-        <div class="top-nav">
-            <a href="#" style="color: var(--gold); background: rgba(255, 215, 0, 0.1);">Login</a>
-            <a href="/">Beranda</a>
-            <a href="{{ route('register') }}">Daftar</a>
-        </div>
+            <!-- Top Header in Panel -->
+            <div class="relative z-10">
+                <a href="{{ route('landing') }}" class="inline-flex items-center gap-3 group">
+                    <div class="w-11 h-11 rounded-xl bg-white shadow-sm p-1.5 flex items-center justify-center group-hover:scale-105 transition-transform">
+                        <img src="{{ asset('aset/finalisasi logo.png') }}" alt="Juragan Pelem" class="h-full w-auto object-contain">
+                    </div>
+                    <div>
+                        <span class="text-2xl font-bold font-display text-white tracking-tight">Juragan<span class="text-brand-amber">Pelem</span></span>
+                        <span class="block text-[10px] tracking-wider uppercase font-semibold text-emerald-200/80 -mt-1">Agro-Commerce Indramayu</span>
+                    </div>
+                </a>
+            </div>
 
-        <!-- Login Container -->
-        <div class="login-container">
-            <div class="login-form">
-                <div class="logo-container">
-                    <img src="{{ asset('aset/finalisasi logo.png') }}" alt="Logo UMKM Indramayu">
-                    <h2>UMKM Indramayu</h2>
+            <!-- Central Hero Narrative -->
+            <div class="space-y-6 relative z-10 max-w-lg">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur border border-white/20 text-emerald-200 text-xs font-bold uppercase tracking-wider">
+                    <i class="fas fa-shield-check text-brand-amber"></i> Portal Terverifikasi
                 </div>
 
-                {{-- Notifikasi Error dari Session --}}
+                <h1 class="text-4xl sm:text-5xl font-extrabold font-display leading-tight tracking-tight text-white">
+                    Akses Langsung ke <br>
+                    <span class="text-amber-300">Ekosistem Mangga</span> Terbaik.
+                </h1>
+
+                <p class="text-emerald-100/90 text-sm leading-relaxed">
+                    Masuk ke akun Anda untuk memantau status pesanan panen raya, mengelola keranjang belanja UMKM, atau mengatur inventaris toko kebun Anda.
+                </p>
+
+                <!-- Value Props -->
+                <div class="grid grid-cols-2 gap-4 pt-4">
+                    <div class="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center mb-2">
+                            <i class="fas fa-truck-fast text-xs"></i>
+                        </div>
+                        <h4 class="font-bold text-xs text-white">Logistik 24 Jam</h4>
+                        <p class="text-[11px] text-emerald-200/70 mt-0.5">Pengiriman bergaransi segar</p>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur">
+                        <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-300 flex items-center justify-center mb-2">
+                            <i class="fas fa-shield-halved text-xs"></i>
+                        </div>
+                        <h4 class="font-bold text-xs text-white">Pembayaran Aman</h4>
+                        <p class="text-[11px] text-emerald-200/70 mt-0.5">Terenkripsi via Midtrans</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Testimonial Quote -->
+            <div class="p-5 rounded-2xl bg-white/10 border border-white/15 backdrop-blur relative z-10">
+                <div class="flex items-center gap-1 text-amber-400 text-xs mb-2">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                </div>
+                <p class="text-xs italic text-emerald-100 leading-relaxed">
+                    "Platform ini memberikan kemudahan luar biasa untuk mendapatkan mangga asli Indramayu langsung saat baru petik matang pohon."
+                </p>
+                <div class="flex items-center justify-between mt-3 pt-3 border-t border-white/10 text-[11px] text-emerald-200">
+                    <span class="font-bold text-white">Mitra Pembeli Terverifikasi</span>
+                    <span>Jakarta Selatan</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Side: Clean Auth Form -->
+        <div class="flex-1 flex flex-col justify-between p-6 sm:p-12 lg:p-16 bg-brand-cream overflow-y-auto">
+            
+            <!-- Top Nav Back Link -->
+            <div class="flex items-center justify-between">
+                <a href="{{ route('landing') }}" class="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-brand-green transition">
+                    <i class="fas fa-arrow-left"></i> Kembali ke Beranda
+                </a>
+                
+                <!-- Mobile Brand Logo (Visible only on mobile/tablet) -->
+                <a href="{{ route('landing') }}" class="flex lg:hidden items-center gap-2">
+                    <img src="{{ asset('aset/finalisasi logo.png') }}" alt="Juragan Pelem" class="h-8 w-auto">
+                    <span class="font-display font-bold text-brand-green text-lg">Juragan<span class="text-brand-amber">Pelem</span></span>
+                </a>
+            </div>
+
+            <!-- Form Container -->
+            <div class="max-w-md w-full mx-auto my-8">
+                
+                <!-- Header Title -->
+                <div class="mb-8">
+                    <h2 class="text-3xl font-extrabold text-brand-slate tracking-tight font-display">
+                        Selamat Datang Kembali
+                    </h2>
+                    <p class="text-sm text-slate-500 mt-1.5">
+                        Masukkan email dan password akun Anda untuk melanjutkan.
+                    </p>
+                </div>
+
+                <!-- Session & Validation Alerts -->
                 @if(session('error'))
-                    <div class="alert alert-danger">
-                        {{ session('error') }}
+                    <div class="mb-5 p-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl flex items-start gap-3 text-xs font-medium shadow-sm">
+                        <i class="fas fa-circle-exclamation text-base text-red-500 mt-0.5 shrink-0"></i>
+                        <div>{{ session('error') }}</div>
                     </div>
                 @endif
 
-                {{-- Validasi Error --}}
+                @if(session('status'))
+                    <div class="mb-5 p-4 bg-emerald-50 border border-emerald-200 text-brand-green rounded-2xl flex items-start gap-3 text-xs font-medium shadow-sm">
+                        <i class="fas fa-circle-check text-base text-emerald-500 mt-0.5 shrink-0"></i>
+                        <div>{{ session('status') }}</div>
+                    </div>
+                @endif
+
                 @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul class="mb-0 ps-3">
+                    <div class="mb-5 p-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl text-xs font-medium shadow-sm">
+                        <div class="flex items-center gap-2 font-bold mb-1">
+                            <i class="fas fa-triangle-exclamation text-red-500"></i> Terjadi Kesalahan:
+                        </div>
+                        <ul class="list-disc list-inside space-y-0.5 pl-1">
                             @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
                             @endforeach
@@ -374,67 +175,139 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('login') }}">
+                <!-- Form -->
+                <form method="POST" action="{{ route('login') }}" class="space-y-4">
                     @csrf
-                    <div class="mb-3">
-                        <input type="email" class="form-control @error('email') is-invalid @enderror" name="email"
-                            placeholder="Email" value="{{ old('email') }}" required autofocus>
-                    </div>
 
-                    <div class="mb-4">
-                        <input type="password" class="form-control @error('password') is-invalid @enderror"
-                            name="password" placeholder="Password" required>
-                    </div>
-
-                    <div class="d-flex justify-content-between align-items-center mb-4 bottom-links">
-                        <div class="checkbox-wrapper">
-                            <input type="checkbox" id="remember" name="remember">
-                            <label for="remember">Ingat saya</label>
+                    <!-- Email Input -->
+                    <div>
+                        <label for="email" class="block text-xs font-bold text-slate-700 mb-1.5">Alamat Email</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <i class="fas fa-envelope text-sm"></i>
+                            </div>
+                            <input 
+                                id="email" 
+                                type="email" 
+                                name="email" 
+                                value="{{ old('email') }}" 
+                                required 
+                                autofocus 
+                                placeholder="nama@email.com"
+                                class="w-full bg-white text-slate-800 text-sm pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:border-brand-green focus:ring-2 focus:ring-brand-green/20 outline-none transition shadow-sm"
+                            >
                         </div>
-                        <a href="{{ route('password.request') }}">Lupa password?</a>
                     </div>
 
-                    <button type="submit" class="btn btn-login">MASUK</button>
-
-                    <div class="divider">
-                        <span>atau</span>
+                    <!-- Password Input -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label for="password" class="block text-xs font-bold text-slate-700">Kata Sandi</label>
+                            @if (Route::has('password.request'))
+                                <a href="{{ route('password.request') }}" class="text-xs font-semibold text-brand-green hover:underline">
+                                    Lupa sandi?
+                                </a>
+                            @endif
+                        </div>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <i class="fas fa-lock text-sm"></i>
+                            </div>
+                            <input 
+                                id="password" 
+                                type="password" 
+                                name="password" 
+                                required 
+                                placeholder="••••••••"
+                                class="w-full bg-white text-slate-800 text-sm pl-10 pr-10 py-3 rounded-xl border border-slate-200 focus:border-brand-green focus:ring-2 focus:ring-brand-green/20 outline-none transition shadow-sm"
+                            >
+                            <button 
+                                type="button" 
+                                onclick="togglePasswordVisibility('password', 'password-toggle-icon')" 
+                                class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition"
+                            >
+                                <i id="password-toggle-icon" class="fas fa-eye text-sm"></i>
+                            </button>
+                        </div>
                     </div>
 
-                    <!-- LOGIN GOOGLE -->
-                    <a href="{{ route('auth.google') }}" class="btn btn-google">
-                        <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google">
+                    <!-- Remember Me -->
+                    <div class="flex items-center justify-between pt-1">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" name="remember" id="remember" class="w-4 h-4 rounded border-slate-300 text-brand-green focus:ring-brand-green/30">
+                            <span class="text-xs font-medium text-slate-600">Ingat sesi saya</span>
+                        </label>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button 
+                        type="submit" 
+                        class="w-full py-3.5 bg-brand-green hover:bg-brand-green-dark text-white font-bold text-sm rounded-xl transition shadow-lg shadow-brand-green/20 hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center gap-2"
+                    >
+                        <i class="fas fa-arrow-right-to-bracket"></i> Masuk ke Akun
+                    </button>
+
+                    <!-- Or Divider -->
+                    <div class="relative my-6 text-center">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-slate-200"></div>
+                        </div>
+                        <span class="relative bg-brand-cream px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                            atau masuk dengan
+                        </span>
+                    </div>
+
+                    <!-- Google SSO Button -->
+                    <a 
+                        href="{{ route('auth.google') }}" 
+                        class="w-full py-3 px-4 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-sm rounded-xl transition shadow-sm flex items-center justify-center gap-3 hover:-translate-y-0.5"
+                    >
+                        <svg class="w-4 h-4" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                        </svg>
                         <span>Masuk dengan Google</span>
                     </a>
-
-                    <div class="signup-link bottom-links">
-                        Belum punya akun? <a href="{{ route('register') }}">Daftar sekarang</a>
-                    </div>
                 </form>
+
+                <!-- Switch to Register -->
+                <div class="text-center mt-8 pt-6 border-t border-slate-200/80">
+                    <p class="text-xs text-slate-500">
+                        Belum memiliki akun Juragan Pelem? 
+                        <a href="{{ route('register') }}" class="font-bold text-brand-green hover:underline">
+                            Daftar Sekarang
+                        </a>
+                    </p>
+                </div>
+
             </div>
+
+            <!-- Footer Small -->
+            <div class="text-center text-[11px] text-slate-400">
+                &copy; {{ date('Y') }} Juragan Pelem Indramayu. Seluruh hak cipta dilindungi.
+            </div>
+
         </div>
+
     </div>
 
+    <!-- Password visibility toggle script -->
     <script>
-        // Add sparkle animation on page load
-        window.addEventListener('load', () => {
-            const bgCover = document.querySelector('.bg-cover');
-            setInterval(() => {
-                const sparkle = document.createElement('div');
-                sparkle.style.position = 'absolute';
-                sparkle.style.width = '4px';
-                sparkle.style.height = '4px';
-                sparkle.style.background = '#ffd700';
-                sparkle.style.borderRadius = '50%';
-                sparkle.style.boxShadow = '0 0 10px #ffd700';
-                sparkle.style.left = Math.random() * 100 + '%';
-                sparkle.style.top = Math.random() * 100 + '%';
-                sparkle.style.animation = 'sparkleFloat 2s forwards';
-                sparkle.style.pointerEvents = 'none';
-                bgCover.appendChild(sparkle);
-
-                setTimeout(() => sparkle.remove(), 2000);
-            }, 500);
-        });
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
     </script>
 </body>
 

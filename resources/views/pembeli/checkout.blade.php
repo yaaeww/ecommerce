@@ -1,350 +1,130 @@
-@extends('layouts.pembeli-navbar')
+@extends('layouts.public')
 
 @section('content')
-    <style>
-        :root {
-            --dark-blue: #0a1628;
-            --medium-blue: #1a3a5f;
-            --light-blue: #2a4a7f;
-            --gold: #ffd700;
-            --gold-light: #ffed4e;
-            --gold-dark: #d4af37;
-            --success-color: #28a745;
-            --warning-color: #ffc107;
-            --danger-color: #dc3545;
-            --info-color: #17a2b8;
-            --secondary-color: #6c757d;
-        }
-
-        body {
-            background-color: #000 !important;
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .container {
-            padding-top: 20px;
-            max-width: relative;
-        }
-
-        .page-title {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 700;
-            font-size: 2.2rem;
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-
-        .order-card {
-            background: rgba(30, 30, 46, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            overflow: hidden;
-            padding: 2.5rem;
-            backdrop-filter: blur(10px);
-            margin: 0 auto;
-            max-width: 600px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        .card-title {
-            color: var(--gold);
-            font-weight: 600;
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
-        }
-
-        .info-table {
-            width: 100%;
-            border-collapse: collapse;
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .info-table tr {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .info-table tr:last-child {
-            border-bottom: none;
-        }
-
-        .info-table td {
-            padding: 1rem 0.5rem;
-            vertical-align: top;
-        }
-
-        .info-table td:first-child {
-            color: var(--gold);
-            font-weight: 600;
-            width: 40%;
-            padding-left: 0;
-        }
-
-        .info-table td:last-child {
-            padding-right: 0;
-        }
-
-        .price-original {
-            text-decoration: line-through;
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.9rem;
-            display: block;
-        }
-
-        .price-discounted {
-            color: var(--success-color);
-            font-weight: 600;
-            font-size: 1rem;
-        }
-
-        .price-normal {
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 600;
-        }
-
-        .total-price {
-            color: var(--gold-light);
-            font-weight: 700;
-            font-size: 1.2rem;
-        }
-
-        .btn {
-            border: none;
-            border-radius: 12px;
-            padding: 1rem 2rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.75rem;
-            cursor: pointer;
-            font-size: 1.1rem;
-            min-width: 200px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            color: var(--dark-blue);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
-            background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
-        }
-
-        .payment-section {
-            text-align: center;
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .payment-info {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            border: 1px solid rgba(255, 215, 0, 0.2);
-        }
-
-        .payment-info p {
-            margin-bottom: 0.5rem;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .payment-info .highlight {
-            color: var(--gold);
-            font-weight: 600;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .container {
-                padding-top: 70px;
-            }
-
-            .page-title {
-                font-size: 1.8rem;
-            }
-
-            .order-card {
-                padding: 2rem;
-                margin: 0 1rem;
-            }
-
-            .info-table td:first-child {
-                width: 35%;
-            }
-
-            .btn {
-                width: 100%;
-                min-width: auto;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .container {
-                padding-top: 60px;
-            }
-
-            .page-title {
-                font-size: 1.6rem;
-            }
-
-            .order-card {
-                padding: 1.5rem;
-            }
-
-            .info-table td {
-                padding: 0.75rem 0.25rem;
-                display: block;
-                width: 100%;
-                border-bottom: none;
-            }
-
-            .info-table td:first-child {
-                width: 100%;
-                padding-bottom: 0.25rem;
-                border-bottom: none;
-            }
-
-            .info-table tr {
-                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-                padding: 0.5rem 0;
-                display: block;
-            }
-
-            .info-table tr:last-child {
-                border-bottom: none;
-            }
-        }
-    </style>
-
-    <div class="container">
-        <!-- Page Header -->
-        <h1 class="page-title">
-            <i class="fas fa-receipt me-2"></i>Detail Pesanan Anda
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
+    <!-- Page Header -->
+    <div class="text-center mb-12">
+        <h1 class="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 mb-4 flex items-center justify-center gap-3">
+            <i class="fas fa-receipt text-indigo-500"></i>
+            Menunggu Pembayaran
         </h1>
+    </div>
 
-        <!-- Order Card -->
-        <div class="order-card">
-            <h3 class="card-title">
-                <i class="fas fa-info-circle me-2"></i>Informasi Pemesanan
+    <!-- Order Card -->
+    <div class="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden">
+        <div class="p-6 md:p-8 border-b border-gray-100 bg-gray-50/50 text-center">
+            <h3 class="text-xl font-bold text-indigo-600 flex items-center justify-center gap-2">
+                <i class="fas fa-info-circle"></i> Ringkasan Pesanan
             </h3>
+        </div>
 
-            <table class="info-table">
-                <tr>
-                    <td>Nama</td>
-                    <td>{{ $order->name }}</td>
-                </tr>
-                <tr>
-                    <td>Nomor HP</td>
-                    <td>{{ $order->phone }}</td>
-                </tr>
-                <tr>
-                    <td>Alamat</td>
-                    <td>{{ $order->alamat }}</td>
-                </tr>
-                <tr>
-                    <td>Jumlah Barang</td>
-                    <td>{{ $order->jumlah }}</td>
-                </tr>
-                <tr>
-                    <td>Produk</td>
-                    <td>{{ $order->produk->nama }}</td>
-                </tr>
-                <tr>
-                    <td>Harga Satuan</td>
-                    <td>
-                        @php
-                            $hargaAsli = $order->produk->harga;
-                            $diskon = $order->produk->diskon;
-                            $hargaSetelahDiskon = $hargaAsli;
-
-                            // Cek apakah diskon aktif sekarang
-                            if ($diskon && now()->between($diskon->tanggal_mulai, $diskon->tanggal_berakhir)) {
-                                $hargaSetelahDiskon = $hargaAsli - ($hargaAsli * $diskon->persen_diskon / 100);
-                            }
-                        @endphp
-                        @if ($hargaSetelahDiskon < $hargaAsli)
-                            <span class="price-original">
-                                Rp {{ number_format($hargaAsli, 0, ',', '.') }}
-                            </span>
-                            <span class="price-discounted">
-                                Rp {{ number_format($hargaSetelahDiskon, 0, ',', '.') }}
-                            </span>
-                        @else
-                            <span class="price-normal">
-                                Rp {{ number_format($hargaAsli, 0, ',', '.') }}
-                            </span>
-                        @endif
-                    </td>
-                </tr>
-                <tr>
-                    <td>Total Harga</td>
-                    <td class="total-price">
-                        Rp {{ number_format($hargaSetelahDiskon * $order->jumlah, 0, ',', '.') }}
-                    </td>
-                </tr>
-            </table>
-
-            <!-- Payment Section -->
-            <div class="payment-section">
-                <div class="payment-info">
-                    <p><span class="highlight">Langkah selanjutnya:</span> Klik tombol di bawah untuk melanjutkan pembayaran
-                    </p>
-                    <p><i class="fas fa-shield-alt me-2"></i>Pembayaran diproses dengan aman oleh Midtrans</p>
+        <div class="p-6 md:p-8">
+            <div class="space-y-6">
+                <!-- User Info -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2 pb-4 border-b border-gray-100">
+                    <div class="text-gray-500 font-medium">Nama Pemesan</div>
+                    <div class="md:col-span-2 text-gray-900 font-semibold">{{ $order->name }}</div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2 pb-4 border-b border-gray-100">
+                    <div class="text-gray-500 font-medium">Nomor HP</div>
+                    <div class="md:col-span-2 text-gray-900 font-semibold">{{ $order->phone }}</div>
                 </div>
 
-                <button class="btn btn-primary" id="pay-button">
-                    <i class="fas fa-credit-card me-2"></i> Bayar Sekarang
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2 pb-4 border-b border-gray-100">
+                    <div class="text-gray-500 font-medium">Alamat Pengiriman</div>
+                    <div class="md:col-span-2 text-gray-900 font-semibold">{{ $order->alamat }}</div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2 pb-4 border-b border-gray-100">
+                    <div class="text-gray-500 font-medium">ID Transaksi</div>
+                    <div class="md:col-span-2 text-gray-900 font-mono text-sm bg-gray-100 px-2 py-1 rounded w-fit">{{ $order->order_id_midtrans }}</div>
+                </div>
+
+                <!-- Order Details (Multiple) -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2 pb-4 border-b border-gray-100">
+                    <div class="text-gray-500 font-medium pt-2">Daftar Produk</div>
+                    <div class="md:col-span-2 space-y-3">
+                        @foreach($items as $item)
+                        <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg border border-gray-100">
+                            <div>
+                                <div class="font-semibold text-gray-900">{{ $item->produk->nama }}</div>
+                                <div class="text-sm text-gray-500">{{ $item->jumlah }} x Rp {{ number_format($item->harga_satuan, 0, ',', '.') }}</div>
+                            </div>
+                            <div class="font-bold text-indigo-600">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                <!-- Total -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2 pt-4 items-center">
+                    <div class="text-gray-600 font-bold text-lg">Total Tagihan</div>
+                    <div class="md:col-span-2 text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
+                        Rp {{ number_format($total_harga, 0, ',', '.') }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Section -->
+            <div class="mt-10 pt-8 border-t border-gray-100 text-center">
+                <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-6 mb-8 max-w-lg mx-auto">
+                    <p class="text-gray-700 mb-2">
+                        <span class="text-indigo-600 font-bold">Langkah selanjutnya:</span> 
+                        Klik tombol di bawah untuk melanjutkan pembayaran
+                    </p>
+                    <p class="text-gray-500 text-sm flex items-center justify-center gap-2">
+                        <i class="fas fa-shield-alt text-green-500"></i> 
+                        Pembayaran diproses dengan aman oleh Midtrans
+                    </p>
+                </div>
+
+                <button id="pay-button" class="w-full md:w-auto min-w-[250px] bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 px-8 rounded-xl font-bold text-lg shadow-lg shadow-indigo-200 hover:shadow-indigo-300 transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-3 mx-auto">
+                    <i class="fas fa-credit-card"></i> Bayar Sekarang
                 </button>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Midtrans Snap Script -->
-    <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js"
-        data-client-key="{{ config('midtrans.client_key') }}"></script>
+<!-- Midtrans Snap Script -->
+<script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
 
-    <script type="text/javascript">
-        var payButton = document.getElementById('pay-button');
-        payButton.addEventListener('click', function () {
-            // Show loading state
-            payButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Memproses...';
-            payButton.disabled = true;
+<script type="text/javascript">
+    var payButton = document.getElementById('pay-button');
+    payButton.addEventListener('click', function () {
+        // Show loading state
+        payButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+        payButton.disabled = true;
+        payButton.classList.add('opacity-75', 'cursor-not-allowed');
+        payButton.classList.remove('hover:-translate-y-1', 'hover:shadow-indigo-300');
 
-            window.snap.pay('{{$snapToken}}', {
-                onSuccess: function (result) {
-                    console.log('Payment success result:', result);
-                    window.location.href = '/pembeli/invoice/{{ $order->id }}';
-                },
-                onPending: function (result) {
-                    alert("Menunggu pembayaran Anda.");
-                    // Reset button
-                    payButton.innerHTML = '<i class="fas fa-credit-card me-2"></i> Bayar Sekarang';
-                    payButton.disabled = false;
-                },
-                onError: function (result) {
-                    alert("Pembayaran gagal. Coba lagi.");
-                    // Reset button
-                    payButton.innerHTML = '<i class="fas fa-credit-card me-2"></i> Bayar Sekarang';
-                    payButton.disabled = false;
-                },
-                onClose: function () {
-                    alert('Anda menutup popup sebelum menyelesaikan pembayaran.');
-                    // Reset button
-                    payButton.innerHTML = '<i class="fas fa-credit-card me-2"></i> Bayar Sekarang';
-                    payButton.disabled = false;
-                }
-            });
+        window.snap.pay('{{$snapToken}}', {
+            onSuccess: function (result) {
+                console.log('Payment success result:', result);
+                // Redirect to pesanan page if multiple orders, or invoice if you handle it
+                window.location.href = '/pembeli/pesanan';
+            },
+            onPending: function (result) {
+                alert("Menunggu pembayaran Anda.");
+                resetButton();
+            },
+            onError: function (result) {
+                alert("Pembayaran gagal. Coba lagi.");
+                resetButton();
+            },
+            onClose: function () {
+                alert('Anda menutup popup sebelum menyelesaikan pembayaran.');
+                resetButton();
+            }
         });
-    </script>
+        
+        function resetButton() {
+            payButton.innerHTML = '<i class="fas fa-credit-card"></i> Bayar Sekarang';
+            payButton.disabled = false;
+            payButton.classList.remove('opacity-75', 'cursor-not-allowed');
+            payButton.classList.add('hover:-translate-y-1', 'hover:shadow-indigo-300');
+        }
+    });
+</script>
 @endsection

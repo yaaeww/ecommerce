@@ -1,350 +1,89 @@
-@extends('layouts.pembeli-navbar')
+@extends('layouts.public')
 
 @section('content')
-    <style>
-        :root {
-            --dark-blue: #0a1628;
-            --medium-blue: #1a3a5f;
-            --light-blue: #2a4a7f;
-            --gold: #ffd700;
-            --gold-light: #ffed4e;
-            --gold-dark: #d4af37;
-            --success-color: #28a745;
-            --warning-color: #ffc107;
-            --danger-color: #dc3545;
-            --info-color: #17a2b8;
-            --secondary-color: #6c757d;
-        }
-
-        body {
-            background-color: #000 !important;
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .container {
-            padding-top: 20px;
-            max-width: relative;
-        }
-
-        .page-header {
-            margin-bottom: 2rem;
-        }
-
-        .page-title {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 700;
-            font-size: 2.2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .page-subtitle {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 1.1rem;
-            margin-bottom: 0;
-        }
-
-        .orders-container {
-            background: rgba(30, 30, 46, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            overflow: hidden;
-            padding: 2rem;
-            backdrop-filter: blur(10px);
-            margin-bottom: 2rem;
-        }
-
-        .orders-table {
-            width: 100%;
-            border-collapse: collapse;
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .orders-table thead {
-            background: rgba(255, 215, 0, 0.1);
-            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
-        }
-
-        .orders-table th {
-            color: var(--gold);
-            font-weight: 600;
-            padding: 1rem 0.75rem;
-            text-align: left;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .orders-table td {
-            padding: 1rem 0.75rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            vertical-align: middle;
-        }
-
-        .orders-table tbody tr {
-            transition: all 0.3s ease;
-        }
-
-        .orders-table tbody tr:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .orders-table tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        .badge {
-            padding: 0.5rem 0.75rem;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.8rem;
-        }
-
-        .badge-warning {
-            background: linear-gradient(135deg, var(--warning-color), #e0a800);
-            color: #000;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            border: none;
-            border-radius: 8px;
-            padding: 0.5rem 1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            cursor: pointer;
-            font-size: 0.85rem;
-            text-align: center;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            color: var(--dark-blue);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
-            background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, var(--danger-color), #c82333);
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            cursor: pointer;
-            font-size: 0.85rem;
-        }
-
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
-            background: linear-gradient(135deg, #c82333, var(--danger-color));
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem 2rem;
-            background: rgba(30, 30, 46, 0.5);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-        }
-
-        .empty-state-icon {
-            font-size: 3rem;
-            color: var(--gold);
-            margin-bottom: 1rem;
-        }
-
-        .empty-state h5 {
-            color: var(--gold);
-            margin-bottom: 0.5rem;
-        }
-
-        .empty-state p {
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 0;
-        }
-
-        .order-count {
-            background: rgba(255, 215, 0, 0.1);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 12px;
-            padding: 1rem 1.5rem;
-            margin-bottom: 1.5rem;
-            color: var(--gold);
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 992px) {
-            .orders-table {
-                display: block;
-                overflow-x: auto;
-            }
-
-            .orders-table thead {
-                display: none;
-            }
-
-            .orders-table tbody,
-            .orders-table tr,
-            .orders-table td {
-                display: block;
-                width: 100%;
-            }
-
-            .orders-table tr {
-                margin-bottom: 1rem;
-                border: 1px solid rgba(255, 255, 255, 0.1);
-                border-radius: 12px;
-                overflow: hidden;
-                background: rgba(255, 255, 255, 0.05);
-                padding: 1rem;
-            }
-
-            .orders-table td {
-                padding: 0.75rem;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-                position: relative;
-                padding-left: 50%;
-            }
-
-            .orders-table td:before {
-                content: attr(data-label);
-                position: absolute;
-                left: 0.75rem;
-                width: 45%;
-                padding-right: 0.5rem;
-                font-weight: 600;
-                color: var(--gold);
-            }
-
-            .action-buttons {
-                justify-content: center;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding-top: 70px;
-            }
-
-            .page-title {
-                font-size: 1.8rem;
-            }
-
-            .orders-container {
-                padding: 1.5rem;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .container {
-                padding-top: 60px;
-            }
-
-            .page-title {
-                font-size: 1.6rem;
-            }
-
-            .orders-container {
-                padding: 1rem;
-            }
-
-            .orders-table td {
-                padding-left: 40%;
-            }
-
-            .orders-table td:before {
-                width: 35%;
-            }
-        }
-    </style>
-
-    <div class="container">
-        <!-- Page Header -->
-        <div class="page-header">
-            <h1 class="page-title">
-                <i class="fas fa-clock me-2"></i>Pesanan Belum Bayar
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Page Header -->
+    <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-extrabold text-gray-900 flex items-center gap-3">
+                <i class="fas fa-clock text-yellow-500"></i>
+                Pesanan Belum Bayar
             </h1>
-            <p class="page-subtitle">Pesanan yang menunggu pembayaran</p>
+            <p class="mt-2 text-sm text-gray-600">
+                Daftar pesanan Anda yang masih menunggu pembayaran
+            </p>
         </div>
+        <a href="{{ route('pembeli.profile.show') }}" class="inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Kembali ke Profil
+        </a>
+    </div>
 
-        <div class="orders-container">
-            @if($orders->count() > 0)
-                <div class="order-count">
-                    <i class="fas fa-shopping-bag me-2"></i>
-                    Total pesanan belum bayar: {{ $orders->count() }}
+    @if(session('success'))
+        <div class="mb-6 p-4 rounded-lg bg-green-50 border border-green-200 flex items-center gap-3 text-green-700">
+            <i class="fas fa-check-circle text-xl"></i>
+            <span class="font-medium">{{ session('success') }}</span>
+        </div>
+    @endif
+    
+    @if(session('error'))
+        <div class="mb-6 p-4 rounded-lg bg-red-50 border border-red-200 flex items-center gap-3 text-red-700">
+            <i class="fas fa-exclamation-circle text-xl"></i>
+            <span class="font-medium">{{ session('error') }}</span>
+        </div>
+    @endif
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        @if($orders->count() > 0)
+            <div class="p-4 sm:p-6 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-yellow-100 text-yellow-800 text-sm font-semibold">
+                    <i class="fas fa-shopping-bag"></i>
+                    Total: {{ $orders->count() }} pesanan
                 </div>
+            </div>
 
-                <table class="orders-table">
-                    <thead>
+            <!-- Desktop View (Table) -->
+            <div class="hidden md:block overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
                         <tr>
-                            <th data-label="Nama">Nama</th>
-                            <th data-label="Nomor HP">Nomor HP</th>
-                            <th data-label="Alamat">Alamat</th>
-                            <th data-label="Jumlah">Jumlah</th>
-                            <th data-label="Total Harga">Total Harga</th>
-                            <th data-label="Status">Status</th>
-                            <th data-label="Aksi">Aksi</th>
+                            <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Detail Pelanggan</th>
+                            <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Pesanan</th>
+                            <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Harga</th>
+                            <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                            <th scope="col" class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="bg-white divide-y divide-gray-200">
                         @foreach ($orders as $order)
-                            <tr>
-                                <td data-label="Nama">{{ $order->name }}</td>
-                                <td data-label="Nomor HP">{{ $order->phone }}</td>
-                                <td data-label="Alamat">{{ $order->alamat }}</td>
-                                <td data-label="Jumlah">{{ $order->jumlah }}</td>
-                                <td data-label="Total Harga">Rp {{ number_format($order->total_harga, 0, ',', '.') }}</td>
-                                <td data-label="Status">
-                                    <span class="badge badge-warning">
-                                        <i class="fas fa-clock me-1"></i>{{ $order->status }}
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-col gap-1">
+                                        <span class="text-sm font-semibold text-gray-900">{{ $order->name }}</span>
+                                        <span class="text-sm text-gray-500 flex items-center gap-1.5"><i class="fas fa-phone text-xs"></i> {{ $order->phone }}</span>
+                                        <span class="text-xs text-gray-500 max-w-xs truncate" title="{{ $order->alamat }}"><i class="fas fa-map-marker-alt text-xs mr-1"></i> {{ $order->alamat }}</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="text-sm text-gray-900 font-medium">{{ $order->jumlah }} Item</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="text-base font-bold text-indigo-600">Rp {{ number_format($order->total_harga, 0, ',', '.') }}</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                        <i class="fas fa-clock mr-1.5"></i> {{ ucfirst($order->status) }}
                                     </span>
                                 </td>
-                                <td data-label="Aksi">
-                                    <div class="action-buttons">
-                                        <a href="{{ route('pembeli.pending', ['order_id_midtrans' => $order->order_id_midtrans]) }}"
-                                            class="btn btn-primary">
-                                            <i class="fas fa-credit-card me-1"></i>Bayar
+                                <td class="px-6 py-4 whitespace-nowrap text-right">
+                                    <div class="flex flex-col sm:flex-row justify-end gap-2">
+                                        <a href="{{ route('pembeli.pending', ['order_id_midtrans' => $order->order_id_midtrans]) }}" class="inline-flex items-center justify-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                            <i class="fas fa-credit-card mr-1.5"></i> Bayar
                                         </a>
-                                        <form action="{{ route('pembeli.order.cancelExpired', $order->id) }}" method="POST"
-                                            onsubmit="return confirm('Yakin ingin membatalkan pesanan ini?')">
+                                        <form action="{{ route('pembeli.order.cancelExpired', $order->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin membatalkan pesanan ini?')">
                                             @csrf
-                                            <button type="submit" class="btn btn-danger">
-                                                <i class="fas fa-times me-1"></i>Batalkan
+                                            <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md text-red-700 bg-white hover:bg-red-50 hover:border-red-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
+                                                <i class="fas fa-times mr-1.5"></i> Batalkan
                                             </button>
                                         </form>
                                     </div>
@@ -353,47 +92,58 @@
                         @endforeach
                     </tbody>
                 </table>
-            @else
-                <div class="empty-state">
-                    <div class="empty-state-icon">
-                        <i class="fas fa-check-circle"></i>
+            </div>
+            
+            <!-- Mobile View (Cards) -->
+            <div class="md:hidden divide-y divide-gray-200">
+                @foreach ($orders as $order)
+                    <div class="p-4 hover:bg-gray-50 transition-colors">
+                        <div class="flex justify-between items-start mb-3">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                <i class="fas fa-clock mr-1.5"></i> {{ ucfirst($order->status) }}
+                            </span>
+                            <span class="text-sm font-medium text-gray-900">{{ $order->jumlah }} Item</span>
+                        </div>
+                        
+                        <div class="mb-4 space-y-1">
+                            <div class="text-sm font-bold text-gray-900">{{ $order->name }}</div>
+                            <div class="text-sm text-gray-500 flex items-center gap-1.5"><i class="fas fa-phone text-xs text-gray-400"></i> {{ $order->phone }}</div>
+                            <div class="text-sm text-gray-500 flex items-start gap-1.5"><i class="fas fa-map-marker-alt text-xs text-gray-400 mt-1"></i> <span>{{ $order->alamat }}</span></div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
+                            <div class="text-sm">
+                                <div class="text-gray-500 text-xs uppercase tracking-wider font-semibold">Total Harga</div>
+                                <div class="text-base font-bold text-indigo-600">Rp {{ number_format($order->total_harga, 0, ',', '.') }}</div>
+                            </div>
+                            
+                            <div class="flex flex-col gap-2">
+                                <a href="{{ route('pembeli.pending', ['order_id_midtrans' => $order->order_id_midtrans]) }}" class="inline-flex items-center justify-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    <i class="fas fa-credit-card mr-1.5"></i> Bayar
+                                </a>
+                                <form action="{{ route('pembeli.order.cancelExpired', $order->id) }}" method="POST" onsubmit="return confirm('Yakin ingin membatalkan pesanan ini?')">
+                                    @csrf
+                                    <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md text-red-700 bg-white hover:bg-red-50 hover:border-red-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
+                                        <i class="fas fa-times mr-1.5"></i> Batalkan
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
-                    <h5>Tidak ada pesanan belum bayar</h5>
-                    <p>Semua pesanan Anda telah dibayar atau belum ada pesanan yang menunggu pembayaran.</p>
+                @endforeach
+            </div>
+        @else
+            <div class="text-center py-16 px-4">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-50 mb-6">
+                    <i class="fas fa-check-circle text-4xl text-gray-300"></i>
                 </div>
-            @endif
-        </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Tidak ada pesanan belum bayar</h3>
+                <p class="text-gray-500 max-w-md mx-auto mb-8">Semua pesanan Anda telah dibayar atau belum ada pesanan yang menunggu pembayaran.</p>
+                <a href="{{ route('pembeli.produk.index') }}" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm transition-all hover:shadow">
+                    Mulai Belanja
+                </a>
+            </div>
+        @endif
     </div>
-
-    <script>
-        // Responsive table - add data labels for mobile view
-        document.addEventListener('DOMContentLoaded', function () {
-            if (window.innerWidth <= 992) {
-                const headers = document.querySelectorAll('.orders-table thead th');
-                const rows = document.querySelectorAll('.orders-table tbody tr');
-
-                rows.forEach(row => {
-                    const cells = row.querySelectorAll('td');
-                    cells.forEach((cell, index) => {
-                        if (headers[index]) {
-                            cell.setAttribute('data-label', headers[index].textContent.trim());
-                        }
-                    });
-                });
-            }
-        });
-
-        // Confirm cancellation
-        document.addEventListener('DOMContentLoaded', function () {
-            const cancelForms = document.querySelectorAll('form[action*="cancelExpired"]');
-
-            cancelForms.forEach(form => {
-                form.addEventListener('submit', function (e) {
-                    if (!confirm('Yakin ingin membatalkan pesanan ini?')) {
-                        e.preventDefault();
-                    }
-                });
-            });
-        });
-    </script>
+</div>
 @endsection

@@ -1,599 +1,226 @@
-@extends('layouts.pembeli-navbar')
+@extends('layouts.public')
 @section('title', 'Pesanan Dikirim & Diterima')
 
 @section('content')
     @php use App\Models\Ulasan; @endphp
 
-    <style>
-        :root {
-            --dark-blue: #0a1628;
-            --medium-blue: #1a3a5f;
-            --light-blue: #2a4a7f;
-            --gold: #ffd700;
-            --gold-light: #ffed4e;
-            --gold-dark: #d4af37;
-            --success-color: #28a745;
-            --warning-color: #ffc107;
-            --danger-color: #dc3545;
-            --info-color: #17a2b8;
-            --secondary-color: #6c757d;
-        }
-
-        body {
-            background-color: #000 !important;
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .container {
-            padding-top: 20px;
-            max-width: relative;
-        }
-
-        .page-header {
-            margin-bottom: 2rem;
-        }
-
-        .page-title {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 700;
-            font-size: 2.2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .section-title {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 600;
-            font-size: 1.5rem;
-            margin: 2.5rem 0 1.5rem 0;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .order-card {
-            background: rgba(30, 30, 46, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            overflow: hidden;
-            padding: 2rem;
-            backdrop-filter: blur(10px);
-            margin-bottom: 2rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .order-card:hover {
-            border-color: rgba(255, 215, 0, 0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-        }
-
-        .order-card.delivered {
-            border-left: 4px solid var(--success-color);
-        }
-
-        .order-card.shipping {
-            border-left: 4px solid var(--info-color);
-        }
-
-        .order-info {
-            margin-bottom: 1.5rem;
-        }
-
-        .info-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .info-item:last-child {
-            border-bottom: none;
-        }
-
-        .info-label {
-            color: var(--gold);
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .info-value {
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 500;
-        }
-
-        .badge {
-            padding: 0.5rem 0.75rem;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .badge-primary {
-            background: linear-gradient(135deg, var(--info-color), #138496);
-            color: white;
-        }
-
-        .badge-success {
-            background: linear-gradient(135deg, var(--success-color), #1e7e34);
-            color: white;
-        }
-
-        .btn {
-            border: none;
-            border-radius: 8px;
-            padding: 0.75rem 1.5rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, var(--success-color), #1e7e34);
-            color: white;
-        }
-
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
-            background: linear-gradient(135deg, #1e7e34, var(--success-color));
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
-        }
-
-        .product-item {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .product-name {
-            color: var(--gold);
-            font-weight: 600;
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .rating-form {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-top: 1rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .form-label {
-            color: var(--gold);
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            display: block;
-        }
-
-        .form-control,
-        .form-select {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            color: rgba(255, 255, 255, 0.9);
-            padding: 0.75rem 1rem;
-            transition: all 0.3s ease;
-            width: 100%;
-        }
-
-        .form-control:focus,
-        .form-select:focus {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: var(--gold);
-            color: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
-            outline: none;
-        }
-
-        .form-control::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            color: var(--dark-blue);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
-            background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
-        }
-
-        .alert {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 1rem 1.5rem;
-            margin-bottom: 1rem;
-            color: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-        }
-
-        .alert-info {
-            border-color: rgba(23, 162, 184, 0.5);
-            background: rgba(23, 162, 184, 0.1);
-        }
-
-        .alert-success {
-            border-color: rgba(40, 167, 69, 0.5);
-            background: rgba(40, 167, 69, 0.1);
-        }
-
-        .alert-warning {
-            border-color: rgba(255, 193, 7, 0.5);
-            background: rgba(255, 193, 7, 0.1);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem 2rem;
-            background: rgba(30, 30, 46, 0.5);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-        }
-
-        .empty-state-icon {
-            font-size: 3rem;
-            color: var(--gold);
-            margin-bottom: 1rem;
-        }
-
-        .empty-state h5 {
-            color: var(--gold);
-            margin-bottom: 0.5rem;
-        }
-
-        .empty-state p {
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 0;
-        }
-
-        .section-divider {
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--gold), transparent);
-            margin: 3rem 0;
-            border: none;
-        }
-
-        /* Star Rating */
-        .star-rating {
-            display: flex;
-            gap: 0.25rem;
-            margin-bottom: 1rem;
-        }
-
-        .star-rating input {
-            display: none;
-        }
-
-        .star-rating label {
-            font-size: 1.5rem;
-            color: rgba(255, 255, 255, 0.3);
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
-
-        .star-rating input:checked~label,
-        .star-rating label:hover,
-        .star-rating label:hover~label {
-            color: var(--gold);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .container {
-                padding-top: 70px;
-            }
-
-            .page-title {
-                font-size: 1.8rem;
-            }
-
-            .section-title {
-                font-size: 1.3rem;
-            }
-
-            .order-card {
-                padding: 1.5rem;
-            }
-
-            .info-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.25rem;
-            }
-
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .container {
-                padding-top: 60px;
-            }
-
-            .page-title {
-                font-size: 1.6rem;
-            }
-
-            .section-title {
-                font-size: 1.2rem;
-            }
-
-            .order-card {
-                padding: 1rem;
-            }
-
-            .product-item {
-                padding: 1rem;
-            }
-
-            .rating-form {
-                padding: 1rem;
-            }
-        }
-    </style>
-
-    <div class="container">
-        <!-- Page Header -->
-        <div class="page-header">
-            <h1 class="page-title">
-                <i class="fas fa-truck me-2"></i>Pesanan Dikirim & Diterima
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Page Header -->
+    <div class="mb-10 text-center sm:text-left flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-200 pb-6">
+        <div>
+            <h1 class="text-3xl font-extrabold text-gray-900 flex items-center justify-center sm:justify-start gap-3">
+                <i class="fas fa-truck text-indigo-600"></i>
+                Pesanan Dikirim & Diterima
             </h1>
+            <p class="mt-2 text-sm text-gray-600">Lacak pengiriman dan riwayat pesanan yang sudah Anda terima.</p>
         </div>
+        <a href="{{ route('pembeli.profile.show') }}" class="inline-flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+            <i class="fas fa-arrow-left mr-2 text-gray-400"></i>
+            Kembali ke Profil
+        </a>
+    </div>
 
-        @php
-            $dikirimOrders = $orders->where('status_pesanan', 'dikirim');
-            $diterimaOrders = $orders->where('status_pesanan', 'diterima');
-        @endphp
+    @php
+        $dikirimOrders = $orders->where('status_pesanan', 'dikirim');
+        $diterimaOrders = $orders->where('status_pesanan', 'diterima');
+    @endphp
 
-        <!-- Pesanan Sedang Dikirim -->
-        <h3 class="section-title">
-            <i class="fas fa-shipping-fast me-2"></i>Pesanan Sedang Dikirim
-        </h3>
+    <!-- Pesanan Sedang Dikirim -->
+    <div class="mb-12">
+        <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+            <i class="fas fa-shipping-fast text-blue-500"></i>
+            Pesanan Sedang Dikirim
+        </h2>
 
-        @if($dikirimOrders->count())
-            @foreach($dikirimOrders as $order)
-                <div class="order-card shipping">
-                    <div class="order-info">
-                        <div class="info-item">
-                            <span class="info-label">Nomor Pesanan</span>
-                            <span class="info-value">{{ $order->invoice ?? 'INV-' . $order->id }}</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Status</span>
-                            <span class="badge badge-primary">
-                                <i class="fas fa-truck me-1"></i>{{ ucfirst($order->status_pesanan) }}
-                            </span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Total</span>
-                            <span class="info-value">Rp{{ number_format($order->total_harga, 0, ',', '.') }}</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Tanggal</span>
-                            <span class="info-value">{{ $order->created_at->format('d-m-Y') }}</span>
-                        </div>
-                    </div>
-
-                    <form action="{{ route('pembeli.pesanan.updateStatus', $order->id) }}" method="POST"
-                        onsubmit="return confirm('Yakin ingin mengonfirmasi pesanan ini sudah diterima?')">
-                        @csrf
-                        @method('PATCH')
-                        <button type="submit" class="btn btn-success">
-                            <i class="fas fa-check-circle me-2"></i>Konfirmasi Diterima
-                        </button>
-                    </form>
-                </div>
-            @endforeach
-        @else
-            <div class="empty-state">
-                <div class="empty-state-icon">
-                    <i class="fas fa-truck-loading"></i>
-                </div>
-                <h5>Tidak ada pesanan yang sedang dikirim</h5>
-                <p>Belum ada pesanan yang sedang dalam proses pengiriman.</p>
-            </div>
-        @endif
-
-        <hr class="section-divider">
-
-        <!-- Pesanan Diterima -->
-        <h3 class="section-title">
-            <i class="fas fa-check-circle me-2"></i>Pesanan Diterima
-        </h3>
-
-        @if($diterimaOrders->count())
-            @foreach($diterimaOrders as $order)
-                <div class="order-card delivered">
-                    <div class="order-info">
-                        <div class="info-item">
-                            <span class="info-label">Nomor Pesanan</span>
-                            <span class="info-value">{{ $order->invoice ?? 'INV-' . $order->id }}</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Status</span>
-                            <span class="badge badge-success">
-                                <i class="fas fa-check me-1"></i>{{ ucfirst($order->status_pesanan) }}
-                            </span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Total</span>
-                            <span class="info-value">Rp{{ number_format($order->total_harga, 0, ',', '.') }}</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Tanggal Diterima</span>
-                            <span class="info-value">{{ $order->updated_at->format('d-m-Y H:i') }}</span>
-                        </div>
-                    </div>
-
-                    <div class="mt-4">
-                        <h6 class="text-gold mb-3">
-                            <i class="fas fa-box me-2"></i>Produk dalam Pesanan
-                        </h6>
-
-                        @if($order->produks && $order->produks->count())
-                            @foreach($order->produks as $produk)
-                                @php
-                                    $sudahDinilai = Ulasan::where('users_id', auth()->id())
-                                        ->where('orders_id', $order->id)
-                                        ->where('produks_id', $produk->id)
-                                        ->exists();
-                                @endphp
-
-                                <div class="product-item">
-                                    <div class="product-name">
-                                        <i class="fas fa-box-open"></i>{{ $produk->nama }}
-                                    </div>
-
-                                    @if(!$sudahDinilai)
-                                        <div class="rating-form">
-                                            <form action="{{ route('pembeli.rating.store') }}" method="POST">
-                                                @csrf
-                                                <input type="hidden" name="orders_id" value="{{ $order->id }}">
-                                                <input type="hidden" name="produks_id" value="{{ $produk->id }}">
-
-                                                <div class="mb-3">
-                                                    <label class="form-label">Rating Produk</label>
-                                                    <div class="star-rating">
-                                                        @for($i = 5; $i >= 1; $i--)
-                                                            <input type="radio" id="star{{ $i }}-{{ $produk->id }}" name="bintang" value="{{ $i }}"
-                                                                required>
-                                                            <label for="star{{ $i }}-{{ $produk->id }}">★</label>
-                                                        @endfor
-                                                    </div>
-                                                </div>
-
-                                                <div class="mb-3">
-                                                    <label class="form-label">Ulasan</label>
-                                                    <textarea name="ulasan" class="form-control" rows="3" required
-                                                        placeholder="Bagikan pengalaman Anda menggunakan produk ini..."></textarea>
-                                                </div>
-
-                                                <button type="submit" class="btn btn-primary">
-                                                    <i class="fas fa-paper-plane me-2"></i>Kirim Ulasan
-                                                </button>
-                                            </form>
-                                        </div>
-                                    @else
-                                        <div class="alert alert-success">
-                                            <i class="fas fa-check-circle me-2"></i>
-                                            Anda sudah memberikan ulasan untuk produk ini.
-                                        </div>
-                                    @endif
-                                </div>
-                            @endforeach
-                        @else
-                            <div class="alert alert-warning">
-                                <i class="fas fa-exclamation-triangle me-2"></i>
-                                Tidak ada produk terkait dengan pesanan ini.
+        <div class="space-y-6">
+            @forelse($dikirimOrders as $order)
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden relative">
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-blue-500"></div>
+                    
+                    <div class="p-6 sm:p-8">
+                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6 border-b border-gray-100 pb-4">
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+                                    <i class="fas fa-receipt text-indigo-500"></i>
+                                    {{ $order->invoice ?? 'INV-' . $order->id }}
+                                </h3>
+                                <p class="text-sm text-gray-500 mt-1">
+                                    <i class="fas fa-calendar-alt mr-1.5"></i>
+                                    {{ $order->created_at->format('d M Y') }}
+                                </p>
                             </div>
-                        @endif
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200 self-start">
+                                <i class="fas fa-truck mr-1.5"></i> {{ ucfirst($order->status_pesanan) }}
+                            </span>
+                        </div>
+
+                        <div class="flex justify-between items-center mb-6">
+                            <span class="text-sm font-medium text-gray-500">Total Belanja</span>
+                            <span class="text-lg font-bold text-indigo-700">Rp {{ number_format($order->total_harga, 0, ',', '.') }}</span>
+                        </div>
+
+                        <div class="bg-gray-50 rounded-xl p-4 border border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <div>
+                                <h4 class="text-sm font-semibold text-gray-900 flex items-center gap-2 mb-1">
+                                    <i class="fas fa-box-open text-indigo-500"></i>
+                                    Paket telah sampai?
+                                </h4>
+                                <p class="text-xs text-gray-500">Konfirmasi jika Anda sudah menerima pesanan ini dengan baik.</p>
+                            </div>
+                            <form action="{{ route('pembeli.pesanan.updateStatus', $order->id) }}" method="POST"
+                                onsubmit="return confirm('Yakin ingin mengonfirmasi pesanan ini sudah diterima?')">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="w-full sm:w-auto inline-flex justify-center items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
+                                    <i class="fas fa-check-circle mr-2"></i>Konfirmasi Diterima
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            @endforeach
-        @else
-            <div class="empty-state">
-                <div class="empty-state-icon">
-                    <i class="fas fa-clipboard-check"></i>
+            @empty
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 text-center">
+                    <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-truck-loading text-2xl text-gray-400"></i>
+                    </div>
+                    <h3 class="text-base font-semibold text-gray-900 mb-1">Tidak ada pesanan dikirim</h3>
+                    <p class="text-sm text-gray-500">Belum ada pesanan Anda yang sedang dalam proses pengiriman saat ini.</p>
                 </div>
-                <h5>Tidak ada pesanan yang sudah diterima</h5>
-                <p>Belum ada pesanan yang telah Anda konfirmasi sebagai diterima.</p>
-            </div>
-        @endif
-
-        <div class="text-center mt-4">
-            <a href="{{ route('pembeli.profile.show') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left me-2"></i>Kembali ke Profil
-            </a>
+            @endforelse
         </div>
     </div>
 
-    <script>
-        // Star rating interaction
-        document.addEventListener('DOMContentLoaded', function () {
-            const starRatings = document.querySelectorAll('.star-rating');
+    <!-- Divider -->
+    <div class="relative py-8">
+        <div class="absolute inset-0 flex items-center" aria-hidden="true">
+            <div class="w-full border-t border-gray-200"></div>
+        </div>
+        <div class="relative flex justify-center">
+            <span class="bg-white px-3 text-gray-400">
+                <i class="fas fa-star text-indigo-300 text-lg"></i>
+            </span>
+        </div>
+    </div>
 
-            starRatings.forEach(rating => {
-                const stars = rating.querySelectorAll('input[type="radio"]');
-                const labels = rating.querySelectorAll('label');
+    <!-- Pesanan Diterima -->
+    <div>
+        <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+            <i class="fas fa-check-circle text-green-500"></i>
+            Pesanan Diterima
+        </h2>
 
-                stars.forEach((star, index) => {
-                    star.addEventListener('change', function () {
-                        // Reset all stars
-                        labels.forEach(label => {
-                            label.style.color = 'rgba(255, 255, 255, 0.3)';
-                        });
+        <div class="space-y-8">
+            @forelse($diterimaOrders as $order)
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden relative">
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-green-500"></div>
+                    
+                    <div class="p-6 sm:p-8 border-b border-gray-100">
+                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-4">
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+                                    <i class="fas fa-receipt text-indigo-500"></i>
+                                    {{ $order->invoice ?? 'INV-' . $order->id }}
+                                </h3>
+                                <p class="text-sm text-gray-500 mt-1">
+                                    <i class="fas fa-calendar-check mr-1.5 text-green-500"></i>
+                                    Diterima pada: {{ $order->updated_at->format('d M Y H:i') }}
+                                </p>
+                            </div>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200 self-start">
+                                <i class="fas fa-check mr-1.5"></i> Selesai
+                            </span>
+                        </div>
+                        
+                        <div class="flex justify-between items-center bg-gray-50 p-4 rounded-lg">
+                            <span class="text-sm font-medium text-gray-500">Total Belanja</span>
+                            <span class="text-base font-bold text-gray-900">Rp {{ number_format($order->total_harga, 0, ',', '.') }}</span>
+                        </div>
+                    </div>
 
-                        // Color stars up to the selected one
-                        for (let i = 0; i <= index; i++) {
-                            labels[4 - i].style.color = 'var(--gold)';
-                        }
-                    });
-                });
+                    <!-- Products in Order -->
+                    <div class="p-6 sm:p-8 bg-gray-50/50">
+                        <h4 class="text-sm font-bold text-gray-900 mb-4 uppercase tracking-wider flex items-center gap-2">
+                            <i class="fas fa-box text-indigo-400"></i>
+                            Produk dalam pesanan
+                        </h4>
+                        
+                        <div class="space-y-6">
+                            @if($order->produks && $order->produks->count())
+                                @foreach($order->produks as $produk)
+                                    @php
+                                        $sudahDinilai = Ulasan::where('users_id', auth()->id())
+                                            ->where('orders_id', $order->id)
+                                            ->where('produks_id', $produk->id)
+                                            ->exists();
+                                    @endphp
 
-                // Hover effect
-                labels.forEach((label, index) => {
-                    label.addEventListener('mouseenter', function () {
-                        for (let i = 0; i <= index; i++) {
-                            labels[4 - i].style.color = 'var(--gold)';
-                        }
-                    });
+                                    <div class="bg-white border border-gray-200 rounded-xl p-4 sm:p-6 shadow-sm">
+                                        <div class="flex items-start gap-4 mb-4">
+                                            <div class="w-12 h-12 bg-indigo-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                                                <i class="fas fa-box-open text-indigo-500 text-xl"></i>
+                                            </div>
+                                            <div>
+                                                <h5 class="text-base font-semibold text-gray-900">{{ $produk->nama }}</h5>
+                                                <p class="text-sm text-gray-500 mt-1">Berikan ulasan untuk membantu pembeli lain.</p>
+                                            </div>
+                                        </div>
 
-                    label.addEventListener('mouseleave', function () {
-                        const checkedStar = rating.querySelector('input:checked');
-                        if (checkedStar) {
-                            const checkedIndex = Array.from(stars).indexOf(checkedStar);
-                            for (let i = 0; i <= checkedIndex; i++) {
-                                labels[4 - i].style.color = 'var(--gold)';
-                            }
-                            for (let i = checkedIndex + 1; i < 5; i++) {
-                                labels[4 - i].style.color = 'rgba(255, 255, 255, 0.3)';
-                            }
-                        } else {
-                            labels.forEach(l => {
-                                l.style.color = 'rgba(255, 255, 255, 0.3)';
-                            });
-                        }
-                    });
-                });
-            });
-        });
-    </script>
+                                        @if(!$sudahDinilai)
+                                            <div class="mt-4 pt-4 border-t border-gray-100">
+                                                <form action="{{ route('pembeli.rating.store') }}" method="POST">
+                                                    @csrf
+                                                    <input type="hidden" name="orders_id" value="{{ $order->id }}">
+                                                    <input type="hidden" name="produks_id" value="{{ $produk->id }}">
+
+                                                    <div class="mb-4">
+                                                        <label class="block text-sm font-medium text-gray-700 mb-2">Rating Produk</label>
+                                                        <div class="flex flex-row-reverse justify-end items-center gap-1">
+                                                            @for($i = 5; $i >= 1; $i--)
+                                                                <input type="radio" id="star{{ $i }}-{{ $produk->id }}" name="bintang" value="{{ $i }}" class="peer hidden" required>
+                                                                <label for="star{{ $i }}-{{ $produk->id }}" class="text-gray-300 peer-hover:text-yellow-400 peer-checked:text-yellow-400 hover:text-yellow-400 cursor-pointer transition-colors text-2xl">
+                                                                    ★
+                                                                </label>
+                                                            @endfor
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="mb-4">
+                                                        <label class="block text-sm font-medium text-gray-700 mb-2">Ulasan Lengkap</label>
+                                                        <textarea name="ulasan" rows="3" required class="block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm resize-none" placeholder="Bagikan pengalaman Anda menggunakan produk ini..."></textarea>
+                                                    </div>
+
+                                                    <button type="submit" class="inline-flex justify-center items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                                                        <i class="fas fa-paper-plane mr-2"></i>Kirim Ulasan
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        @else
+                                            <div class="mt-4 bg-green-50 rounded-lg p-3 flex items-start gap-3 border border-green-100">
+                                                <i class="fas fa-check-circle text-green-500 mt-0.5"></i>
+                                                <p class="text-sm text-green-800 font-medium">Terima kasih, Anda sudah memberikan ulasan untuk produk ini.</p>
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            @else
+                                <div class="bg-yellow-50 rounded-lg p-4 flex items-start gap-3 border border-yellow-200">
+                                    <i class="fas fa-exclamation-triangle text-yellow-500 mt-0.5"></i>
+                                    <p class="text-sm text-yellow-800">Tidak ada data produk yang terkait dengan pesanan ini.</p>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 text-center">
+                    <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-clipboard-check text-2xl text-gray-400"></i>
+                    </div>
+                    <h3 class="text-base font-semibold text-gray-900 mb-1">Tidak ada pesanan selesai</h3>
+                    <p class="text-sm text-gray-500">Belum ada riwayat pesanan yang telah Anda terima.</p>
+                </div>
+            @endforelse
+        </div>
+    </div>
+</div>
 @endsection

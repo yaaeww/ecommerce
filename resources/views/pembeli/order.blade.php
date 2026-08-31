@@ -1,372 +1,156 @@
-@extends('layouts.pembeli-navbar')
+@extends('layouts.public')
 
 @section('content')
-    <style>
-        :root {
-            --dark-blue: #0a1628;
-            --medium-blue: #1a3a5f;
-            --light-blue: #2a4a7f;
-            --gold: #ffd700;
-            --gold-light: #ffed4e;
-            --gold-dark: #d4af37;
-            --success-color: #28a745;
-            --warning-color: #ffc107;
-            --danger-color: #dc3545;
-            --info-color: #17a2b8;
-            --secondary-color: #6c757d;
-        }
-
-        body {
-            background-color: #000 !important;
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .container {
-            padding-top: 20px;
-            max-width: relative;
-        }
-
-        .checkout-container {
-            background: rgba(30, 30, 46, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            overflow: hidden;
-            padding: 2rem;
-            backdrop-filter: blur(10px);
-            margin-bottom: 2rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        .page-title {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 700;
-            font-size: 2.2rem;
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-
-        .section-title {
-            color: var(--gold);
-            font-weight: 600;
-            font-size: 1.3rem;
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .product-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .product-card:hover {
-            border-color: rgba(255, 215, 0, 0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.2);
-        }
-
-        .product-image {
-            height: 200px;
-            overflow: hidden;
-        }
-
-        .product-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .product-info {
-            padding: 1.5rem;
-        }
-
-        .product-name {
-            color: var(--gold);
-            font-weight: 600;
-            font-size: 1.2rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .product-description {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.9rem;
-            line-height: 1.5;
-            margin-bottom: 1rem;
-        }
-
-        .price-info {
-            margin-bottom: 0.5rem;
-        }
-
-        .price-original {
-            text-decoration: line-through;
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.9rem;
-            margin-right: 0.5rem;
-        }
-
-        .price-discounted {
-            color: var(--success-color);
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        .price-normal {
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        .quantity-info {
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 0.5rem;
-        }
-
-        .total-price {
-            color: var(--gold-light);
-            font-weight: 700;
-            font-size: 1.3rem;
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .form-container {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 2rem;
-            height: 100%;
-        }
-
-        .form-label {
-            color: var(--gold);
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .form-control {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            color: rgba(255, 255, 255, 0.9);
-            padding: 0.75rem 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .form-control:focus {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: var(--gold);
-            color: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
-            outline: none;
-        }
-
-        .form-control::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        textarea.form-control {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .alert {
-            background: rgba(220, 53, 69, 0.2);
-            border: 1px solid rgba(220, 53, 69, 0.5);
-            border-radius: 12px;
-            padding: 1rem 1.5rem;
-            margin-bottom: 1.5rem;
-            color: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-        }
-
-        .alert-dismissible .btn-close {
-            filter: invert(1);
-        }
-
-        .btn {
-            border: none;
-            border-radius: 8px;
-            padding: 1rem 2rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            cursor: pointer;
-            width: 100%;
-            font-size: 1.1rem;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            color: var(--dark-blue);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
-            background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .container {
-                padding-top: 70px;
-            }
-
-            .page-title {
-                font-size: 1.8rem;
-            }
-
-            .checkout-container {
-                padding: 1.5rem;
-            }
-
-            .form-container {
-                padding: 1.5rem;
-            }
-
-            .product-image {
-                height: 150px;
-            }
-
-            .product-info {
-                padding: 1rem;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .container {
-                padding-top: 60px;
-            }
-
-            .page-title {
-                font-size: 1.6rem;
-            }
-
-            .checkout-container {
-                padding: 1rem;
-            }
-
-            .form-container {
-                padding: 1rem;
-            }
-        }
-    </style>
-
-    <div class="container">
-        <!-- Page Header -->
-        <h1 class="page-title">
-            <i class="fas fa-shopping-bag me-2"></i>Checkout Pesanan
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Page Header -->
+    <div class="mb-8 text-center sm:text-left">
+        <h1 class="text-3xl font-extrabold text-gray-900 flex items-center justify-center sm:justify-start gap-3">
+            <i class="fas fa-shopping-bag text-indigo-600"></i>
+            Checkout Pesanan
         </h1>
+    </div>
 
-        @if(session('error'))
-            <div class="alert alert-dismissible fade show" role="alert">
-                <i class="fas fa-exclamation-triangle me-2"></i>{{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-
-        <div class="checkout-container">
-            <div class="row g-4">
-                {{-- Kolom Gambar dan Info Produk --}}
-                <div class="col-lg-5">
-                    <h3 class="section-title">
-                        <i class="fas fa-box me-2"></i>Detail Produk
-                    </h3>
-
-                    <div class="product-card">
-                        <div class="product-image">
-                            @if ($produk->gambar)
-                                <img src="{{ asset('storage/' . $produk->gambar) }}" alt="{{ $produk->nama }}">
-                            @else
-                                <img src="{{ asset('images/default.jpg') }}" alt="Default Image">
-                            @endif
-                        </div>
-
-                        <div class="product-info">
-                            <h4 class="product-name">{{ $produk->nama }}</h4>
-                            <p class="product-description">{{ $produk->deskripsi }}</p>
-
-                            <div class="price-info">
-                                @if($harga_diskon < $produk->harga)
-                                    <span class="price-original">
-                                        Rp{{ number_format($produk->harga, 0, ',', '.') }}
-                                    </span>
-                                    <span class="price-discounted">
-                                        Rp{{ number_format($harga_diskon, 0, ',', '.') }}
-                                    </span>
-                                @else
-                                    <span class="price-normal">
-                                        Rp{{ number_format($produk->harga, 0, ',', '.') }}
-                                    </span>
-                                @endif
-                            </div>
-
-                            <div class="quantity-info">
-                                <i class="fas fa-cube me-2"></i>Jumlah: {{ $quantity }}
-                            </div>
-
-                            <div class="total-price">
-                                <i class="fas fa-receipt me-2"></i>
-                                Total: Rp{{ number_format($total_harga, 0, ',', '.') }}
-                            </div>
-                        </div>
-                    </div>
+    @if(session('error'))
+        <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-md">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-exclamation-triangle text-red-500"></i>
                 </div>
-
-                {{-- Kolom Form Pemesanan --}}
-                <div class="col-lg-7">
-                    <div class="form-container">
-                        <h3 class="section-title">
-                            <i class="fas fa-user-edit me-2"></i>Data Pemesanan
-                        </h3>
-
-                        <form action="{{ route('pembeli.checkout') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="produk_id" value="{{ $produk->id }}">
-                            <input type="hidden" name="jumlah" value="{{ $quantity }}">
-
-                            <div class="mb-4">
-                                <label class="form-label">
-                                    <i class="fas fa-user me-2"></i>Nama Lengkap
-                                </label>
-                                <input type="text" name="name" class="form-control"
-                                    placeholder="Masukkan Nama Lengkap Anda!" required value="{{ old('name') }}">
-                            </div>
-
-                            <div class="mb-4">
-                                <label class="form-label">
-                                    <i class="fas fa-phone me-2"></i>Nomor HP
-                                </label>
-                                <input type="text" name="phone" class="form-control" placeholder="Masukkan Nomor HP/WA!"
-                                    required value="{{ old('phone') }}">
-                            </div>
-
-                            <div class="mb-4">
-                                <label class="form-label">
-                                    <i class="fas fa-map-marker-alt me-2"></i>Alamat Pengiriman
-                                </label>
-                                <textarea name="alamat" class="form-control" rows="4"
-                                    placeholder="Masukkan Alamat Lengkap Anda!" required>{{ old('alamat') }}</textarea>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-credit-card me-2"></i>Pesan Sekarang
-                            </button>
-                        </form>
+                <div class="ml-3">
+                    <p class="text-sm text-red-700">
+                        {{ session('error') }}
+                    </p>
+                </div>
+                <div class="ml-auto pl-3">
+                    <div class="-mx-1.5 -my-1.5">
+                        <button type="button" class="inline-flex bg-red-50 rounded-md p-1.5 text-red-500 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-red-50 focus:ring-red-600" onclick="this.parentElement.parentElement.parentElement.parentElement.remove()">
+                            <span class="sr-only">Dismiss</span>
+                            <i class="fas fa-times"></i>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
+    @endif
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-gray-100">
+            {{-- Kolom Gambar dan Info Produk --}}
+            <div class="lg:col-span-6 p-6 sm:p-8 bg-gray-50/50">
+                <h3 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2 pb-4 border-b border-gray-200">
+                    <i class="fas fa-box text-indigo-500"></i>
+                    Detail Produk
+                </h3>
+
+                <div class="space-y-4 mb-6 max-h-96 overflow-y-auto pr-2">
+                    @foreach($items as $item)
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden group flex">
+                        <div class="w-32 bg-gray-100 relative shrink-0">
+                            @if ($item->produk->gambar)
+                                <img src="{{ asset('storage/' . $item->produk->gambar) }}" alt="{{ $item->produk->nama }}" class="w-full h-full object-cover">
+                            @else
+                                <div class="w-full h-full flex items-center justify-center text-gray-400">
+                                    <i class="fas fa-image text-2xl"></i>
+                                </div>
+                            @endif
+                        </div>
+
+                        <div class="p-4 flex-1">
+                            <h4 class="text-md font-bold text-gray-900 mb-1 line-clamp-2">{{ $item->produk->nama }}</h4>
+                            <div class="text-xs text-gray-500 mb-2">Toko: {{ $item->produk->umkm->nama_perusahaan ?? 'UMKM' }}</div>
+                            <div class="mb-2">
+                                @if($item->harga_satuan < $item->produk->harga)
+                                    <div class="flex flex-col gap-1">
+                                        <span class="text-sm font-bold text-green-600">
+                                            Rp{{ number_format($item->harga_satuan, 0, ',', '.') }}
+                                        </span>
+                                        <span class="text-xs text-gray-500 line-through">
+                                            Rp{{ number_format($item->produk->harga, 0, ',', '.') }}
+                                        </span>
+                                    </div>
+                                @else
+                                    <span class="text-sm font-bold text-gray-900">
+                                        Rp{{ number_format($item->produk->harga, 0, ',', '.') }}
+                                    </span>
+                                @endif
+                            </div>
+                            <div class="text-xs font-medium text-gray-700 bg-gray-50 rounded p-1.5 border border-gray-100 inline-block">
+                                <span class="text-indigo-600">{{ $item->jumlah }}</span> x pesanan
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                
+                <div class="bg-indigo-50/50 p-5 sm:p-6 border border-indigo-100 rounded-xl">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-gray-700 flex items-center gap-2">
+                            <i class="fas fa-receipt text-indigo-400"></i>
+                            Total Pembayaran
+                        </span>
+                        <span class="text-xl font-extrabold text-indigo-700">
+                            Rp{{ number_format($total_harga, 0, ',', '.') }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Kolom Form Pemesanan --}}
+            <div class="lg:col-span-6 p-6 sm:p-8">
+                <h3 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2 pb-4 border-b border-gray-200">
+                    <i class="fas fa-user-edit text-indigo-500"></i>
+                    Data Pengiriman
+                </h3>
+
+                <form action="{{ route('pembeli.checkout') }}" method="POST" class="space-y-6">
+                    @csrf
+                    
+                    <input type="hidden" name="is_cart" value="{{ $is_cart ? '1' : '0' }}">
+                    @if(!$is_cart)
+                        <input type="hidden" name="produk_id" value="{{ $produkId }}">
+                        <input type="hidden" name="jumlah" value="{{ $quantity }}">
+                    @endif
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-user text-gray-400 mr-1.5"></i>Nama Lengkap
+                        </label>
+                        <input type="text" name="name" 
+                            class="block w-full px-4 py-3 rounded-lg border-gray-300 bg-gray-50 border focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white transition-colors sm:text-sm"
+                            placeholder="Masukkan nama lengkap penerima" required value="{{ old('name', Auth::user()->name) }}">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-phone text-gray-400 mr-1.5"></i>Nomor HP/WhatsApp
+                        </label>
+                        <input type="text" name="phone" 
+                            class="block w-full px-4 py-3 rounded-lg border-gray-300 bg-gray-50 border focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white transition-colors sm:text-sm"
+                            placeholder="08xxxxxxxxxx" required value="{{ old('phone') }}">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-map-marker-alt text-gray-400 mr-1.5"></i>Alamat Pengiriman
+                        </label>
+                        <textarea name="alamat" rows="4"
+                            class="block w-full px-4 py-3 rounded-lg border-gray-300 bg-gray-50 border focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white transition-colors sm:text-sm resize-y"
+                            placeholder="Masukkan alamat lengkap pengiriman beserta patokan jika ada" required>{{ old('alamat', Auth::user()->alamat) }}</textarea>
+                    </div>
+
+                    <div class="pt-6 border-t border-gray-100">
+                        <button type="submit" class="w-full flex justify-center items-center px-6 py-4 border border-transparent text-base font-bold rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 shadow-sm transition-all transform active:scale-[0.98]">
+                            <i class="fas fa-lock mr-2"></i>
+                            Pesan & Lanjut ke Pembayaran
+                        </button>
+                        <p class="text-center text-xs text-gray-500 mt-4 flex items-center justify-center gap-1.5">
+                            <i class="fas fa-shield-alt text-green-500"></i>
+                            Transaksi aman dan terenkripsi
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
+</div>
 @endsection

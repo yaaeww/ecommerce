@@ -28,6 +28,27 @@ class UserChatController extends Controller
             ->where('id', '!=', $authId)
             ->get();
 
+        // 🔹 Hitung unread chat per penjual
+        foreach ($penjuals as $penjual) {
+            $penjual->unread_count = Chat::where('sender_id', $penjual->id)
+                ->where('receiver_id', $authId)
+                ->where('is_read', false)
+                ->count();
+        }
+
+        // 🔹 Jika ada activeUserId, tandai pesan dari user tersebut sebagai sudah dibaca
+        if ($id && $id != 0) {
+            Chat::where('sender_id', $id)
+                ->where('receiver_id', $authId)
+                ->where('is_read', false)
+                ->update(['is_read' => true]);
+        } elseif ($id === 0) {
+            Chat::where('receiver_id', $authId)
+                ->where('is_ai', true)
+                ->where('is_read', false)
+                ->update(['is_read' => true]);
+        }
+
         // 🔹 Tambahkan AI Asisten
         $ai = (object) [
             'id' => 0,
@@ -48,7 +69,7 @@ class UserChatController extends Controller
     public function chat(Request $request)
     {
         $request->validate([
-            'message' => 'required|string',
+            'message' => 'required|string|max:1000',
             'receiver_id' => 'nullable|integer',
         ]);
 
@@ -76,6 +97,7 @@ class UserChatController extends Controller
                 'receiver_id' => null,
                 'message' => $message, // Otomatis dienkripsi oleh mutator
                 'is_ai' => false,
+                'is_read' => true,
             ]);
 
             $prompt = "Kamu adalah AI Asisten UMKM Indramayu.\n\nUser: {$message}";
@@ -92,6 +114,7 @@ class UserChatController extends Controller
                 'receiver_id' => $sender->id,
                 'message' => $aiReply, // Otomatis dienkripsi oleh mutator
                 'is_ai' => true,
+                'is_read' => true,
             ]);
 
             broadcast(new NewChatMessage($chatUser))->toOthers();
@@ -127,6 +150,7 @@ class UserChatController extends Controller
                 'umkm_id' => $umkm ? $umkm->id : null,
                 'message' => $message, // Otomatis dienkripsi oleh mutator
                 'is_ai' => false,
+                'is_read' => false,
             ]);
 
             // Broadcast realtime ke lawan chat
@@ -143,35 +167,57 @@ class UserChatController extends Controller
     }
 
     /**
-     * 🕘 Ambil riwayat chat
+     * 🕘 Ambil riwayat chat & tandai sudah dibaca
      */
     public function history($userId = null)
     {
         $authId = Auth::id();
 
-        $query = Chat::with(['sender', 'receiver'])->orderBy('created_at', 'asc');
-
         if ($userId == 0 || $userId === null) {
-            // Chat AI
-            $query->where(function ($q) use ($authId) {
-                $q->where('sender_id', $authId)
-                    ->whereNull('receiver_id')
-                    ->orWhere(function ($subq) use ($authId) {
-                        $subq->where('receiver_id', $authId)->where('is_ai', true);
-                    });
-            });
+            // Chat AI: tandai pesan AI sebagai terbaca
+            Chat::where('receiver_id', $authId)
+                ->where('is_ai', true)
+                ->where('is_read', false)
+                ->update(['is_read' => true]);
+
+            $query = Chat::with(['sender', 'receiver'])
+                ->where(function ($q) use ($authId) {
+                    $q->where('sender_id', $authId)
+                        ->whereNull('receiver_id')
+                        ->orWhere(function ($subq) use ($authId) {
+                            $subq->where('receiver_id', $authId)->where('is_ai', true);
+                        });
+                })
+                ->orderBy('created_at', 'asc');
         } else {
-            // Chat pembeli ↔ penjual
-            $query->where(function ($q) use ($authId, $userId) {
-                $q->where('sender_id', $authId)->where('receiver_id', $userId);
-            })->orWhere(function ($q) use ($authId, $userId) {
-                $q->where('sender_id', $userId)->where('receiver_id', $authId);
-            });
+            // Chat pembeli ↔ penjual: tandai pesan dari penjual ini sebagai terbaca
+            Chat::where('sender_id', $userId)
+                ->where('receiver_id', $authId)
+                ->where('is_read', false)
+                ->update(['is_read' => true]);
+
+            $query = Chat::with(['sender', 'receiver'])
+                ->where(function ($q) use ($authId, $userId) {
+                    $q->where('sender_id', $authId)->where('receiver_id', $userId);
+                })
+                ->orWhere(function ($q) use ($authId, $userId) {
+                    $q->where('sender_id', $userId)->where('receiver_id', $authId);
+                })
+                ->orderBy('created_at', 'asc');
         }
 
         $chats = $query->get();
 
-        return response()->json(['status' => 'ok', 'chats' => $chats]);
+        // Hitung total sisa pesan yang belum dibaca untuk user ini
+        $totalUnread = Chat::where('receiver_id', $authId)
+            ->where('is_read', false)
+            ->count();
+
+        return response()->json([
+            'status' => 'ok', 
+            'chats' => $chats,
+            'total_unread' => $totalUnread
+        ]);
     }
 
     /**

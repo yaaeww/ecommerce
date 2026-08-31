@@ -1,604 +1,309 @@
-@extends('layouts.pembeli-navbar')
+@extends('layouts.public')
+@section('title', 'Pesanan Saya')
 
 @section('content')
-    <style>
-        :root {
-            --dark-blue: #0a1628;
-            --medium-blue: #1a3a5f;
-            --light-blue: #2a4a7f;
-            --gold: #ffd700;
-            --gold-light: #ffed4e;
-            --gold-dark: #d4af37;
-            --success-color: #28a745;
-            --warning-color: #ffc107;
-            --danger-color: #dc3545;
-            --info-color: #17a2b8;
-            --secondary-color: #6c757d;
-        }
-
-        body {
-            background-color: #000 !important;
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .container {
-            padding-top: 20px;
-            max-width: relative;
-        }
-
-        .page-header {
-            margin-bottom: 2rem;
-        }
-
-        .page-title {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 700;
-            font-size: 2.2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .section-title {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 600;
-            font-size: 1.5rem;
-            margin: 2.5rem 0 1.5rem 0;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .order-section {
-            background: rgba(30, 30, 46, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            overflow: hidden;
-            padding: 1.5rem;
-            backdrop-filter: blur(10px);
-            margin-bottom: 2rem;
-        }
-
-        .order-table {
-            width: 100%;
-            border-collapse: collapse;
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .order-table thead {
-            background: rgba(255, 215, 0, 0.1);
-            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
-        }
-
-        .order-table th {
-            color: var(--gold);
-            font-weight: 600;
-            padding: 1rem 0.75rem;
-            text-align: left;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .order-table td {
-            padding: 1rem 0.75rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            vertical-align: middle;
-        }
-
-        .order-table tbody tr {
-            transition: all 0.3s ease;
-        }
-
-        .order-table tbody tr:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .order-table tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        .checkbox-cell {
-            width: 40px;
-            text-align: center;
-        }
-
-        .checkbox-cell input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-            accent-color: var(--gold);
-        }
-
-        .action-cell {
-            width: 120px;
-        }
-
-        .badge {
-            padding: 0.5rem 0.75rem;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.8rem;
-        }
-
-        .badge-success {
-            background: linear-gradient(135deg, var(--success-color), #1e7e34);
-            color: white;
-        }
-
-        .badge-warning {
-            background: linear-gradient(135deg, var(--warning-color), #e0a800);
-            color: #000;
-        }
-
-        .badge-danger {
-            background: linear-gradient(135deg, var(--danger-color), #c82333);
-            color: white;
-        }
-
-        .badge-info {
-            background: linear-gradient(135deg, var(--info-color), #138496);
-            color: white;
-        }
-
-        .badge-secondary {
-            background: linear-gradient(135deg, var(--secondary-color), #545b62);
-            color: white;
-        }
-
-        .btn {
-            border: none;
-            border-radius: 8px;
-            padding: 0.5rem 1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            color: var(--dark-blue);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
-            background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, var(--danger-color), #c82333);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
-            background: linear-gradient(135deg, #c82333, var(--danger-color));
-        }
-
-        .btn-sm {
-            padding: 0.4rem 0.8rem;
-            font-size: 0.85rem;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 2rem;
-            background: rgba(30, 30, 46, 0.5);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-        }
-
-        .empty-state-icon {
-            font-size: 2.5rem;
-            color: var(--gold);
-            margin-bottom: 1rem;
-        }
-
-        .empty-state h5 {
-            color: var(--gold);
-            margin-bottom: 0.5rem;
-        }
-
-        .empty-state p {
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 0;
-        }
-
-        .bulk-actions {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 1rem;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 992px) {
-            .order-table {
-                display: block;
-                overflow-x: auto;
-            }
-
-            .order-table thead {
-                display: none;
-            }
-
-            .order-table tbody,
-            .order-table tr,
-            .order-table td {
-                display: block;
-                width: 100%;
-            }
-
-            .order-table tr {
-                margin-bottom: 1rem;
-                border: 1px solid rgba(255, 255, 255, 0.1);
-                border-radius: 12px;
-                overflow: hidden;
-                background: rgba(255, 255, 255, 0.05);
-            }
-
-            .order-table td {
-                padding: 0.75rem;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-                position: relative;
-                padding-left: 50%;
-            }
-
-            .order-table td:before {
-                content: attr(data-label);
-                position: absolute;
-                left: 0.75rem;
-                width: 45%;
-                padding-right: 0.5rem;
-                font-weight: 600;
-                color: var(--gold);
-            }
-
-            .checkbox-cell {
-                width: 100%;
-                text-align: left;
-            }
-
-            .checkbox-cell:before {
-                content: "Pilih";
-            }
-
-            .action-cell {
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding-top: 70px;
-            }
-
-            .page-title {
-                font-size: 1.8rem;
-            }
-
-            .section-title {
-                font-size: 1.3rem;
-            }
-
-            .order-section {
-                padding: 1rem;
-            }
-
-            .bulk-actions {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .container {
-                padding-top: 60px;
-            }
-
-            .page-title {
-                font-size: 1.6rem;
-            }
-
-            .section-title {
-                font-size: 1.2rem;
-            }
-
-            .order-table td {
-                padding-left: 40%;
-            }
-
-            .order-table td:before {
-                width: 35%;
-            }
-        }
-    </style>
-
-    <div class="container">
-        <!-- Page Header -->
-        <div class="page-header">
-            <h1 class="page-title">
-                <i class="fas fa-shopping-bag me-2"></i>Pesanan Saya
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Page Header -->
+    <div class="mb-8 border-b border-gray-200 pb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 flex items-center gap-3">
+                <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600">
+                    <i class="fas fa-shopping-bag"></i>
+                </div>
+                Pesanan Saya
             </h1>
+            <p class="mt-2 text-sm text-gray-600">Kelola dan pantau status semua pesanan Anda.</p>
         </div>
+    </div>
 
-        @php
-            $pesananLunas = $orders->where('status', 'complete');
-            $pesananPending = $orders->where('status', 'pending');
-            $pesananCancel = $orders->where('status', 'cancel');
-        @endphp
+    @php
+        $pesananLunas = $orders->where('status', 'complete');
+        $pesananPending = $orders->where('status', 'pending');
+        $pesananCancel = $orders->where('status', 'cancel');
+    @endphp
 
-        {{-- PESANAN LUNAS --}}
-        <h3 class="section-title">
-            <i class="fas fa-check-circle me-2"></i>Pesanan Lunas
+    <!-- PESANAN LUNAS -->
+    <div class="mb-12">
+        <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2 mb-6 pb-2 border-b border-gray-200">
+            <div class="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
+                <i class="fas fa-check"></i>
+            </div>
+            Pesanan Lunas
         </h3>
 
-        <div class="order-section">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
             @if ($pesananLunas->isEmpty())
-                <div class="empty-state">
-                    <div class="empty-state-icon">
-                        <i class="fas fa-check"></i>
+                <div class="text-center py-12 px-6">
+                    <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-box-open text-3xl text-gray-300"></i>
                     </div>
-                    <h5>Tidak ada pesanan lunas</h5>
-                    <p>Belum ada pesanan yang telah diselesaikan.</p>
+                    <h5 class="text-lg font-bold text-gray-900 mb-1">Tidak ada pesanan lunas</h5>
+                    <p class="text-gray-500 text-sm">Belum ada pesanan yang telah diselesaikan.</p>
                 </div>
             @else
-                <form action="{{ route('pembeli.pesanan.bulkDelete') }}" method="POST"
-                    onsubmit="return confirm('Yakin ingin menghapus pesanan yang dipilih?')">
+                <form action="{{ route('pembeli.pesanan.bulkDelete') }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus pesanan yang dipilih?')">
                     @csrf
                     @method('DELETE')
-                    <div class="bulk-actions">
-                        <button type="submit" class="btn btn-danger btn-sm">
-                            <i class="fas fa-trash me-1"></i>Hapus yang Dipilih
+                    
+                    <div class="bg-gray-50 p-4 border-b border-gray-200 flex justify-end">
+                        <button type="submit" class="bg-white border border-red-200 text-red-600 hover:bg-red-50 py-2 px-4 rounded-lg font-medium shadow-sm transition-colors duration-200 flex items-center gap-2 text-sm">
+                            <i class="fas fa-trash"></i> Hapus yang Dipilih
                         </button>
                     </div>
 
-                    <table class="order-table">
-                        <thead>
-                            <tr>
-                                <th class="checkbox-cell">
-                                    <input type="checkbox" id="select-all-lunas">
-                                </th>
-                                <th data-label="Produk">Produk</th>
-                                <th data-label="Jumlah">Jumlah</th>
-                                <th data-label="Total Harga">Total Harga</th>
-                                <th data-label="Status Pembayaran">Status Pembayaran</th>
-                                <th data-label="Status Pengiriman">Status Pengiriman</th>
-                                <th data-label="Tanggal">Tanggal</th>
-                                <th class="action-cell" data-label="Aksi">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($pesananLunas as $order)
-                                <tr>
-                                    <td class="checkbox-cell" data-label="Pilih">
-                                        <input type="checkbox" name="order_ids[]" value="{{ $order->id }}"
-                                            class="order-checkbox-lunas">
-                                    </td>
-                                    <td data-label="Produk">{{ $order->produk->nama ?? '-' }}</td>
-                                    <td data-label="Jumlah">{{ $order->jumlah }}</td>
-                                    <td data-label="Total Harga">Rp{{ number_format($order->total_harga, 0, ',', '.') }}</td>
-                                    <td data-label="Status Pembayaran">
-                                        <span class="badge badge-success">{{ ucfirst($order->status) }}</span>
-                                    </td>
-                                    <td data-label="Status Pengiriman">
-                                        @if ($order->status_pesanan)
-                                            <span
-                                                class="badge badge-info">{{ ucfirst(str_replace('_', ' ', $order->status_pesanan)) }}</span>
-                                        @else
-                                            <span class="badge badge-secondary">Belum Diproses</span>
-                                        @endif
-                                    </td>
-                                    <td data-label="Tanggal">{{ $order->created_at->format('d-m-Y H:i') }}</td>
-                                    <td class="action-cell" data-label="Aksi">
-                                        <a href="{{ route('pembeli.invoice.show', $order->id) }}" class="btn btn-primary btn-sm">
-                                            <i class="fas fa-file-invoice me-1"></i>Invoice
-                                        </a>
-                                    </td>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-gray-200 bg-gray-50 text-xs text-gray-500 uppercase tracking-wider font-semibold">
+                                    <th class="p-4 sm:pl-6 w-12">
+                                        <input type="checkbox" id="select-all-lunas" class="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+                                    </th>
+                                    <th class="p-4">Produk</th>
+                                    <th class="p-4 text-center">Jumlah</th>
+                                    <th class="p-4">Total Harga</th>
+                                    <th class="p-4">Status Pembayaran</th>
+                                    <th class="p-4">Status Pengiriman</th>
+                                    <th class="p-4">Tanggal</th>
+                                    <th class="p-4 sm:pr-6 text-right">Aksi</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </form>
-            @endif
-        </div>
-
-        {{-- PESANAN MENUNGGU PEMBAYARAN --}}
-        <h3 class="section-title">
-            <i class="fas fa-clock me-2"></i>Pesanan Menunggu Pembayaran
-        </h3>
-
-        <div class="order-section">
-            @if ($pesananPending->isEmpty())
-                <div class="empty-state">
-                    <div class="empty-state-icon">
-                        <i class="fas fa-clock"></i>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 text-sm">
+                                @foreach ($pesananLunas as $order)
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td class="p-4 sm:pl-6">
+                                            <input type="checkbox" name="order_ids[]" value="{{ $order->id }}" class="order-checkbox-lunas w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+                                        </td>
+                                        <td class="p-4 font-medium text-gray-900">{{ $order->produk->nama ?? '-' }}</td>
+                                        <td class="p-4 text-center text-gray-600">{{ $order->jumlah }}</td>
+                                        <td class="p-4 font-bold text-gray-900">Rp{{ number_format($order->total_harga, 0, ',', '.') }}</td>
+                                        <td class="p-4">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                {{ ucfirst($order->status) }}
+                                            </span>
+                                        </td>
+                                        <td class="p-4">
+                                            @if ($order->status_pesanan)
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                    {{ ucfirst(str_replace('_', ' ', $order->status_pesanan)) }}
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                    Belum Diproses
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td class="p-4 text-gray-500 text-xs whitespace-nowrap">{{ $order->created_at->format('d-m-Y H:i') }}</td>
+                                        <td class="p-4 sm:pr-6 text-right">
+                                            <a href="{{ route('pembeli.invoice.show', $order->id) }}" class="inline-flex items-center gap-2 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 py-1.5 px-3 rounded-lg font-medium shadow-sm transition-colors text-xs whitespace-nowrap">
+                                                <i class="fas fa-file-invoice text-gray-400"></i> Invoice
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
-                    <h5>Tidak ada pesanan menunggu pembayaran</h5>
-                    <p>Belum ada pesanan yang menunggu pembayaran.</p>
-                </div>
-            @else
-                <form action="{{ route('pembeli.pesanan.bulkDelete') }}" method="POST"
-                    onsubmit="return confirm('Yakin ingin menghapus pesanan yang dipilih?')">
-                    @csrf
-                    @method('DELETE')
-                    <div class="bulk-actions">
-                        <button type="submit" class="btn btn-danger btn-sm">
-                            <i class="fas fa-trash me-1"></i>Hapus yang Dipilih
-                        </button>
-                    </div>
-
-                    <table class="order-table">
-                        <thead>
-                            <tr>
-                                <th class="checkbox-cell">
-                                    <input type="checkbox" id="select-all-pending">
-                                </th>
-                                <th data-label="Produk">Produk</th>
-                                <th data-label="Jumlah">Jumlah</th>
-                                <th data-label="Total Harga">Total Harga</th>
-                                <th data-label="Status Pembayaran">Status Pembayaran</th>
-                                <th data-label="Status Pengiriman">Status Pengiriman</th>
-                                <th data-label="Tanggal">Tanggal</th>
-                                <th class="action-cell" data-label="Aksi">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($pesananPending as $order)
-                                <tr>
-                                    <td class="checkbox-cell" data-label="Pilih">
-                                        <input type="checkbox" name="order_ids[]" value="{{ $order->id }}"
-                                            class="order-checkbox-pending">
-                                    </td>
-                                    <td data-label="Produk">{{ $order->produk->nama ?? '-' }}</td>
-                                    <td data-label="Jumlah">{{ $order->jumlah }}</td>
-                                    <td data-label="Total Harga">Rp{{ number_format($order->total_harga, 0, ',', '.') }}</td>
-                                    <td data-label="Status Pembayaran">
-                                        <span class="badge badge-warning">{{ ucfirst($order->status) }}</span>
-                                    </td>
-                                    <td data-label="Status Pengiriman">
-                                        @if ($order->status_pesanan)
-                                            <span
-                                                class="badge badge-info">{{ ucfirst(str_replace('_', ' ', $order->status_pesanan)) }}</span>
-                                        @else
-                                            <span class="badge badge-secondary">Belum Diproses</span>
-                                        @endif
-                                    </td>
-                                    <td data-label="Tanggal">{{ $order->created_at->format('d-m-Y H:i') }}</td>
-                                    <td class="action-cell" data-label="Aksi">
-                                        <a href="{{ route('pembeli.status.belum-bayar') }}" class="btn btn-primary btn-sm">
-                                            <i class="fas fa-credit-card me-1"></i>Bayar
-                                        </a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </form>
-            @endif
-        </div>
-
-        {{-- PESANAN DIBATALKAN --}}
-        <h3 class="section-title">
-            <i class="fas fa-times-circle me-2"></i>Pesanan Dibatalkan
-        </h3>
-
-        <div class="order-section">
-            @if ($pesananCancel->isEmpty())
-                <div class="empty-state">
-                    <div class="empty-state-icon">
-                        <i class="fas fa-ban"></i>
-                    </div>
-                    <h5>Tidak ada pesanan yang dibatalkan</h5>
-                    <p>Belum ada pesanan yang dibatalkan.</p>
-                </div>
-            @else
-                <form action="{{ route('pembeli.pesanan.bulkDelete') }}" method="POST"
-                    onsubmit="return confirm('Yakin ingin menghapus pesanan yang dipilih?')">
-                    @csrf
-                    @method('DELETE')
-                    <div class="bulk-actions">
-                        <button type="submit" class="btn btn-danger btn-sm">
-                            <i class="fas fa-trash me-1"></i>Hapus yang Dipilih
-                        </button>
-                    </div>
-
-                    <table class="order-table">
-                        <thead>
-                            <tr>
-                                <th class="checkbox-cell">
-                                    <input type="checkbox" id="select-all-cancel">
-                                </th>
-                                <th data-label="Produk">Produk</th>
-                                <th data-label="Jumlah">Jumlah</th>
-                                <th data-label="Total Harga">Total Harga</th>
-                                <th data-label="Status Pembayaran">Status Pembayaran</th>
-                                <th data-label="Status Pengiriman">Status Pengiriman</th>
-                                <th data-label="Tanggal">Tanggal</th>
-                                <th class="action-cell" data-label="Aksi">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($pesananCancel as $order)
-                                <tr>
-                                    <td class="checkbox-cell" data-label="Pilih">
-                                        <input type="checkbox" name="order_ids[]" value="{{ $order->id }}"
-                                            class="order-checkbox-cancel">
-                                    </td>
-                                    <td data-label="Produk">{{ $order->produk->nama ?? '-' }}</td>
-                                    <td data-label="Jumlah">{{ $order->jumlah }}</td>
-                                    <td data-label="Total Harga">Rp{{ number_format($order->total_harga, 0, ',', '.') }}</td>
-                                    <td data-label="Status Pembayaran">
-                                        <span class="badge badge-danger">{{ ucfirst($order->status) }}</span>
-                                    </td>
-                                    <td data-label="Status Pengiriman">
-                                        @if ($order->status_pesanan)
-                                            <span
-                                                class="badge badge-info">{{ ucfirst(str_replace('_', ' ', $order->status_pesanan)) }}</span>
-                                        @else
-                                            <span class="badge badge-secondary">Belum Diproses</span>
-                                        @endif
-                                    </td>
-                                    <td data-label="Tanggal">{{ $order->created_at->format('d-m-Y H:i') }}</td>
-                                    <td class="action-cell" data-label="Aksi">
-                                        <a href="{{ route('pembeli.invoice.show', $order->id) }}" class="btn btn-primary btn-sm">
-                                            <i class="fas fa-file-invoice me-1"></i>Invoice
-                                        </a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
                 </form>
             @endif
         </div>
     </div>
 
-    <script>
-        // Menangani aksi "Select All" untuk memilih semua checkbox di bagian lunas
-        document.getElementById('select-all-lunas').addEventListener('change', function (e) {
-            const checkboxes = document.querySelectorAll('.order-checkbox-lunas');
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = e.target.checked;
-            });
-        });
+    <!-- PESANAN MENUNGGU PEMBAYARAN -->
+    <div class="mb-12">
+        <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2 mb-6 pb-2 border-b border-gray-200">
+            <div class="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center">
+                <i class="fas fa-clock"></i>
+            </div>
+            Pesanan Menunggu Pembayaran
+        </h3>
 
-        // Menangani aksi "Select All" untuk memilih semua checkbox di bagian pending
-        document.getElementById('select-all-pending').addEventListener('change', function (e) {
-            const checkboxes = document.querySelectorAll('.order-checkbox-pending');
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = e.target.checked;
-            });
-        });
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            @if ($pesananPending->isEmpty())
+                <div class="text-center py-12 px-6">
+                    <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-wallet text-3xl text-gray-300"></i>
+                    </div>
+                    <h5 class="text-lg font-bold text-gray-900 mb-1">Tidak ada tagihan tertunda</h5>
+                    <p class="text-gray-500 text-sm">Belum ada pesanan yang menunggu pembayaran.</p>
+                </div>
+            @else
+                <form action="{{ route('pembeli.pesanan.bulkDelete') }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus pesanan yang dipilih?')">
+                    @csrf
+                    @method('DELETE')
+                    
+                    <div class="bg-gray-50 p-4 border-b border-gray-200 flex justify-end">
+                        <button type="submit" class="bg-white border border-red-200 text-red-600 hover:bg-red-50 py-2 px-4 rounded-lg font-medium shadow-sm transition-colors duration-200 flex items-center gap-2 text-sm">
+                            <i class="fas fa-trash"></i> Hapus yang Dipilih
+                        </button>
+                    </div>
 
-        // Menangani aksi "Select All" untuk memilih semua checkbox di bagian cancel
-        document.getElementById('select-all-cancel').addEventListener('change', function (e) {
-            const checkboxes = document.querySelectorAll('.order-checkbox-cancel');
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = e.target.checked;
-            });
-        });
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-gray-200 bg-gray-50 text-xs text-gray-500 uppercase tracking-wider font-semibold">
+                                    <th class="p-4 sm:pl-6 w-12">
+                                        <input type="checkbox" id="select-all-pending" class="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+                                    </th>
+                                    <th class="p-4">Produk</th>
+                                    <th class="p-4 text-center">Jumlah</th>
+                                    <th class="p-4">Total Harga</th>
+                                    <th class="p-4">Status Pembayaran</th>
+                                    <th class="p-4">Status Pengiriman</th>
+                                    <th class="p-4">Tanggal</th>
+                                    <th class="p-4 sm:pr-6 text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 text-sm">
+                                @foreach ($pesananPending as $order)
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td class="p-4 sm:pl-6">
+                                            <input type="checkbox" name="order_ids[]" value="{{ $order->id }}" class="order-checkbox-pending w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+                                        </td>
+                                        <td class="p-4 font-medium text-gray-900">{{ $order->produk->nama ?? '-' }}</td>
+                                        <td class="p-4 text-center text-gray-600">{{ $order->jumlah }}</td>
+                                        <td class="p-4 font-bold text-gray-900">Rp{{ number_format($order->total_harga, 0, ',', '.') }}</td>
+                                        <td class="p-4">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                                {{ ucfirst($order->status) }}
+                                            </span>
+                                        </td>
+                                        <td class="p-4">
+                                            @if ($order->status_pesanan)
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                    {{ ucfirst(str_replace('_', ' ', $order->status_pesanan)) }}
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                    Belum Diproses
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td class="p-4 text-gray-500 text-xs whitespace-nowrap">{{ $order->created_at->format('d-m-Y H:i') }}</td>
+                                        <td class="p-4 sm:pr-6 text-right">
+                                            <a href="{{ route('pembeli.status.belum-bayar') }}" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white py-1.5 px-3 rounded-lg font-medium shadow-sm transition-colors text-xs whitespace-nowrap">
+                                                <i class="fas fa-credit-card"></i> Bayar
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
+            @endif
+        </div>
+    </div>
 
-        // Responsive table - add data labels for mobile view
-        document.addEventListener('DOMContentLoaded', function () {
-            if (window.innerWidth <= 992) {
-                const headers = document.querySelectorAll('.order-table thead th');
-                const rows = document.querySelectorAll('.order-table tbody tr');
+    <!-- PESANAN DIBATALKAN -->
+    <div class="mb-12">
+        <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2 mb-6 pb-2 border-b border-gray-200">
+            <div class="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center">
+                <i class="fas fa-times"></i>
+            </div>
+            Pesanan Dibatalkan
+        </h3>
 
-                rows.forEach(row => {
-                    const cells = row.querySelectorAll('td');
-                    cells.forEach((cell, index) => {
-                        if (headers[index]) {
-                            cell.setAttribute('data-label', headers[index].textContent.trim());
-                        }
-                    });
-                });
-            }
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            @if ($pesananCancel->isEmpty())
+                <div class="text-center py-12 px-6">
+                    <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-ban text-3xl text-gray-300"></i>
+                    </div>
+                    <h5 class="text-lg font-bold text-gray-900 mb-1">Tidak ada pesanan yang dibatalkan</h5>
+                    <p class="text-gray-500 text-sm">Belum ada pesanan yang dibatalkan.</p>
+                </div>
+            @else
+                <form action="{{ route('pembeli.pesanan.bulkDelete') }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus pesanan yang dipilih?')">
+                    @csrf
+                    @method('DELETE')
+                    
+                    <div class="bg-gray-50 p-4 border-b border-gray-200 flex justify-end">
+                        <button type="submit" class="bg-white border border-red-200 text-red-600 hover:bg-red-50 py-2 px-4 rounded-lg font-medium shadow-sm transition-colors duration-200 flex items-center gap-2 text-sm">
+                            <i class="fas fa-trash"></i> Hapus yang Dipilih
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-gray-200 bg-gray-50 text-xs text-gray-500 uppercase tracking-wider font-semibold">
+                                    <th class="p-4 sm:pl-6 w-12">
+                                        <input type="checkbox" id="select-all-cancel" class="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+                                    </th>
+                                    <th class="p-4">Produk</th>
+                                    <th class="p-4 text-center">Jumlah</th>
+                                    <th class="p-4">Total Harga</th>
+                                    <th class="p-4">Status Pembayaran</th>
+                                    <th class="p-4">Status Pengiriman</th>
+                                    <th class="p-4">Tanggal</th>
+                                    <th class="p-4 sm:pr-6 text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 text-sm">
+                                @foreach ($pesananCancel as $order)
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td class="p-4 sm:pl-6">
+                                            <input type="checkbox" name="order_ids[]" value="{{ $order->id }}" class="order-checkbox-cancel w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+                                        </td>
+                                        <td class="p-4 font-medium text-gray-900">{{ $order->produk->nama ?? '-' }}</td>
+                                        <td class="p-4 text-center text-gray-600">{{ $order->jumlah }}</td>
+                                        <td class="p-4 font-bold text-gray-900">Rp{{ number_format($order->total_harga, 0, ',', '.') }}</td>
+                                        <td class="p-4">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                {{ ucfirst($order->status) }}
+                                            </span>
+                                        </td>
+                                        <td class="p-4">
+                                            @if ($order->status_pesanan)
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                    {{ ucfirst(str_replace('_', ' ', $order->status_pesanan)) }}
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                    Belum Diproses
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td class="p-4 text-gray-500 text-xs whitespace-nowrap">{{ $order->created_at->format('d-m-Y H:i') }}</td>
+                                        <td class="p-4 sm:pr-6 text-right">
+                                            <a href="{{ route('pembeli.invoice.show', $order->id) }}" class="inline-flex items-center gap-2 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 py-1.5 px-3 rounded-lg font-medium shadow-sm transition-colors text-xs whitespace-nowrap">
+                                                <i class="fas fa-file-invoice text-gray-400"></i> Invoice
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
+            @endif
+        </div>
+    </div>
+</div>
+
+<script>
+    // Menangani aksi "Select All" untuk memilih semua checkbox di bagian lunas
+    document.getElementById('select-all-lunas')?.addEventListener('change', function (e) {
+        const checkboxes = document.querySelectorAll('.order-checkbox-lunas');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = e.target.checked;
         });
-    </script>
+    });
+
+    // Menangani aksi "Select All" untuk memilih semua checkbox di bagian pending
+    document.getElementById('select-all-pending')?.addEventListener('change', function (e) {
+        const checkboxes = document.querySelectorAll('.order-checkbox-pending');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = e.target.checked;
+        });
+    });
+
+    // Menangani aksi "Select All" untuk memilih semua checkbox di bagian cancel
+    document.getElementById('select-all-cancel')?.addEventListener('change', function (e) {
+        const checkboxes = document.querySelectorAll('.order-checkbox-cancel');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = e.target.checked;
+        });
+    });
+</script>
 @endsection

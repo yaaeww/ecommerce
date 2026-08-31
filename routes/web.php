@@ -55,6 +55,10 @@ use App\Http\Controllers\InvoiceController;
 */
 
 Route::get('/', [LandingController::class, 'index'])->name('landing');
+Route::get('/kategori', [LandingController::class, 'kategori'])->name('kategori');
+Route::get('/tentang', [LandingController::class, 'tentang'])->name('tentang');
+Route::get('/api/search/live', [LandingController::class, 'liveSearch'])->name('api.search.live');
+Route::get('/produk/{id}', [ProdukPembeliController::class, 'show'])->name('pembeli.produk.show');
 /*
 |--------------------------------------------------------------------------
 | 💬 CHAT & CHATBOT ROUTES
@@ -71,7 +75,7 @@ Route::middleware(['auth', 'role:pembeli'])->prefix('pembeli/chat')->name('pembe
 
     Route::get('/{id?}', [UserChatController::class, 'index'])->name('index');
 
-    Route::post('/send', [UserChatController::class, 'chat'])->name('send');
+    Route::post('/send', [UserChatController::class, 'chat'])->name('send')->middleware('throttle:60,1');
     Route::get('/history/{userId}', [UserChatController::class, 'history'])->name('history');
     Route::delete('/clear/{userId}', [UserChatController::class, 'clear'])->name('clear');
 });
@@ -84,7 +88,7 @@ Route::middleware(['auth', 'role:penjual'])
     ->name('penjual.chat.')
     ->group(function () {
         Route::get('/', [PenjualChatController::class, 'index'])->name('index');
-        Route::post('/send', [PenjualChatController::class, 'sendMessage'])->name('send');
+        Route::post('/send', [PenjualChatController::class, 'sendMessage'])->name('send')->middleware('throttle:60,1');
         Route::get('/history/{receiverId}', [PenjualChatController::class, 'history'])->name('history');
     });
 
@@ -96,7 +100,7 @@ Route::middleware(['auth', 'role:admin'])
     ->name('admin.chat.')
     ->group(function () {
         Route::get('/', [AdminChatController::class, 'index'])->name('index');
-        Route::post('/send', [AdminChatController::class, 'chat'])->name('send');
+        Route::post('/send', [AdminChatController::class, 'chat'])->name('send')->middleware('throttle:60,1');
         Route::get('/history', [AdminChatController::class, 'history'])->name('history');
     });
 
@@ -123,7 +127,7 @@ Route::middleware('auth')->get('/redirect-after-login', function () {
         default => abort(403),
     };
 });
-Route::middleware('auth')->get('/dashboard', fn() => redirect('/redirect-after-login'));
+Route::middleware('auth')->get('/dashboard', fn() => redirect('/redirect-after-login'))->name('dashboard');
 
 /*
 |--------------------------------------------------------------------------
@@ -206,7 +210,6 @@ Route::middleware(['auth', 'role:pembeli'])->prefix('pembeli')->name('pembeli.')
 
     Route::controller(ProdukPembeliController::class)->prefix('produk')->name('produk.')->group(function () {
         Route::get('/', 'index')->name('index');
-        Route::get('/{id}', 'show')->name('show');
     });
 
     Route::controller(KeranjangController::class)->prefix('keranjang')->name('keranjang.')->group(function () {
@@ -216,7 +219,7 @@ Route::middleware(['auth', 'role:pembeli'])->prefix('pembeli')->name('pembeli.')
         Route::delete('/{id}', 'destroy')->name('destroy');
     });
 
-    Route::get('/order/{produk_id}/{quantity}', [OrderController::class, 'showForm'])->name('order');
+    Route::get('/order/{produk_id?}/{quantity?}', [OrderController::class, 'showForm'])->name('order');
     Route::post('/checkout', [OrderController::class, 'checkout'])->name('checkout');
     Route::get('/status/belum-bayar', [OrderController::class, 'statusBelumBayar'])->name('status.belum-bayar');
     Route::get('/status/dikemas', [PesananController::class, 'statusDikemas'])->name('status.dikemas');

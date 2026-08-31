@@ -1,501 +1,192 @@
-@extends('layouts.pembeli-navbar')
+@extends('layouts.public')
 @section('title', 'Detail Pembayaran')
 @section('content')
-    <style>
-        :root {
-            --dark-blue: #0a1628;
-            --medium-blue: #1a3a5f;
-            --light-blue: #2a4a7f;
-            --gold: #ffd700;
-            --gold-light: #ffed4e;
-            --gold-dark: #d4af37;
-            --success-color: #28a745;
-            --warning-color: #ffc107;
-            --danger-color: #dc3545;
-            --info-color: #17a2b8;
-            --secondary-color: #6c757d;
-        }
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Page Header -->
+    <div class="mb-8 text-center sm:text-left">
+        <h1 class="text-3xl font-extrabold text-gray-900 flex items-center justify-center sm:justify-start gap-3">
+            <i class="fas fa-file-invoice text-indigo-600"></i>
+            Detail Pembayaran
+        </h1>
+        <p class="mt-2 text-sm text-gray-600">Rincian pesanan dan informasi pengiriman Anda.</p>
+    </div>
 
-        body {
-            background-color: #000 !important;
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .container {
-            padding-top: 20px;
-            max-width: relative;
-        }
-
-        .page-header {
-            margin-bottom: 2rem;
-        }
-
-        .page-title {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 700;
-            font-size: 2.2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .invoice-card {
-            background: rgba(30, 30, 46, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            overflow: hidden;
-            padding: 2rem;
-            backdrop-filter: blur(10px);
-            margin-bottom: 2rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        .section-title {
-            color: var(--gold);
-            font-weight: 600;
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .info-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .info-label {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.9rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .info-value {
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 600;
-            font-size: 1rem;
-        }
-
-        .order-table {
-            width: 100%;
-            border-collapse: collapse;
-            color: rgba(255, 255, 255, 0.9);
-            margin: 1.5rem 0;
-        }
-
-        .order-table thead {
-            background: rgba(255, 215, 0, 0.1);
-            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
-        }
-
-        .order-table th {
-            color: var(--gold);
-            font-weight: 600;
-            padding: 1rem 0.75rem;
-            text-align: left;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .order-table td {
-            padding: 1rem 0.75rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            vertical-align: middle;
-        }
-
-        .order-table tbody tr {
-            transition: all 0.3s ease;
-        }
-
-        .order-table tbody tr:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .order-table tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        .total-price {
-            text-align: right;
-            margin-top: 1.5rem;
-            padding-top: 1rem;
-            border-top: 2px solid rgba(255, 215, 0, 0.3);
-        }
-
-        .total-label {
-            color: var(--gold);
-            font-weight: 600;
-            font-size: 1.1rem;
-            margin-right: 0.5rem;
-        }
-
-        .total-value {
-            color: var(--gold-light);
-            font-weight: 700;
-            font-size: 1.5rem;
-        }
-
-        .badge {
-            padding: 0.5rem 0.75rem;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.8rem;
-        }
-
-        .badge-success {
-            background: linear-gradient(135deg, var(--success-color), #1e7e34);
-            color: white;
-        }
-
-        .badge-warning {
-            background: linear-gradient(135deg, var(--warning-color), #e0a800);
-            color: #000;
-        }
-
-        .badge-danger {
-            background: linear-gradient(135deg, var(--danger-color), #c82333);
-            color: white;
-        }
-
-        .badge-info {
-            background: linear-gradient(135deg, var(--info-color), #138496);
-            color: white;
-        }
-
-        .btn {
-            border: none;
-            border-radius: 8px;
-            padding: 0.75rem 1.5rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-            cursor: pointer;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            color: var(--dark-blue);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
-            background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, var(--success-color), #1e7e34);
-            color: white;
-        }
-
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
-            background: linear-gradient(135deg, #1e7e34, var(--success-color));
-        }
-
-        .status-form {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin: 2rem 0;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .form-label {
-            color: var(--gold);
-            font-weight: 600;
-            margin-bottom: 1rem;
-            display: block;
-        }
-
-        .btn-group-vertical {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            width: 100%;
-        }
-
-        .btn-radio {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: rgba(255, 255, 255, 0.8);
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            text-align: left;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-        }
-
-        .btn-radio:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .btn-radio.active {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            color: var(--dark-blue);
-            border-color: var(--gold);
-        }
-
-        .btn-check {
-            position: absolute;
-            opacity: 0;
-        }
-
-        .radio-dot {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            margin-right: 0.75rem;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .btn-radio.active .radio-dot {
-            border-color: var(--dark-blue);
-            background: var(--dark-blue);
-        }
-
-        .btn-radio.active .radio-dot:after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--gold);
-        }
-
-        .action-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .container {
-                padding-top: 70px;
-            }
-
-            .page-title {
-                font-size: 1.8rem;
-            }
-
-            .invoice-card {
-                padding: 1.5rem;
-            }
-
-            .order-table {
-                display: block;
-                overflow-x: auto;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .container {
-                padding-top: 60px;
-            }
-
-            .page-title {
-                font-size: 1.6rem;
-            }
-
-            .invoice-card {
-                padding: 1rem;
-            }
-
-            .info-group {
-                margin-bottom: 1rem;
-            }
-        }
-    </style>
-
-    <div class="container">
-        <!-- Page Header -->
-        <div class="page-header">
-            <h1 class="page-title">
-                <i class="fas fa-file-invoice me-2"></i>Detail Pembayaran
-            </h1>
+    <!-- Invoice Card -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-8">
+        <!-- Order Information -->
+        <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-100">
+            <div class="p-6 sm:p-8">
+                <h4 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2 pb-4 border-b border-gray-100">
+                    <i class="fas fa-user text-indigo-500"></i>
+                    Informasi Pembeli
+                </h4>
+                <dl class="space-y-4">
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Nama</dt>
+                        <dd class="mt-1 text-sm font-semibold text-gray-900">{{ $order->name }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">No HP</dt>
+                        <dd class="mt-1 text-sm font-semibold text-gray-900">{{ $order->phone }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Alamat</dt>
+                        <dd class="mt-1 text-sm font-semibold text-gray-900">{{ $order->alamat }}</dd>
+                    </div>
+                </dl>
+            </div>
+            <div class="p-6 sm:p-8 bg-gray-50/50">
+                <h4 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2 pb-4 border-b border-gray-100">
+                    <i class="fas fa-shopping-bag text-indigo-500"></i>
+                    Informasi Pesanan
+                </h4>
+                <dl class="space-y-4">
+                    <div class="flex justify-between items-start sm:block">
+                        <dt class="text-sm font-medium text-gray-500">No. Pesanan</dt>
+                        <dd class="mt-1 text-sm font-semibold text-gray-900">{{ $order->order_id_midtrans }}</dd>
+                    </div>
+                    <div class="flex justify-between items-start sm:block">
+                        <dt class="text-sm font-medium text-gray-500">Tanggal</dt>
+                        <dd class="mt-1 text-sm font-semibold text-gray-900">{{ $order->created_at->format('d M Y') }}</dd>
+                    </div>
+                    <div class="flex justify-between items-center sm:items-start sm:block">
+                        <dt class="text-sm font-medium text-gray-500 sm:mb-1">Status Pembayaran</dt>
+                        <dd>
+                            @if ($order->status === 'complete')
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+                                    <i class="fas fa-check-circle mr-1.5"></i> Lunas
+                                </span>
+                            @elseif ($order->status === 'cancel')
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200">
+                                    <i class="fas fa-times-circle mr-1.5"></i> Dibatalkan
+                                </span>
+                            @elseif ($order->status === 'pending')
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
+                                    <i class="fas fa-clock mr-1.5"></i> Pending
+                                </span>
+                            @endif
+                        </dd>
+                    </div>
+                    <div class="flex justify-between items-center sm:items-start sm:block">
+                        <dt class="text-sm font-medium text-gray-500 sm:mb-1">Status Pesanan</dt>
+                        <dd>
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
+                                <i class="fas fa-info-circle mr-1.5"></i> {{ ucfirst(str_replace('_', ' ', $order->status_pesanan)) }}
+                            </span>
+                        </dd>
+                    </div>
+                </dl>
+            </div>
         </div>
 
-        <!-- Invoice Card -->
-        <div class="invoice-card">
-            <!-- Order Information -->
-            <div class="row">
-                <div class="col-md-6">
-                    <h4 class="section-title">
-                        <i class="fas fa-user me-2"></i>Informasi Pembeli
-                    </h4>
-                    <div class="info-group">
-                        <div class="info-label">Nama</div>
-                        <div class="info-value">{{ $order->name }}</div>
-                    </div>
-                    <div class="info-group">
-                        <div class="info-label">No HP</div>
-                        <div class="info-value">{{ $order->phone }}</div>
-                    </div>
-                    <div class="info-group">
-                        <div class="info-label">Alamat</div>
-                        <div class="info-value">{{ $order->alamat }}</div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <h4 class="section-title">
-                        <i class="fas fa-shopping-bag me-2"></i>Informasi Pesanan
-                    </h4>
-                    <div class="info-group">
-                        <div class="info-label">No. Pesanan</div>
-                        <div class="info-value">{{ $order->order_id_midtrans }}</div>
-                    </div>
-                    <div class="info-group">
-                        <div class="info-label">Tanggal</div>
-                        <div class="info-value">{{ $order->created_at->format('d M Y') }}</div>
-                    </div>
-                    <div class="info-group">
-                        <div class="info-label">Status Pembayaran</div>
-                        <div class="info-value">
-                            @if ($order->status === 'complete')
-                                <span class="badge badge-success">Lunas</span>
-                            @elseif ($order->status === 'cancel')
-                                <span class="badge badge-danger">Dibatalkan</span>
-                            @elseif ($order->status === 'pending')
-                                <span class="badge badge-warning">Pending</span>
-                            @endif
-                        </div>
-                    </div>
-                    <div class="info-group">
-                        <div class="info-label">Status Pesanan</div>
-                        <div class="info-value">
-                            <span class="badge badge-info">{{ ucfirst(str_replace('_', ' ', $order->status_pesanan)) }}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Order Details Table -->
-            <h4 class="section-title mt-4">
-                <i class="fas fa-list me-2"></i>Detail Produk
+        <!-- Order Details Table -->
+        <div class="p-6 sm:p-8 border-t border-gray-100">
+            <h4 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <i class="fas fa-list text-indigo-500"></i>
+                Detail Produk
             </h4>
-            <div class="table-responsive">
-                <table class="order-table">
-                    <thead>
+            
+            <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
                         <tr>
-                            <th>Produk</th>
-                            <th>Harga</th>
-                            <th>Jumlah</th>
-                            <th>Subtotal</th>
+                            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider sm:pl-6">Produk</th>
+                            <th scope="col" class="px-3 py-3.5 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">Harga</th>
+                            <th scope="col" class="px-3 py-3.5 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Jumlah</th>
+                            <th scope="col" class="py-3.5 pl-3 pr-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider sm:pr-6">Subtotal</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="divide-y divide-gray-200 bg-white">
                         <tr>
-                            <td>{{ $order->produk->nama }}</td>
-                            <td>Rp {{ number_format($order->produk->harga, 0, ',', '.') }}</td>
-                            <td>{{ $order->jumlah }}</td>
-                            <td>Rp {{ number_format($order->total_harga, 0, ',', '.') }}</td>
+                            <td class="py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                                {{ $order->produk->nama }}
+                                <div class="mt-1 sm:hidden text-xs text-gray-500">
+                                    Rp {{ number_format($order->produk->harga, 0, ',', '.') }}
+                                </div>
+                            </td>
+                            <td class="px-3 py-4 text-sm text-gray-500 text-right hidden sm:table-cell">Rp {{ number_format($order->produk->harga, 0, ',', '.') }}</td>
+                            <td class="px-3 py-4 text-sm text-gray-500 text-center">{{ $order->jumlah }}</td>
+                            <td class="py-4 pl-3 pr-4 text-sm font-semibold text-gray-900 text-right sm:pr-6">Rp {{ number_format($order->total_harga, 0, ',', '.') }}</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
             <!-- Total Price -->
-            <div class="total-price">
-                <span class="total-label">Total Harga:</span>
-                <span class="total-value">Rp {{ number_format($order->total_harga, 0, ',', '.') }}</span>
-            </div>
-
-            <!-- Form Update Status Pesanan -->
-            @if($order->status === 'complete' && $order->status_pesanan === 'dikirim')
-                <div class="status-form">
-                    <h4 class="section-title">
-                        <i class="fas fa-truck me-2"></i>Konfirmasi Penerimaan Barang
-                    </h4>
-                    <form action="{{ route('pembeli.pesanan.updateStatus', $order->id) }}" method="POST">
-                        @csrf
-                        @method('PATCH')
-                        <label class="form-label">Silakan konfirmasi status penerimaan barang:</label>
-                        
-                        <div class="btn-group-vertical">
-                            @php
-                                $pengirimanStatus = ['diterima' => 'Diterima', 'belum_diterima' => 'Belum Diterima'];
-                                $currentStatus = old('status_pesanan', $order->status_pesanan);
-                            @endphp
-                            
-                            @foreach ($pengirimanStatus as $value => $label)
-                                <input type="radio" class="btn-check" name="status_pesanan" 
-                                       id="status-{{ $value }}" value="{{ $value }}"
-                                       {{ $currentStatus === $value ? 'checked' : '' }}>
-                                <label class="btn-radio {{ $currentStatus === $value ? 'active' : '' }}" 
-                                       for="status-{{ $value }}">
-                                    <span class="radio-dot"></span>
-                                    {{ $label }}
-                                </label>
-                            @endforeach
-                        </div>
-                        
-                        <button type="submit" class="btn btn-success mt-3">
-                            <i class="fas fa-sync-alt me-2"></i>Perbarui Status
-                        </button>
-                    </form>
-                </div>
-            @endif
-
-            <!-- Action Buttons -->
-            <div class="action-buttons">
-                <a href="{{ route('pembeli.pesanan.index') }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left me-2"></i>Kembali ke Daftar Pesanan
-                </a>
+            <div class="mt-6 flex justify-end items-center gap-4 bg-indigo-50 p-4 rounded-lg border border-indigo-100">
+                <span class="text-sm font-semibold text-indigo-900">Total Harga:</span>
+                <span class="text-2xl font-extrabold text-indigo-700">Rp {{ number_format($order->total_harga, 0, ',', '.') }}</span>
             </div>
         </div>
-    </div>
 
-    <script>
-        // Handle radio button styling
-        document.addEventListener('DOMContentLoaded', function() {
-            const radioButtons = document.querySelectorAll('.btn-check');
-            
-            radioButtons.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    // Remove active class from all labels
-                    document.querySelectorAll('.btn-radio').forEach(label => {
-                        label.classList.remove('active');
-                    });
+        <!-- Form Update Status Pesanan -->
+        @if($order->status === 'complete' && $order->status_pesanan === 'dikirim')
+            <div class="p-6 sm:p-8 bg-gray-50 border-t border-gray-200">
+                <h4 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <i class="fas fa-truck text-indigo-500"></i>
+                    Konfirmasi Penerimaan Barang
+                </h4>
+                <form action="{{ route('pembeli.pesanan.updateStatus', $order->id) }}" method="POST">
+                    @csrf
+                    @method('PATCH')
+                    <p class="text-sm text-gray-600 mb-4">Silakan konfirmasi status penerimaan barang, apakah sudah Anda terima dengan baik?</p>
                     
-                    // Add active class to the selected label
-                    const label = document.querySelector(`label[for="${this.id}"]`);
-                    if (label) {
-                        label.classList.add('active');
-                    }
-                });
-            });
-        });
-    </script>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        @php
+                            $pengirimanStatus = ['diterima' => 'Diterima', 'belum_diterima' => 'Belum Diterima'];
+                            $currentStatus = old('status_pesanan', $order->status_pesanan);
+                        @endphp
+                        
+                        @foreach ($pengirimanStatus as $value => $label)
+                            <div class="flex-1 relative">
+                                <input type="radio" class="peer sr-only" name="status_pesanan" 
+                                       id="status-{{ $value }}" value="{{ $value }}"
+                                       {{ $currentStatus === $value ? 'checked' : '' }}>
+                                <label class="flex items-center justify-between px-4 py-3 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 peer-checked:ring-1 peer-checked:ring-indigo-600 transition-all" 
+                                       for="status-{{ $value }}">
+                                    <div class="flex items-center">
+                                        <div class="w-5 h-5 border-2 rounded-full border-gray-300 peer-checked:border-indigo-600 flex items-center justify-center mr-3 radio-indicator">
+                                            <div class="w-2.5 h-2.5 rounded-full bg-indigo-600 scale-0 transition-transform"></div>
+                                        </div>
+                                        <span class="text-sm font-medium text-gray-900">{{ $label }}</span>
+                                    </div>
+                                    @if($value == 'diterima')
+                                        <i class="fas fa-check text-green-500 text-lg"></i>
+                                    @else
+                                        <i class="fas fa-box-open text-gray-400 text-lg"></i>
+                                    @endif
+                                </label>
+                            </div>
+                        @endforeach
+                    </div>
+                    
+                    <div class="mt-6">
+                        <button type="submit" class="w-full sm:w-auto inline-flex justify-center items-center px-6 py-3 border border-transparent shadow-sm text-base font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
+                            <i class="fas fa-sync-alt mr-2"></i>
+                            Perbarui Status Pesanan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        @endif
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="flex justify-center">
+        <a href="{{ route('pembeli.pesanan.index') }}" class="inline-flex justify-center items-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors w-full sm:w-auto">
+            <i class="fas fa-arrow-left mr-2 text-gray-400"></i>
+            Kembali ke Daftar Pesanan
+        </a>
+    </div>
+</div>
+
+<style>
+    /* Styling custom untuk radio buttons */
+    input[type="radio"]:checked + label .radio-indicator {
+        border-color: #4f46e5;
+    }
+    input[type="radio"]:checked + label .radio-indicator div {
+        transform: scale(1);
+    }
+</style>
 @endsection

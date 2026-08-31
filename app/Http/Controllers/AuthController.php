@@ -52,7 +52,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6|confirmed',
-            'role' => 'required|in:admin,penjual,pembeli',
+            'role' => 'nullable|in:penjual,pembeli',
         ]);
 
         if ($validator->fails()) {
@@ -63,11 +63,13 @@ class AuthController extends Controller
             ], 422);
         }
 
+        $role = in_array($request->role, ['penjual', 'pembeli']) ? $request->role : 'pembeli';
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role,
+            'role' => $role,
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;

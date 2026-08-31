@@ -10,10 +10,35 @@ use Illuminate\Support\Str;
 
 class KategoriController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $kategoris = KategoriProduk::with(['parent', 'children'])->latest()->get();
-        return view('admin.kategori.index', compact('kategoris'));
+        $search = $request->get('search');
+        $filter = $request->get('filter', 'all');
+
+        $query = KategoriProduk::with(['parent', 'children']);
+
+        if ($search) {
+            $query->where('nama', 'like', '%' . $search . '%');
+        }
+
+        if ($filter === 'induk') {
+            $query->whereNull('parent_id');
+        } elseif ($filter === 'sub') {
+            $query->whereNotNull('parent_id');
+        }
+
+        if ($search || $filter === 'sub') {
+            $kategoris = $query->latest()->paginate(10)->withQueryString();
+            $isHierarchical = false;
+        } else {
+            $kategoris = $query->whereNull('parent_id')->latest()->paginate(6)->withQueryString();
+            $isHierarchical = true;
+        }
+
+        $totalInduk = KategoriProduk::whereNull('parent_id')->count();
+        $totalSub = KategoriProduk::whereNotNull('parent_id')->count();
+
+        return view('admin.kategori.index', compact('kategoris', 'search', 'filter', 'isHierarchical', 'totalInduk', 'totalSub'));
     }
 
     public function create()

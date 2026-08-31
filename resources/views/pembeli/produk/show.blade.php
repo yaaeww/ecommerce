@@ -1,734 +1,395 @@
-@extends('layouts.pembeli-navbar')
+@extends('layouts.public')
+
+@section('title', $produk->nama . ' — Juragan Pelem')
+@section('meta_description', Str::limit($produk->deskripsi, 150))
 
 @section('content')
-    <style>
-        :root {
-            --dark-blue: #0a1628;
-            --medium-blue: #1a3a5f;
-            --light-blue: #2a4a7f;
-            --gold: #ffd700;
-            --gold-light: #ffed4e;
-            --gold-dark: #d4af37;
-        }
-
-        .container {
-            padding-top: 5px;
-            max-width: relative;
-        }
-
-        .page-header {
-            margin-bottom: 3rem;
-            text-align: center;
-        }
-
-        .page-title {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 700;
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .page-subtitle {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 1.1rem;
-            margin-bottom: 0;
-        }
-
-        .product-detail-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-
-        .product-image-container {
-            background: rgba(30, 30, 46, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            overflow: hidden;
-            padding: 1.5rem;
-            backdrop-filter: blur(10px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 500px;
-        }
-
-        .product-image-container img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            border-radius: 12px;
-        }
-
-        .product-info-container {
-            background: rgba(30, 30, 46, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            overflow: hidden;
-            padding: 2rem;
-            backdrop-filter: blur(10px);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .product-title {
-            color: var(--gold);
-            font-weight: 700;
-            font-size: 1.75rem;
-            margin-bottom: 1rem;
-            line-height: 1.4;
-        }
-
-        .product-description {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 1rem;
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
-            flex-grow: 1;
-        }
-
-        .product-price {
-            margin-bottom: 1.5rem;
-        }
-
-        .price-original {
-            text-decoration: line-through;
-            color: #f8d7da;
-            font-size: 1rem;
-            margin-right: 0.5rem;
-        }
-
-        .badge-discount {
-            background: linear-gradient(135deg, #dc3545, #c82333);
-            color: white;
-            font-size: 0.8rem;
-            padding: 0.3rem 0.6rem;
-            border-radius: 4px;
-            margin-left: 0.5rem;
-        }
-
-        .current-price {
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
-        .price-warning {
-            color: var(--gold-light);
-        }
-
-        .price-primary {
-            color: var(--gold);
-        }
-
-        .product-meta {
-            margin-bottom: 1.5rem;
-        }
-
-        .meta-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 0.75rem;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .meta-item i {
-            color: var(--gold);
-            margin-right: 0.5rem;
-            width: 20px;
-        }
-
-        .seller-info {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .seller-title {
-            color: var(--gold);
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-            font-size: 1.1rem;
-        }
-
-        .seller-detail {
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 0.25rem;
-        }
-
-        .btn-add-cart {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            border: none;
-            color: var(--dark-blue);
-            font-weight: 600;
-            padding: 1rem;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            width: 100%;
-            font-size: 1rem;
-            margin-top: auto;
-        }
-
-        .btn-add-cart:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
-            background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
-        }
-
-        .section-title {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 700;
-            font-size: 1.75rem;
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .reviews-container {
-            background: rgba(30, 30, 46, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            overflow: hidden;
-            padding: 2rem;
-            backdrop-filter: blur(10px);
-            margin-bottom: 3rem;
-        }
-
-        .review-item {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .review-item:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 215, 0, 0.3);
-        }
-
-        .review-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.75rem;
-        }
-
-        .reviewer-name {
-            color: var(--gold);
-            font-weight: 600;
-        }
-
-        .review-date {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 0.85rem;
-        }
-
-        .review-rating {
-            margin-bottom: 0.75rem;
-        }
-
-        .review-star {
-            color: var(--gold);
-        }
-
-        .review-text {
-            color: rgba(255, 255, 255, 0.8);
-            line-height: 1.5;
-        }
-
-        .rating-summary {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-        }
-
-        .rating-average {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--gold);
-            margin-right: 1rem;
-        }
-
-        .rating-stars {
-            margin-right: 1rem;
-        }
-
-        .rating-count {
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .related-products-container {
-            margin-bottom: 3rem;
-        }
-
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 2rem;
-        }
-
-        .product-card {
-            background: rgba(30, 30, 46, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 30px rgba(255, 215, 0, 0.25);
-            border-color: var(--gold);
-        }
-
-        .product-image {
-            height: 220px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .product-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.4s ease;
-        }
-
-        .product-card:hover .product-image img {
-            transform: scale(1.08);
-        }
-
-        .product-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.9), rgba(255, 237, 78, 0.9));
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2;
-        }
-
-        .product-card:hover .product-overlay {
-            opacity: 1;
-        }
-
-        .overlay-content {
-            text-align: center;
-            color: var(--dark-blue);
-        }
-
-        .overlay-content h5 {
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .overlay-content .btn {
-            background: var(--dark-blue);
-            color: var(--gold);
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .overlay-content .btn:hover {
-            background: var(--medium-blue);
-            transform: translateY(-2px);
-        }
-
-        .product-content {
-            padding: 1.5rem;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .product-title-small {
-            color: var(--gold);
-            font-weight: 600;
-            font-size: 1.1rem;
-            margin-bottom: 0.75rem;
-            line-height: 1.4;
-        }
-
-        .product-description-small {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.9rem;
-            line-height: 1.5;
-            margin-bottom: 1rem;
-            flex-grow: 1;
-        }
-
-        .product-price-small {
-            margin-bottom: 1.25rem;
-        }
-
-        .btn-view-details {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            border: none;
-            color: var(--dark-blue);
-            font-weight: 600;
-            padding: 0.75rem;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            width: 100%;
-            font-size: 0.9rem;
-            text-decoration: none;
-            text-align: center;
-        }
-
-        .btn-view-details:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
-            background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
-            color: var(--dark-blue);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem 2rem;
-            background: rgba(30, 30, 46, 0.5);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            grid-column: 1 / -1;
-        }
-
-        .empty-state-icon {
-            font-size: 3rem;
-            color: var(--gold);
-            margin-bottom: 1rem;
-        }
-
-        .empty-state h5 {
-            color: var(--gold);
-            margin-bottom: 0.5rem;
-        }
-
-        .empty-state p {
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 0;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 1200px) {
-            .product-detail-container {
-                grid-template-columns: 1fr;
-            }
-
-            .products-grid {
-                grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-                gap: 1.5rem;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding-top: 70px;
-            }
-
-            .page-title {
-                font-size: 2rem;
-            }
-
-            .product-image-container {
-                height: 400px;
-            }
-
-            .products-grid {
-                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-                gap: 1.25rem;
-            }
-
-            .product-image {
-                height: 200px;
-            }
-
-            .product-content {
-                padding: 1.25rem;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .container {
-                padding-top: 60px;
-            }
-
-            .page-title {
-                font-size: 1.75rem;
-            }
-
-            .page-subtitle {
-                font-size: 1rem;
-            }
-
-            .product-image-container {
-                height: 300px;
-                padding: 1rem;
-            }
-
-            .product-info-container {
-                padding: 1.5rem;
-            }
-
-            .products-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            .product-image {
-                height: 180px;
-            }
-
-            .product-content {
-                padding: 1rem;
-            }
-        }
-    </style>
-
-    <div class="container">
-        <!-- Page Header -->
-        <div class="page-header">
-            <h1 class="page-title">
-                <i class="fas fa-box-open me-2"></i>Detail Produk
-            </h1>
-            <p class="page-subtitle">Informasi lengkap tentang produk pilihan Anda</p>
-        </div>
-
-        <!-- Product Detail Section -->
-        <div class="product-detail-container">
-            <!-- Product Image -->
-            <div class="product-image-container">
-                @if ($produk->gambar)
-                    <img src="{{ asset('storage/' . $produk->gambar) }}" alt="{{ $produk->nama }}" loading="lazy">
-                @else
-                    <img src="{{ asset('images/default.jpg') }}" alt="Default Image" loading="lazy">
-                @endif
+<!-- Breadcrumbs -->
+<div class="bg-brand-cream/60 border-b border-slate-100 py-3">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="flex items-center gap-2 text-xs font-semibold text-slate-500">
+            <a href="{{ route('landing') }}" class="hover:text-indigo-600 transition">Beranda</a>
+            <i class="fas fa-chevron-right text-[10px] text-slate-300"></i>
+            <a href="{{ route('kategori') }}" class="hover:text-indigo-600 transition">Kategori</a>
+            <i class="fas fa-chevron-right text-[10px] text-slate-300"></i>
+            <span class="text-slate-800 font-bold truncate max-w-xs">{{ $produk->nama }}</span>
+        </nav>
+    </div>
+</div>
+
+<main class="py-10 lg:py-14">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Flash Messages -->
+        @if(session('success'))
+            <div class="mb-6 p-4 bg-indigo-50 border border-indigo-200 text-indigo-600 rounded-2xl flex items-center gap-3 text-sm font-semibold shadow-sm">
+                <i class="fas fa-circle-check text-lg"></i>
+                <span>{{ session('success') }}</span>
             </div>
+        @endif
 
-            <!-- Product Info -->
-            <div class="product-info-container">
-                <h2 class="product-title">{{ $produk->nama }}</h2>
-                <p class="product-description">{{ $produk->deskripsi }}</p>
+        @if(session('error'))
+            <div class="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl flex items-center gap-3 text-sm font-semibold shadow-sm">
+                <i class="fas fa-circle-exclamation text-lg"></i>
+                <span>{{ session('error') }}</span>
+            </div>
+        @endif
 
-                <!-- Product Price -->
-                <div class="product-price">
-                    @if(isset($produk->harga_setelah_diskon) && $produk->harga_setelah_diskon < $produk->harga)
-                        @php
-                            $diskon = 100 - round(($produk->harga_setelah_diskon / $produk->harga) * 100);
-                        @endphp
-                        <div class="d-flex align-items-center mb-1">
-                            <span class="price-original">
-                                Rp{{ number_format($produk->harga, 0, ',', '.') }}
-                            </span>
-                            <span class="badge-discount">{{ $diskon }}% OFF</span>
+        <!-- Product Hero Grid (Image + Purchasing Actions) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start mb-16">
+            
+            <!-- Left: Product Image Gallery (5 cols) -->
+            <div class="lg:col-span-5 space-y-4">
+                <div class="bento-card p-4 bg-white border border-slate-200/80 shadow-sm relative overflow-hidden aspect-square flex items-center justify-center">
+                    @if($produk->gambar)
+                        <img 
+                            src="{{ asset('storage/' . $produk->gambar) }}" 
+                            alt="{{ $produk->nama }}" 
+                            class="w-full h-full object-cover rounded-2xl"
+                            onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');"
+                        >
+                        <div class="hidden w-full h-full rounded-2xl bg-indigo-50/60 flex flex-col items-center justify-center text-slate-400 gap-2">
+                            <i class="fas fa-box-open text-5xl text-indigo-400"></i>
+                            <span class="text-xs font-semibold text-slate-500">{{ $produk->nama }}</span>
                         </div>
-                        <span class="current-price price-warning">
-                            Rp{{ number_format($produk->harga_setelah_diskon, 0, ',', '.') }}
-                        </span>
                     @else
-                        <span class="current-price price-primary">
-                            Rp{{ number_format($produk->harga, 0, ',', '.') }}
+                        <div class="w-full h-full rounded-2xl bg-indigo-50/60 flex flex-col items-center justify-center text-slate-400 gap-2">
+                            <i class="fas fa-box-open text-5xl text-indigo-400"></i>
+                            <span class="text-xs font-semibold text-slate-500">{{ $produk->nama }}</span>
+                        </div>
+                    @endif
+
+                    @if($produk->diskon && now()->between($produk->diskon->tanggal_mulai, $produk->diskon->tanggal_berakhir))
+                        <span class="absolute top-6 left-6 bg-red-600 text-white font-black text-xs px-3 py-1 rounded-lg shadow-md tracking-wider">
+                            DISKON {{ $produk->diskon->persen_diskon }}%
                         </span>
                     @endif
                 </div>
 
-                <!-- Product Meta -->
-                <div class="product-meta">
-                    <div class="meta-item">
-                        <i class="fas fa-box"></i>
-                        <span>Stok tersedia: <strong>{{ $produk->stok }}</strong></span>
+                <!-- Guarantee Badges under image -->
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="p-3 bg-brand-cream/60 rounded-xl border border-slate-100 text-center">
+                        <i class="fas fa-truck-fast text-indigo-600 text-sm mb-1 block"></i>
+                        <p class="text-[11px] font-bold text-slate-700">Kirim 24 Jam</p>
                     </div>
-                    <div class="meta-item">
-                        <i class="fas fa-star"></i>
-                        <span>Rating:
-                            @php
-                                $roundedRating = round($produk->rating ?? 0);
-                            @endphp
-                            @for ($i = 1; $i <= 5; $i++)
-                                @if ($i <= $roundedRating)
-                                    <i class="review-star fas fa-star"></i>
-                                @else
-                                    <i class="text-secondary fas fa-star"></i>
-                                @endif
-                            @endfor
-                            <strong>({{ number_format($produk->rating ?? 0, 1) }}/5)</strong>
+                    <div class="p-3 bg-brand-cream/60 rounded-xl border border-slate-100 text-center">
+                        <i class="fas fa-shield-halved text-amber-500 text-sm mb-1 block"></i>
+                        <p class="text-[11px] font-bold text-slate-700">Garansi Segar</p>
+                    </div>
+                    <div class="p-3 bg-brand-cream/60 rounded-xl border border-slate-100 text-center">
+                        <i class="fas fa-seedling text-teal-600 text-sm mb-1 block"></i>
+                        <p class="text-[11px] font-bold text-slate-700">100% Organik</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Product Overview & Buy Box (7 cols) -->
+            <div class="lg:col-span-7 space-y-6">
+                
+                <!-- Category & UMKM Name -->
+                <div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-md border border-indigo-200">
+                            {{ $produk->kategori->nama ?? 'Komoditas Unggulan' }}
+                        </span>
+                        <span class="text-xs font-semibold text-slate-400">•</span>
+                        <span class="text-xs font-semibold text-slate-500">
+                            {{ $produk->umkm->nama_toko ?? $produk->user->name ?? 'Mitra Kebun Indramayu' }}
                         </span>
                     </div>
+
+                    <h1 class="text-3xl sm:text-4xl font-extrabold text-brand-slate tracking-tight leading-tight">
+                        {{ $produk->nama }}
+                    </h1>
+
+                    <!-- Rating & Stock summary -->
+                    <div class="flex items-center gap-4 mt-3 pb-4 border-b border-slate-100">
+                        <div class="flex items-center gap-1.5 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200/60 text-xs font-bold text-amber-800">
+                            <i class="fas fa-star text-amber-400"></i>
+                            <span>{{ number_format($produk->rating ?? 5.0, 1) }}</span>
+                            <span class="text-slate-400 font-normal">({{ $ulasan->count() }} ulasan)</span>
+                        </div>
+                        <span class="text-xs text-slate-400">|</span>
+                        <div class="text-xs font-semibold {{ $produk->stok > 0 ? 'text-indigo-600' : 'text-red-500' }}">
+                            <i class="fas {{ $produk->stok > 0 ? 'fa-circle-check' : 'fa-circle-xmark' }} mr-1"></i>
+                            {{ $produk->stok > 0 ? 'Stok Tersedia (' . $produk->stok . ' item)' : 'Stok Habis' }}
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Seller Info -->
-                <div class="seller-info">
-                    <h5 class="seller-title">Informasi Penjual</h5>
-                    <p class="seller-detail"><i class="fas fa-store me-2"></i> {{ $produk->user->name ?? 'Penjual' }}</p>
-                    <p class="seller-detail"><i class="fas fa-envelope me-2"></i> {{ $produk->user->email ?? '-' }}</p>
+                <!-- Price Box -->
+                <div class="p-5 bg-brand-cream/50 rounded-2xl border border-slate-200/70">
+                    <p class="text-xs text-slate-500 font-semibold mb-1">Harga Produk</p>
+                    <div class="flex items-baseline gap-3">
+                        <span class="text-3xl sm:text-4xl font-extrabold text-indigo-600 font-display">
+                            Rp{{ number_format($produk->harga_setelah_diskon ?? $produk->harga, 0, ',', '.') }}
+                        </span>
+                        @if(isset($produk->harga_setelah_diskon) && $produk->harga_setelah_diskon < $produk->harga)
+                            <span class="text-base text-slate-400 line-through font-semibold">
+                                Rp{{ number_format($produk->harga, 0, ',', '.') }}
+                            </span>
+                        @endif
+                    </div>
                 </div>
 
-                <!-- Add to Cart Form -->
-                <form action="{{ route('pembeli.keranjang.store') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="produk_id" value="{{ $produk->id }}">
-                    <input type="hidden" name="quantity" value="1">
-                    <button type="submit" class="btn-add-cart">
-                        <i class="fas fa-cart-plus me-2"></i>Tambah ke Keranjang
-                    </button>
-                </form>
+                <!-- Short Description -->
+                <div>
+                    <h3 class="text-xs uppercase tracking-wider font-bold text-slate-400 mb-2">Deskripsi Produk</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        {{ $produk->deskripsi }}
+                    </p>
+                </div>
+
+                <!-- Quantity & Purchase Action Buttons -->
+                <div class="pt-4 border-t border-slate-100 space-y-4">
+                    
+                    @auth
+                        @if(Auth::user()->role === 'pembeli')
+                            <!-- Form Beli untuk Pembeli yang sudah login -->
+                            <form action="{{ route('pembeli.keranjang.store') }}" method="POST" id="cartForm">
+                                @csrf
+                                <input type="hidden" name="produk_id" value="{{ $produk->id }}">
+                                
+                                <div class="flex flex-wrap items-center justify-between gap-4 mb-5 p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80">
+                                    <div class="flex items-center gap-3">
+                                        <span class="text-xs font-bold text-slate-700">Jumlah:</span>
+                                        <div class="inline-flex items-center border border-slate-200 rounded-xl bg-white p-1 shadow-sm">
+                                            <button type="button" onclick="decrementQty()" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-600 font-bold transition">
+                                                <i class="fas fa-minus text-xs"></i>
+                                            </button>
+                                            <input type="number" id="quantityInput" name="quantity" value="1" min="1" max="{{ $produk->stok }}" oninput="updateLiveSubtotal()" class="w-12 text-center text-sm font-bold text-slate-800 outline-none border-none bg-transparent">
+                                            <button type="button" onclick="incrementQty({{ $produk->stok }})" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-600 font-bold transition">
+                                                <i class="fas fa-plus text-xs"></i>
+                                            </button>
+                                        </div>
+                                        <span class="text-xs text-slate-400">Maks. {{ $produk->stok }} item</span>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-[10px] uppercase font-bold text-slate-400 block">Subtotal</span>
+                                        <span id="detail-subtotal-display" class="text-base font-extrabold text-indigo-600">
+                                            Rp{{ number_format($produk->harga_setelah_diskon ?? $produk->harga, 0, ',', '.') }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <button type="submit" class="w-full py-3.5 px-6 rounded-xl bg-white border-2 border-indigo-600 text-indigo-600 font-bold text-sm hover:bg-indigo-50 transition flex items-center justify-center gap-2 shadow-sm">
+                                        <i class="fas fa-cart-plus"></i> Tambah ke Keranjang
+                                    </button>
+                                    <button type="button" onclick="directBuy({{ $produk->id }})" class="w-full py-3.5 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm transition flex items-center justify-center gap-2 shadow-md shadow-indigo-600/20">
+                                        <i class="fas fa-bag-shopping"></i> Beli Sekarang
+                                    </button>
+                                </div>
+                            </form>
+                        @else
+                            <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs text-slate-600">
+                                <i class="fas fa-info-circle text-indigo-600 mr-1"></i> Anda sedang masuk sebagai <strong>{{ ucfirst(Auth::user()->role) }}</strong>. Gunakan akun pembeli untuk bertransaksi.
+                            </div>
+                        @endif
+                    @else
+                        <!-- Guest Mode: Prompt Login Only on Purchase -->
+                        <div class="flex items-center gap-4 mb-5">
+                            <span class="text-xs font-bold text-slate-700">Jumlah:</span>
+                            <div class="inline-flex items-center border border-slate-200 rounded-xl bg-white p-1 shadow-sm">
+                                <button type="button" onclick="decrementQty()" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-600 font-bold transition">
+                                    <i class="fas fa-minus text-xs"></i>
+                                </button>
+                                <input type="number" id="quantityInput" value="1" min="1" max="{{ $produk->stok }}" class="w-12 text-center text-sm font-bold text-slate-800 outline-none border-none bg-transparent">
+                                <button type="button" onclick="incrementQty({{ $produk->stok }})" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-600 font-bold transition">
+                                    <i class="fas fa-plus text-xs"></i>
+                                </button>
+                            </div>
+                            <span class="text-xs text-slate-400">Maks. {{ $produk->stok }} item</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <a href="{{ route('login') }}" class="w-full py-3.5 px-6 rounded-xl bg-white border-2 border-indigo-600 text-indigo-600 font-bold text-sm hover:bg-indigo-50 transition flex items-center justify-center gap-2 shadow-sm text-center">
+                                <i class="fas fa-cart-plus"></i> Tambah ke Keranjang
+                            </a>
+                            <a href="{{ route('login') }}" class="w-full py-3.5 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm transition flex items-center justify-center gap-2 shadow-md shadow-indigo-600/20 text-center">
+                                <i class="fas fa-bag-shopping"></i> Beli Sekarang
+                            </a>
+                        </div>
+                        <p class="text-[11px] text-slate-400 text-center">
+                            <i class="fas fa-lock text-[10px] mr-1"></i> Anda akan diarahkan untuk login terlebih dahulu sebelum melanjutkan pembayaran.
+                        </p>
+                    @endauth
+
+                </div>
+
+                <!-- Seller Profile Card -->
+                <div class="bento-card p-5 bg-white border border-slate-200/80 mt-6 flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl shadow-sm shrink-0">
+                            <i class="fas fa-store"></i>
+                        </div>
+                        <div>
+                            <p class="text-[11px] text-slate-400 font-semibold uppercase">Toko Mitra UMKM</p>
+                            <h4 class="font-bold text-sm text-slate-900">{{ $produk->umkm->nama_toko ?? $produk->user->name ?? 'Mitra Juragan Pelem' }}</h4>
+                            <p class="text-xs text-slate-500"><i class="fas fa-location-dot text-amber-500 mr-1"></i> {{ $produk->umkm->alamat ?? 'Indramayu, Jawa Barat' }}</p>
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold px-3 py-1.5 bg-indigo-50 text-indigo-600 rounded-lg border border-indigo-200/60 shrink-0">
+                        <i class="fas fa-check-circle mr-1"></i> Terverifikasi
+                    </span>
+                </div>
+
             </div>
         </div>
 
-        <!-- Reviews Section -->
-        <div class="reviews-container">
-            <h3 class="section-title">
-                <i class="fas fa-comments me-2"></i>Ulasan Produk
-            </h3>
-
-            <!-- Rating Summary -->
-            <div class="rating-summary">
-                <div class="rating-average">{{ number_format($produk->rating ?? 0, 1) }}</div>
-                <div class="rating-stars">
-                    @php
-                        $roundedRating = round($produk->rating ?? 0);
-                        $jumlahUserUnik = $ulasan->groupBy('user_id')->count();
-                    @endphp
-                    @for ($i = 1; $i <= 5; $i++)
-                        @if ($i <= $roundedRating)
-                            <i class="review-star fas fa-star"></i>
-                        @else
-                            <i class="text-secondary fas fa-star"></i>
-                        @endif
-                    @endfor
+        <!-- Product Reviews Section -->
+        <section class="py-10 border-t border-slate-200">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-brand-slate tracking-tight">Ulasan & Penilaian Pembeli</h2>
+                    <p class="text-xs text-slate-500 mt-0.5">Ulasan dari konsumen yang telah membeli produk ini.</p>
                 </div>
-                <div class="rating-count">
-                    {{ $jumlahUserUnik }} ulasan
+                <div class="flex items-center gap-2 bg-amber-50 px-3.5 py-2 rounded-xl border border-amber-200 text-amber-900 font-bold text-sm">
+                    <i class="fas fa-star text-amber-400"></i>
+                    <span>{{ number_format($produk->rating ?? 5.0, 1) }} / 5.0</span>
                 </div>
             </div>
 
-            <!-- Reviews List -->
             @if($ulasan->isEmpty())
-                <div class="empty-state">
-                    <div class="empty-state-icon">
-                        <i class="fas fa-comment-slash"></i>
-                    </div>
-                    <h5>Belum ada ulasan</h5>
-                    <p>Jadilah yang pertama memberikan ulasan untuk produk ini.</p>
+                <div class="text-center py-12 bg-brand-cream/40 rounded-2xl border border-dashed border-slate-200">
+                    <i class="fas fa-comments text-slate-300 text-4xl mb-3"></i>
+                    <p class="text-sm font-bold text-slate-700">Belum Ada Ulasan</p>
+                    <p class="text-xs text-slate-400 mt-1">Jadilah yang pertama memberikan ulasan setelah berbelanja!</p>
                 </div>
             @else
-                @foreach($ulasan as $review)
-                    <div class="review-item">
-                        <div class="review-header">
-                            <span class="reviewer-name">{{ $review->user->name ?? 'Pengguna' }}</span>
-                            <span class="review-date">{{ $review->created_at->format('d M Y') }}</span>
-                        </div>
-                        <div class="review-rating">
-                            @for ($i = 1; $i <= 5; $i++)
-                                @if ($i <= $review->rating)
-                                    <i class="review-star fas fa-star"></i>
-                                @else
-                                    <i class="text-secondary fas fa-star"></i>
-                                @endif
-                            @endfor
-                        </div>
-                        <p class="review-text">{{ $review->ulasan }}</p>
-                    </div>
-                @endforeach
-            @endif
-        </div>
-
-        <!-- Related Products Section -->
-        <div class="related-products-container">
-            <h3 class="section-title">
-                <i class="fas fa-th-large me-2"></i>Produk Lain dari Toko Ini
-            </h3>
-
-            <div class="products-grid">
-                @forelse ($produkTerkait as $item)
-                    <div class="product-card">
-                        <!-- Product Image -->
-                        <div class="product-image">
-                            @if ($item->gambar)
-                                <img src="{{ asset('storage/' . $item->gambar) }}" alt="{{ $item->nama }}" loading="lazy">
-                            @else
-                                <img src="{{ asset('images/default.jpg') }}" alt="Default Image" loading="lazy">
-                            @endif
-
-                            <!-- Product Overlay -->
-                            <div class="product-overlay">
-                                <div class="overlay-content">
-                                    <h5>Lihat Detail Produk</h5>
-                                    <a href="{{ route('pembeli.produk.show', $item->id) }}" class="btn btn-sm">
-                                        <i class="fas fa-eye me-1"></i>Detail
-                                    </a>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @foreach($ulasan as $review)
+                        <div class="bento-card p-5 bg-white border border-slate-200/80 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 font-bold text-xs flex items-center justify-center">
+                                        {{ strtoupper(substr($review->user->name ?? 'U', 0, 2)) }}
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xs font-bold text-slate-900">{{ $review->user->name ?? 'Pembeli' }}</h4>
+                                        <p class="text-[10px] text-slate-400">{{ $review->created_at->format('d M Y') }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center text-amber-400 text-xs">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        @if ($i <= ($review->bintang ?? $review->rating ?? 5))
+                                            <i class="fas fa-star"></i>
+                                        @else
+                                            <i class="far fa-star text-slate-200"></i>
+                                        @endif
+                                    @endfor
                                 </div>
                             </div>
+                            <p class="text-xs text-slate-600 leading-relaxed italic">
+                                "{{ $review->komentar ?? $review->isi ?? 'Produk sangat berkualitas dan memuaskan.' }}"
+                            </p>
                         </div>
+                    @endforeach
+                </div>
+            @endif
+        </section>
 
-                        <!-- Product Content -->
-                        <div class="product-content">
-                            <h5 class="product-title-small">{{ $item->nama }}</h5>
-                            <p class="product-description-small">{{ Str::limit($item->deskripsi, 80) }}</p>
+        <!-- Related Products Section -->
+        @if(isset($produkTerkait) && $produkTerkait->count())
+            <section class="py-12 border-t border-slate-200">
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <p class="text-xs uppercase tracking-wider font-bold text-indigo-600 mb-1">Rekomendasi</p>
+                        <h2 class="text-2xl font-extrabold text-brand-slate tracking-tight">Produk Terkait Lainnya</h2>
+                    </div>
+                </div>
 
-                            <!-- Product Price -->
-                            <div class="product-price-small">
-                                @if(isset($item->harga_setelah_diskon) && $item->harga_setelah_diskon < $item->harga)
-                                    @php
-                                        $diskon = 100 - round(($item->harga_setelah_diskon / $item->harga) * 100);
-                                    @endphp
-                                    <div class="d-flex align-items-center mb-1">
-                                        <span class="price-original">
-                                            Rp{{ number_format($item->harga, 0, ',', '.') }}
-                                        </span>
-                                        <span class="badge-discount">{{ $diskon }}% OFF</span>
-                                    </div>
-                                    <span class="current-price price-warning">
-                                        Rp{{ number_format($item->harga_setelah_diskon, 0, ',', '.') }}
-                                    </span>
-                                @else
-                                    <span class="current-price price-primary">
-                                        Rp{{ number_format($item->harga, 0, ',', '.') }}
-                                    </span>
-                                @endif
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                    @foreach($produkTerkait as $terkait)
+                        <div class="bento-card p-4 bg-white border border-slate-200/80 flex flex-col justify-between group">
+                            <div>
+                                <div class="aspect-square rounded-2xl overflow-hidden bg-slate-100 relative mb-4 border border-slate-100">
+                                    @if($terkait->gambar)
+                                        <img src="{{ asset('storage/' . $terkait->gambar) }}" alt="{{ $terkait->nama }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+                                        <div class="hidden w-full h-full flex items-center justify-center text-slate-300 bg-slate-50">
+                                            <i class="fas fa-box-open text-3xl"></i>
+                                        </div>
+                                    @else
+                                        <div class="w-full h-full flex items-center justify-center text-slate-300">
+                                            <i class="fas fa-box-open text-3xl"></i>
+                                        </div>
+                                    @endif
+                                </div>
+
+                                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+                                    {{ $terkait->umkm->nama_toko ?? 'Petani Mitra' }}
+                                </span>
+                                <h3 class="font-bold text-slate-900 text-sm group-hover:text-indigo-600 transition line-clamp-1 mb-1">
+                                    {{ $terkait->nama }}
+                                </h3>
                             </div>
 
-                            <!-- Product Actions -->
-                            <div class="product-actions">
-                                <a href="{{ route('pembeli.produk.show', $item->id) }}" class="btn-view-details">
-                                    <i class="fas fa-eye me-2"></i>Lihat Detail
+                            <div class="pt-3 border-t border-slate-100 mt-2">
+                                <p class="text-base font-extrabold text-indigo-600 mb-2">
+                                    Rp{{ number_format($terkait->harga_setelah_diskon ?? $terkait->harga, 0, ',', '.') }}
+                                </p>
+                                <a href="{{ route('pembeli.produk.show', $terkait->id) }}" class="w-full py-2 bg-indigo-50 hover:bg-indigo-600 hover:text-white text-indigo-600 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition">
+                                    <i class="fas fa-eye"></i> Lihat Detail
                                 </a>
                             </div>
                         </div>
-                    </div>
-                @empty
-                    <div class="empty-state">
-                        <div class="empty-state-icon">
-                            <i class="fas fa-search"></i>
-                        </div>
-                        <h5>Tidak ada produk lain</h5>
-                        <p>Belum ada produk lain dari toko ini.</p>
-                    </div>
-                @endforelse
-            </div>
-        </div>
+                    @endforeach
+                </div>
+            </section>
+        @endif
+
     </div>
+</main>
+
+@push('scripts')
+<script>
+    const unitPrice = {{ (float)($produk->harga_setelah_diskon ?? $produk->harga) }};
+
+    function updateLiveSubtotal() {
+        const input = document.getElementById('quantityInput');
+        if (!input) return;
+        let qty = parseInt(input.value) || 1;
+        const max = parseInt(input.getAttribute('max')) || 9999;
+        if (qty > max) {
+            qty = max;
+            input.value = max;
+        }
+        if (qty < 1) {
+            qty = 1;
+            input.value = 1;
+        }
+
+        const subtotal = unitPrice * qty;
+        const display = document.getElementById('detail-subtotal-display');
+        if (display) {
+            display.textContent = 'Rp' + subtotal.toLocaleString('id-ID');
+        }
+    }
+
+    function incrementQty(max) {
+        const input = document.getElementById('quantityInput');
+        if (!input) return;
+        let current = parseInt(input.value) || 1;
+        if (current < max) {
+            input.value = current + 1;
+            updateLiveSubtotal();
+        }
+    }
+
+    function decrementQty() {
+        const input = document.getElementById('quantityInput');
+        if (!input) return;
+        let current = parseInt(input.value) || 1;
+        if (current > 1) {
+            input.value = current - 1;
+            updateLiveSubtotal();
+        }
+    }
+
+    function directBuy(produkId) {
+        const qty = document.getElementById('quantityInput').value || 1;
+        window.location.href = "{{ url('/pembeli/order') }}/" + produkId + "/" + qty;
+    }
+</script>
+@endpush
 @endsection

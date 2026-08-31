@@ -1,581 +1,277 @@
 @extends('layouts.app')
-@section('page_title', 'Kategori')
 
-@section('title')
-    <i class="bi bi-tags-fill" style="color: var(--gold);"></i> Edit Kategori Produk
-@endsection
-
-@push('style')
-    <style>
-        :root {
-            --dark-blue: #0a1628;
-            --medium-blue: #1a3a5f;
-            --light-blue: #2a4a7f;
-            --gold: #ffd700;
-            --gold-light: #ffed4e;
-            --gold-dark: #d4af37;
-            --text-primary: #ffffff;
-            --text-secondary: #a0aec0;
-            --success-color: #28a745;
-            --danger-color: #dc3545;
-        }
-
-        .card {
-            background: linear-gradient(135deg, rgba(10, 22, 40, 0.95) 0%, rgba(26, 58, 95, 0.9) 100%) !important;
-            border: 2px solid var(--gold);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(255, 215, 0, 0.15);
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--gold), transparent);
-            animation: shimmer 3s infinite;
-        }
-
-        @keyframes shimmer {
-
-            0%,
-            100% {
-                opacity: 0;
-            }
-
-            50% {
-                opacity: 1;
-            }
-        }
-
-        .card-body {
-            color: var(--text-primary);
-            padding: 2rem;
-        }
-
-        /* Form Styling */
-        form {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .mb-3 {
-            margin-bottom: 1.5rem !important;
-        }
-
-        .form-label {
-            color: var(--gold);
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            display: block;
-            font-size: 1rem;
-        }
-
-        .form-control {
-            background: linear-gradient(135deg, rgba(10, 22, 40, 0.9) 0%, rgba(26, 58, 95, 0.8) 100%);
-            border: 2px solid rgba(255, 215, 0, 0.3);
-            border-radius: 10px;
-            color: var(--text-primary);
-            padding: 12px 16px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .form-control:focus {
-            background: linear-gradient(135deg, rgba(10, 22, 40, 0.95) 0%, rgba(26, 58, 95, 0.85) 100%);
-            border-color: var(--gold);
-            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
-            color: var(--text-primary);
-            outline: none;
-        }
-
-        /* Select Dropdown Styling */
-        select.form-control {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23ffd700' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 16px center;
-            background-size: 16px;
-            padding-right: 40px;
-        }
-
-        /* Invalid State */
-        .form-control.is-invalid {
-            border-color: var(--danger-color);
-            background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(26, 58, 95, 0.8) 100%);
-        }
-
-        .form-control.is-invalid:focus {
-            border-color: var(--danger-color);
-            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.2);
-        }
-
-        .invalid-feedback {
-            color: #ff6b6b;
-            font-size: 0.875rem;
-            margin-top: 0.5rem;
-            font-weight: 500;
-        }
-
-        /* Alert Styling */
-        .alert-success {
-            background: linear-gradient(135deg, rgba(40, 167, 69, 0.9) 0%, rgba(52, 195, 85, 0.8) 100%);
-            border: 2px solid var(--success-color);
-            color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-            margin-bottom: 2rem;
-        }
-
-        /* Button Styling */
-        .btn-primary {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            border: 2px solid var(--gold);
-            color: var(--dark-blue);
-            font-weight: 700;
-            padding: 12px 30px;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
-            font-size: 1.1rem;
-            margin-right: 1rem;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
-            background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
-            color: var(--dark-blue);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            border: 2px solid var(--text-secondary);
-            color: var(--text-secondary);
-            font-weight: 600;
-            padding: 12px 30px;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--gold);
-            color: var(--gold);
-            transform: translateY(-2px);
-        }
-
-        /* Image Styling */
-        .current-image {
-            border: 3px solid var(--gold);
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
-            transition: all 0.3s ease;
-            object-fit: cover;
-        }
-
-        .current-image:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
-        }
-
-        .image-label {
-            color: var(--gold);
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            display: block;
-        }
-
-        /* File Input Styling */
-        .file-input-wrapper {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-            width: 100%;
-        }
-
-        .file-input-wrapper input[type=file] {
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-        }
-
-        .file-input-custom {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 16px;
-            background: linear-gradient(135deg, rgba(10, 22, 40, 0.9) 0%, rgba(26, 58, 95, 0.8) 100%);
-            border: 2px solid rgba(255, 215, 0, 0.3);
-            border-radius: 10px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .file-input-custom:hover {
-            border-color: var(--gold);
-            color: var(--text-primary);
-        }
-
-        .file-input-custom.has-file {
-            color: var(--text-primary);
-            border-color: var(--gold);
-        }
-
-        .file-input-text {
-            flex-grow: 1;
-        }
-
-        .file-input-icon {
-            color: var(--gold);
-        }
-
-        /* Image Preview Styling */
-        .image-preview-container {
-            margin-top: 1rem;
-            text-align: center;
-            display: none;
-        }
-
-        .image-preview {
-            max-width: 200px;
-            max-height: 200px;
-            border: 3px solid var(--gold);
-            border-radius: 15px;
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3);
-            transition: all 0.3s ease;
-            object-fit: cover;
-        }
-
-        .preview-label {
-            color: var(--gold);
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            display: block;
-        }
-
-        .remove-preview {
-            background: linear-gradient(135deg, var(--danger-color) 0%, #e74c3c 100%);
-            border: 2px solid var(--danger-color);
-            color: white;
-            font-weight: 600;
-            padding: 6px 12px;
-            border-radius: 6px;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
-            margin-top: 0.5rem;
-            font-size: 0.875rem;
-        }
-
-        .remove-preview:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
-            background: linear-gradient(135deg, #e74c3c 0%, var(--danger-color) 100%);
-            color: white;
-        }
-
-        /* Subkategori Section */
-        hr {
-            border-color: rgba(255, 215, 0, 0.3);
-            margin: 2rem 0;
-        }
-
-        h5 {
-            color: var(--gold);
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* Animation */
-        .fade-in {
-            animation: fadeInUp 0.6s ease-out;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .slide-down {
-            animation: slideDown 0.4s ease-out;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .card-body {
-                padding: 1.5rem;
-            }
-
-            form {
-                max-width: 100%;
-            }
-
-            .form-control {
-                padding: 10px 14px;
-                font-size: 0.9rem;
-            }
-
-            .btn-primary,
-            .btn-secondary {
-                padding: 10px 20px;
-                font-size: 1rem;
-                width: 100%;
-                margin-bottom: 1rem;
-                margin-right: 0;
-            }
-
-            .image-preview,
-            .current-image {
-                max-width: 150px;
-                max-height: 150px;
-            }
-        }
-    </style>
-@endpush
+@section('page_title', 'Edit Kategori')
 
 @section('content')
-    <div class="card fade-in">
-        <div class="card-body">
-            @if (session('success'))
-                <div class="alert alert-success fade-in">
-                    <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
-                </div>
-            @endif
-
-            <form action="{{ route('admin.kategori.update', $kategori->id) }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                @method('PUT')
-
-                {{-- Nama Kategori --}}
-                <div class="mb-3">
-                    <label for="nama" class="form-label">
-                        <i class="bi bi-tag me-2"></i>Nama Kategori
-                    </label>
-                    <input type="text" class="form-control @error('nama') is-invalid @enderror" id="nama" name="nama"
-                        value="{{ old('nama', $kategori->nama) }}" required placeholder="Masukkan nama kategori">
-                    @error('nama')
-                        <div class="invalid-feedback">
-                            <i class="bi bi-exclamation-circle me-2"></i>{{ $message }}
-                        </div>
-                    @enderror
-                </div>
-
-                {{-- Parent Kategori --}}
-                <div class="mb-3">
-                    <label for="parent_id" class="form-label">
-                        <i class="bi bi-diagram-3 me-2"></i>Kategori Induk (Opsional)
-                    </label>
-                    <select name="parent_id" id="parent_id" class="form-control @error('parent_id') is-invalid @enderror">
-                        <option value="">-- Tidak ada (Kategori Utama) --</option>
-                        @foreach ($kategoriUtamaFlat as $utama)
-                            @if ($utama->id != $kategori->id) {{-- Hindari jadi parent dirinya sendiri --}}
-                                <option value="{{ $utama->id }}"
-                                    {{ old('parent_id', $kategori->parent_id) == $utama->id ? 'selected' : '' }}>
-                                    {{ $utama->nama }}
-                                </option>
-                            @endif
-                        @endforeach
-                    </select>
-                    @error('parent_id')
-                        <div class="invalid-feedback">
-                            <i class="bi bi-exclamation-circle me-2"></i>{{ $message }}
-                        </div>
-                    @enderror
-                </div>
-
-                {{-- Gambar Kategori --}}
-                <div class="mb-3">
-                    <label class="form-label">
-                        <i class="bi bi-image me-2"></i>Gambar Kategori
-                    </label>
-
-                    {{-- Custom File Input --}}
-                    <div class="file-input-wrapper">
-                        <div class="file-input-custom" id="fileInputCustom">
-                            <span class="file-input-text" id="fileInputText">Pilih file gambar baru...</span>
-                            <span class="file-input-icon">
-                                <i class="bi bi-upload"></i>
-                            </span>
-                        </div>
-                        <input type="file" class="form-control @error('gambar') is-invalid @enderror" id="gambar"
-                            name="gambar" accept="image/*">
-                    </div>
-
-                    {{-- New Image Preview --}}
-                    <div class="image-preview-container" id="imagePreviewContainer">
-                        <span class="preview-label">
-                            <i class="bi bi-eye me-2"></i>Preview Gambar Baru
-                        </span>
-                        <div class="mt-2">
-                            <img id="imagePreview" class="image-preview" src="#" alt="Preview Gambar">
-                        </div>
-                        <button type="button" class="remove-preview" id="removePreview">
-                            <i class="bi bi-x-circle me-2"></i>Hapus Preview
-                        </button>
-                    </div>
-
-                    @error('gambar')
-                        <div class="invalid-feedback d-block">
-                            <i class="bi bi-exclamation-circle me-2"></i>{{ $message }}
-                        </div>
-                    @enderror
-
-                    {{-- Current Image --}}
-                    @if ($kategori->gambar)
-                        <div class="mt-4">
-                            <span class="image-label">
-                                <i class="bi bi-image me-2"></i>Gambar Saat Ini:
-                            </span>
-                            <div class="mt-2">
-                                <img src="{{ asset('storage/kategori/' . $kategori->gambar) }}" alt="gambar kategori"
-                                    class="current-image" width="150" height="150">
-                            </div>
-                            <small class="text-muted mt-2 d-block">
-                                <i class="bi bi-info-circle me-1"></i>Gambar ini akan diganti jika Anda mengunggah gambar baru.
-                            </small>
-                        </div>
-                    @endif
-                </div>
-
-                {{-- Edit Subkategori --}}
-                @if ($kategori->children->count())
-                    <hr>
-                    <h5>
-                        <i class="bi bi-list-nested me-2"></i>Subkategori yang Ada
-                    </h5>
-                    @foreach ($kategori->children as $index => $child)
-                        <div class="mb-3">
-                            <input type="hidden" name="subkategori_id[]" value="{{ $child->id }}">
-                            <label class="form-label">Subkategori {{ $index + 1 }}</label>
-                            <input type="text" name="subkategori_nama[]" class="form-control"
-                                value="{{ old('subkategori_nama.' . $index, $child->nama) }}" placeholder="Nama subkategori">
-                        </div>
-                    @endforeach
-                @endif
-
-                {{-- Action Buttons --}}
-                <div class="d-flex flex-wrap gap-2 mt-4">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-check-circle me-2"></i>Update Kategori
-                    </button>
-                    <a href="{{ route('admin.kategori.index') }}" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left me-2"></i>Kembali ke Daftar
-                    </a>
-                </div>
-            </form>
+<div class="max-w-2xl mx-auto space-y-6">
+    
+    <div class="flex items-center justify-between">
+        <div>
+            <h2 class="text-xl font-extrabold text-slate-900 tracking-tight font-display">Edit Kategori</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Perbarui nama, hierarki, atau gambar kategori</p>
         </div>
+        <a 
+            href="{{ route('admin.kategori.index') }}" 
+            class="px-3.5 py-2 text-xs font-bold text-slate-600 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl transition shadow-sm"
+        >
+            <i class="fas fa-arrow-left mr-1"></i> Kembali
+        </a>
     </div>
-@endsection
 
-@push('script')
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // File input custom behavior
-            const fileInput = document.getElementById('gambar');
-            const fileInputCustom = document.getElementById('fileInputCustom');
-            const fileInputText = document.getElementById('fileInputText');
-            const imagePreviewContainer = document.getElementById('imagePreviewContainer');
-            const imagePreview = document.getElementById('imagePreview');
-            const removePreviewBtn = document.getElementById('removePreview');
+    <div class="card p-6 sm:p-8 bg-white border border-slate-200/80 shadow-sm">
+        <form action="{{ route('admin.kategori.update', $kategori->id) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+            @csrf
+            @method('PUT')
 
-            fileInput.addEventListener('change', function () {
-                if (this.files && this.files[0]) {
-                    const fileName = this.files[0].name;
-                    fileInputText.textContent = fileName;
-                    fileInputCustom.classList.add('has-file');
+            <!-- Nama Kategori -->
+            <div>
+                <label for="nama" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                    Nama Kategori <span class="text-rose-500">*</span>
+                </label>
+                <input 
+                    type="text" 
+                    name="nama" 
+                    id="nama" 
+                    value="{{ old('nama', $kategori->nama) }}" 
+                    required 
+                    class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition"
+                >
+                @error('nama')
+                    <p class="text-rose-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                @enderror
+            </div>
 
-                    // Preview image
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        imagePreview.src = e.target.result;
-                        imagePreviewContainer.style.display = 'block';
-                        imagePreviewContainer.classList.add('slide-down');
+            <!-- Parent Kategori (Searchable Custom Dropdown) -->
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                    Kategori Induk
+                </label>
+                @php
+                    $optionsList = $kategoriUtamaFlat ?? $kategoriInduk ?? \App\Models\KategoriProduk::where('id', '!=', $kategori->id)->get();
+                    $currentParentId = old('parent_id', $kategori->parent_id);
+                    $selectedLabel = '— Tidak ada (Kategori Utama) —';
+                    foreach ($optionsList as $opt) {
+                        if ((string)$opt->id === (string)$currentParentId) {
+                            $selectedLabel = $opt->nama;
+                            break;
+                        }
                     }
-                    reader.readAsDataURL(this.files[0]);
-                } else {
-                    resetFileInput();
-                }
-            });
+                @endphp
 
-            // Remove preview functionality
-            removePreviewBtn.addEventListener('click', function () {
-                resetFileInput();
-                fileInput.value = ''; // Clear the file input
-            });
+                <!-- Hidden Input for Form Submission -->
+                <input type="hidden" name="parent_id" id="parent_id_input" value="{{ $currentParentId }}">
 
-            function resetFileInput() {
-                fileInputText.textContent = 'Pilih file gambar baru...';
-                fileInputCustom.classList.remove('has-file');
-                imagePreviewContainer.style.display = 'none';
-                imagePreviewContainer.classList.remove('slide-down');
-                imagePreview.src = '#';
-            }
+                <!-- Custom Dropdown Container -->
+                <div class="relative" id="customDropdownContainer">
+                    <!-- Dropdown Trigger Button -->
+                    <button 
+                        type="button" 
+                        onclick="toggleCustomDropdown()" 
+                        id="dropdownTriggerBtn" 
+                        class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-800 flex items-center justify-between hover:bg-white hover:border-brand-400 focus:outline-none focus:border-brand-500 focus:bg-white transition shadow-sm"
+                    >
+                        <span class="flex items-center gap-2.5 truncate" id="selectedOptionText">
+                            <i class="fas fa-layer-group text-brand-600 text-xs"></i>
+                            <span class="truncate">{{ $selectedLabel }}</span>
+                        </span>
+                        <i class="fas fa-chevron-down text-slate-400 text-xs transition-transform duration-200" id="dropdownChevronIcon"></i>
+                    </button>
 
-            // Trigger file input when custom div is clicked
-            fileInputCustom.addEventListener('click', function () {
-                fileInput.click();
-            });
+                    <!-- Floating Searchable Menu -->
+                    <div 
+                        id="customDropdownMenu" 
+                        class="hidden absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl border border-slate-200 shadow-xl z-50 p-2 space-y-2 animate-in fade-in slide-in-from-top-2 duration-150"
+                    >
+                        <!-- Live Search Input -->
+                        <div class="relative px-1 pt-1">
+                            <i class="fas fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            <input 
+                                type="text" 
+                                id="dropdownSearchInput" 
+                                placeholder="Ketik untuk mencari kategori..." 
+                                oninput="filterDropdownOptions(this.value)" 
+                                autocomplete="off"
+                                class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition"
+                            >
+                        </div>
 
-            // File size and type validation
-            fileInput.addEventListener('change', function () {
-                const file = this.files[0];
-                if (file) {
-                    const fileSize = file.size / 1024 / 1024; // MB
-                    const maxSize = 2; // 2MB
+                        <!-- Options List -->
+                        <div class="max-h-60 overflow-y-auto space-y-1 pr-1 customscroll" id="dropdownOptionsList">
+                            
+                            <!-- Option 1: Root / None -->
+                            <div 
+                                onclick="selectKategoriOption('', '— Tidak ada (Kategori Utama) —')" 
+                                class="option-item flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer text-xs font-bold transition {{ empty($currentParentId) ? 'bg-brand-50 text-brand-700' : 'text-slate-700 hover:bg-slate-50' }}"
+                                data-label="tidak ada kategori utama root induk"
+                            >
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+                                    <span>— Tidak ada (Kategori Utama) —</span>
+                                </div>
+                                <span class="check-icon {{ empty($currentParentId) ? 'block' : 'hidden' }} text-brand-600">
+                                    <i class="fas fa-check text-xs"></i>
+                                </span>
+                            </div>
 
-                    if (fileSize > maxSize) {
-                        alert('Ukuran file terlalu besar! Maksimal 2MB.');
-                        resetFileInput();
-                        fileInput.value = ''; // Clear the file input
-                    }
+                            <!-- List of Options -->
+                            @foreach ($optionsList as $item)
+                                @if ($item->id !== $kategori->id)
+                                    @php
+                                        $isSub = str_contains($item->nama, '--');
+                                        $cleanName = trim(str_replace('--', '', $item->nama));
+                                        $isSelected = (string)$currentParentId === (string)$item->id;
+                                    @endphp
+                                    <div 
+                                        onclick="selectKategoriOption('{{ $item->id }}', '{{ addslashes($cleanName) }}')" 
+                                        class="option-item flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer text-xs font-semibold transition {{ $isSelected ? 'bg-brand-50 text-brand-700 font-bold' : 'text-slate-700 hover:bg-slate-50' }}"
+                                        data-label="{{ strtolower($cleanName) }}"
+                                        style="padding-left: {{ $isSub ? '28px' : '12px' }};"
+                                    >
+                                        <div class="flex items-center gap-2 truncate">
+                                            @if($isSub)
+                                                <i class="fas fa-arrow-turn-down text-slate-300 text-[10px] rotate-[270deg]"></i>
+                                                <span class="inline-block px-1.5 py-0.5 rounded text-[9px] font-bold bg-slate-100 text-slate-500 border border-slate-200">Sub</span>
+                                                <span class="truncate">{{ $cleanName }}</span>
+                                            @else
+                                                <span class="inline-block px-1.5 py-0.5 rounded text-[9px] font-bold bg-brand-50 text-brand-700 border border-brand-200">Induk</span>
+                                                <span class="font-bold text-slate-900 truncate">{{ $cleanName }}</span>
+                                            @endif
+                                        </div>
 
-                    // Check file type
-                    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-                    if (!allowedTypes.includes(file.type)) {
-                        alert('Format file tidak didukung! Hanya JPG, JPEG, dan PNG yang diizinkan.');
-                        resetFileInput();
-                        fileInput.value = ''; // Clear the file input
-                    }
-                }
-            });
+                                        <span class="check-icon {{ $isSelected ? 'block' : 'hidden' }} text-brand-600 shrink-0 ml-2">
+                                            <i class="fas fa-check text-xs"></i>
+                                        </span>
+                                    </div>
+                                @endif
+                            @endforeach
 
-            // Auto-focus on first input
-            const firstInput = document.querySelector('input[name="nama"]');
-            if (firstInput) {
-                setTimeout(() => {
-                    firstInput.focus();
-                }, 500);
+                            <!-- Empty Search Results Notice -->
+                            <div id="emptySearchNotice" class="hidden py-6 text-center text-xs text-slate-400">
+                                <i class="fas fa-search mb-1 text-slate-300 text-base block"></i>
+                                Kategori tidak ditemukan
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @error('parent_id')
+                    <p class="text-rose-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Gambar Kategori -->
+            <div>
+                <label for="gambar" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                    Ikon / Foto Kategori
+                </label>
+                @if ($kategori->gambar && file_exists(public_path('storage/kategori/' . $kategori->gambar)))
+                    <div class="mb-3 flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 w-fit">
+                        <img src="{{ asset('storage/kategori/' . $kategori->gambar) }}" class="w-12 h-12 object-cover rounded-lg" alt="Gambar Saat Ini">
+                        <span class="text-xs text-slate-500 font-medium">Gambar saat ini terpasang</span>
+                    </div>
+                @endif
+                <input 
+                    type="file" 
+                    name="gambar" 
+                    id="gambar" 
+                    accept="image/*"
+                    class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 transition cursor-pointer"
+                >
+                @error('gambar')
+                    <p class="text-rose-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Submit Button -->
+            <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+                <a 
+                    href="{{ route('admin.kategori.index') }}" 
+                    class="px-5 py-2.5 rounded-xl text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition"
+                >
+                    Batal
+                </a>
+                <button 
+                    type="submit" 
+                    class="px-6 py-2.5 rounded-xl text-xs font-bold text-white bg-brand-600 hover:bg-brand-700 transition shadow-sm hover:shadow"
+                >
+                    Perbarui Kategori
+                </button>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+@push('scripts')
+<script>
+    function toggleCustomDropdown() {
+        const menu = document.getElementById('customDropdownMenu');
+        const chevron = document.getElementById('dropdownChevronIcon');
+        const searchInput = document.getElementById('dropdownSearchInput');
+        
+        const isHidden = menu.classList.contains('hidden');
+        if (isHidden) {
+            menu.classList.remove('hidden');
+            chevron.classList.add('rotate-180');
+            setTimeout(() => searchInput.focus(), 50);
+        } else {
+            menu.classList.add('hidden');
+            chevron.classList.remove('rotate-180');
+        }
+    }
+
+    function selectKategoriOption(id, label) {
+        document.getElementById('parent_id_input').value = id;
+        document.getElementById('selectedOptionText').innerHTML = `
+            <i class="fas fa-layer-group text-brand-600 text-xs"></i>
+            <span class="truncate">${label}</span>
+        `;
+
+        // Update active checkmarks and background
+        document.querySelectorAll('#dropdownOptionsList .option-item').forEach(item => {
+            item.classList.remove('bg-brand-50', 'text-brand-700', 'font-bold');
+            item.classList.add('text-slate-700');
+            const check = item.querySelector('.check-icon');
+            if (check) check.classList.add('hidden');
+        });
+
+        // Close dropdown
+        toggleCustomDropdown();
+    }
+
+    function filterDropdownOptions(query) {
+        const q = query.toLowerCase().trim();
+        const items = document.querySelectorAll('#dropdownOptionsList .option-item');
+        let visibleCount = 0;
+
+        items.forEach(item => {
+            const label = item.getAttribute('data-label') || '';
+            if (label.includes(q)) {
+                item.classList.remove('hidden');
+                visibleCount++;
+            } else {
+                item.classList.add('hidden');
             }
         });
-    </script>
+
+        const emptyNotice = document.getElementById('emptySearchNotice');
+        if (visibleCount === 0) {
+            emptyNotice.classList.remove('hidden');
+        } else {
+            emptyNotice.classList.add('hidden');
+        }
+    }
+
+    // Close on outside click
+    document.addEventListener('click', function(event) {
+        const container = document.getElementById('customDropdownContainer');
+        const menu = document.getElementById('customDropdownMenu');
+        const chevron = document.getElementById('dropdownChevronIcon');
+        if (container && !container.contains(event.target) && menu && !menu.classList.contains('hidden')) {
+            menu.classList.add('hidden');
+            chevron.classList.remove('rotate-180');
+        }
+    });
+</script>
 @endpush
+@endsection

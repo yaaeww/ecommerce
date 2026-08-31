@@ -1,4 +1,4 @@
-@extends('layouts.pembeli-navbar')
+@extends('layouts.public')
 
 @php
     use Carbon\Carbon;
@@ -6,190 +6,14 @@
 
 @push('style')
     <style>
-        :root {
-            --dark-blue: #0a1628;
-            --medium-blue: #1a3a5f;
-            --light-blue: #2a4a7f;
-            --gold: #ffd700;
-            --gold-light: #ffed4e;
-            --gold-dark: #d4af37;
-            --success-color: #28a745;
-            --warning-color: #ffc107;
-            --danger-color: #dc3545;
-            --info-color: #17a2b8;
-            --secondary-color: #6c757d;
-        }
-
-        body {
-            background: linear-gradient(135deg, var(--dark-blue) 0%, var(--medium-blue) 70%, var(--light-blue) 100%) !important;
-            color: #e0e0e0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100vh;
-        }
-
         .chat-container {
-            height: 88vh;
-            background: linear-gradient(135deg, rgba(10, 22, 40, 0.95) 0%, rgba(26, 58, 95, 0.9) 100%);
-            backdrop-filter: blur(15px);
-            position: relative;
-            overflow: hidden;
-            border-radius: 20px;
-            border: 2px solid var(--gold);
-            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.2);
-            margin: 2rem auto;
-        }
-
-        .chat-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--gold), transparent);
-            animation: shimmer 3s infinite;
-        }
-
-        @keyframes shimmer {
-
-            0%,
-            100% {
-                opacity: 0;
-            }
-
-            50% {
-                opacity: 1;
-            }
-        }
-
-        /* Sidebar Styling - Matching Navbar */
-        .sidebar {
-            background: linear-gradient(135deg, rgba(10, 22, 40, 0.98) 0%, rgba(26, 58, 95, 0.95) 100%);
-            border-right: 2px solid var(--gold);
-            backdrop-filter: blur(15px);
-        }
-
-        .sidebar-header {
-            background: linear-gradient(135deg, var(--dark-blue) 0%, var(--medium-blue) 100%);
-            padding: 1.5rem;
-            border-bottom: 2px solid var(--gold);
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 30px rgba(255, 215, 0, 0.15);
-        }
-
-        .sidebar-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
-            animation: slideLight 3s infinite;
-        }
-
-        @keyframes slideLight {
-            0% {
-                left: -100%;
-            }
-
-            100% {
-                left: 100%;
-            }
-        }
-
-        .chat-avatar {
-            width: 48px;
-            height: 48px;
-            font-size: 1.1rem;
-            position: relative;
-            overflow: hidden;
-            border: 2px solid transparent;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
-        }
-
-        .ai-avatar {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
-            animation: pulse-glow 2s infinite;
-            color: var(--dark-blue);
-            font-weight: 700;
-        }
-
-        @keyframes pulse-glow {
-
-            0%,
-            100% {
-                box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
-            }
-
-            50% {
-                box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
-            }
-        }
-
-        .user-avatar {
-            background: linear-gradient(135deg, var(--medium-blue) 0%, var(--light-blue) 100%);
-            color: white;
-            font-weight: 700;
-        }
-
-        .list-group-item {
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
-            padding: 1rem 1.25rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .list-group-item::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: var(--gold);
-            transform: scaleY(0);
-            transition: transform 0.3s ease;
-        }
-
-        .list-group-item:hover {
-            background: rgba(255, 215, 0, 0.1);
-            transform: translateX(8px);
-        }
-
-        .list-group-item:hover::before {
-            transform: scaleY(1);
-        }
-
-        .list-group-item.active {
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 237, 78, 0.1) 100%);
-            border-left: 4px solid var(--gold);
-        }
-
-        /* Chat Area */
-        .chat-header {
-            background: linear-gradient(135deg, var(--dark-blue) 0%, var(--medium-blue) 100%);
-            padding: 1.25rem 1.5rem;
-            border-bottom: 2px solid var(--gold);
-            backdrop-filter: blur(15px);
-            box-shadow: 0 4px 30px rgba(255, 215, 0, 0.15);
-        }
-
-        .chat-messages {
-            background-image:
-                radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(255, 215, 0, 0.08) 0%, transparent 50%);
-            background-color: rgba(10, 22, 40, 0.8);
+            height: calc(100vh - 12rem);
+            min-height: 500px;
         }
 
         /* Message Bubbles */
         .bubble-appear {
-            animation: bubbleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: bubbleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         @keyframes bubbleIn {
@@ -205,171 +29,26 @@
         }
 
         .message-bubble {
-            padding: 0.875rem 1.125rem;
-            max-width: 70%;
+            max-width: 75%;
             word-wrap: break-word;
-            position: relative;
-            transition: all 0.3s ease;
-            border: 1px solid transparent;
-            border-radius: 15px;
-        }
-
-        .message-bubble:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
 
         .message-mine {
-            background: linear-gradient(135deg, var(--medium-blue) 0%, var(--light-blue) 100%);
+            background-color: #4f46e5; /* indigo-600 */
             color: white;
-            border-radius: 1.25rem 1.25rem 0.25rem 1.25rem;
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            border-radius: 1rem 1rem 0 1rem;
         }
 
         .message-other {
-            background: linear-gradient(135deg, rgba(26, 58, 95, 0.8) 0%, rgba(42, 74, 127, 0.9) 100%);
-            color: #ffffff;
-            border-radius: 1.25rem 1.25rem 1.25rem 0.25rem;
-            border: 1px solid rgba(255, 215, 0, 0.2);
-            backdrop-filter: blur(10px);
+            background-color: #f3f4f6; /* gray-100 */
+            color: #1f2937; /* gray-800 */
+            border-radius: 1rem 1rem 1rem 0;
         }
 
         .message-ai {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            color: var(--dark-blue);
-            border-radius: 1.25rem 1.25rem 1.25rem 0.25rem;
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
-            font-weight: 700;
-            border: 1px solid rgba(255, 215, 0, 0.3);
-        }
-
-        /* Input Area */
-        .chat-input-area {
-            background: linear-gradient(135deg, var(--dark-blue) 0%, var(--medium-blue) 100%);
-            padding: 1.25rem 1.5rem;
-            border-top: 2px solid var(--gold);
-            backdrop-filter: blur(15px);
-            box-shadow: 0 -4px 30px rgba(255, 215, 0, 0.15);
-        }
-
-        .chat-input {
-            background: linear-gradient(135deg, rgba(10, 22, 40, 0.9) 0%, rgba(26, 58, 95, 0.8) 100%);
-            border: 2px solid rgba(255, 215, 0, 0.3);
-            color: #e0e0e0;
-            padding: 0.875rem 1.25rem;
-            border-radius: 50px;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .chat-input:focus {
-            background: linear-gradient(135deg, rgba(10, 22, 40, 0.95) 0%, rgba(26, 58, 95, 0.85) 100%);
-            border-color: var(--gold);
-            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
-            outline: none;
-        }
-
-        .chat-input::placeholder {
-            color: #a0aec0;
-        }
-
-        .btn-send {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            border: none;
-            border-radius: 50%;
-            transition: all 0.3s ease;
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
-            color: var(--dark-blue);
-            font-weight: 700;
-        }
-
-        .btn-send:hover:not(:disabled) {
-            transform: scale(1.1) rotate(15deg);
-            box-shadow: 0 8px 30px rgba(255, 215, 0, 0.6);
-        }
-
-        .btn-send:active:not(:disabled) {
-            transform: scale(0.95) rotate(15deg);
-        }
-
-        .btn-send:disabled {
-            background: #6c757d;
-            opacity: 0.5;
-            cursor: not-allowed;
-            color: #a0aec0;
-        }
-
-        .btn-clear {
-            background: linear-gradient(135deg, var(--danger-color) 0%, #dc2626 100%);
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            color: white;
-            font-size: 0.875rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
-            font-weight: 600;
-        }
-
-        .btn-clear:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
-        }
-
-        /* Header Titles */
-        .sidebar-title {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 800;
-            font-size: 1.5rem;
-        }
-
-        /* Status Indicator */
-        .status-online {
-            width: 12px;
-            height: 12px;
-            background: var(--gold);
-            border-radius: 50%;
-            border: 2px solid var(--dark-blue);
-            position: absolute;
-            bottom: 2px;
-            right: 2px;
-            animation: pulse 2s infinite;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-        }
-
-        @keyframes pulse {
-
-            0%,
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-
-            50% {
-                opacity: 0.7;
-                transform: scale(1.1);
-            }
-        }
-
-        /* Empty State */
-        .empty-state {
-            color: #a0aec0;
-            text-align: center;
-            padding: 3rem 1rem;
-        }
-
-        .empty-state-icon {
-            font-size: 4rem;
-            opacity: 0.5;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            background-color: #fef3c7; /* amber-100 */
+            color: #92400e; /* amber-900 */
+            border-radius: 1rem 1rem 1rem 0;
         }
 
         /* Loading Animation */
@@ -379,10 +58,10 @@
         }
 
         .loading-dots span {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
-            background: var(--gold);
+            background-color: #9ca3af; /* gray-400 */
             animation: bounce 1.4s infinite ease-in-out;
         }
 
@@ -395,7 +74,6 @@
         }
 
         @keyframes bounce {
-
             0%,
             80%,
             100% {
@@ -407,317 +85,35 @@
             }
         }
 
-        /* Timestamp */
-        .message-time {
-            font-size: 0.75rem;
-            opacity: 0.7;
-            margin-top: 0.25rem;
+        /* Custom Scrollbar for chat area */
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
         }
 
-        /* Scrollbar */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
+        .chat-messages::-webkit-scrollbar-track {
+            background: transparent;
         }
 
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: linear-gradient(135deg, var(--dark-blue) 0%, var(--medium-blue) 100%);
-            border-radius: 4px;
+        .chat-messages::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1; /* slate-300 */
+            border-radius: 3px;
         }
 
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            border-radius: 4px;
-            border: 1px solid var(--dark-blue);
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background-color: #94a3b8; /* slate-400 */
         }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
+        
+        .contact-list::-webkit-scrollbar {
+            width: 4px;
         }
-
-        /* Floating animation untuk pesan */
-        @keyframes float {
-
-            0%,
-            100% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform: translateY(-5px);
-            }
+        
+        .contact-list::-webkit-scrollbar-track {
+            background: transparent;
         }
-
-        .message-bubble:hover {
-            animation: float 2s ease-in-out infinite;
-        }
-
-        /* Mobile Toggle Button */
-        .sidebar-toggle {
-            display: none;
-            position: absolute;
-            top: 1rem;
-            left: 1rem;
-            z-index: 1050;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            color: var(--dark-blue);
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 992px) {
-            .chat-container {
-                height: 85vh;
-                margin: 1.5rem;
-                border-radius: 18px;
-            }
-
-            .message-bubble {
-                max-width: 80%;
-            }
-
-            .chat-avatar {
-                width: 42px;
-                height: 42px;
-                font-size: 1rem;
-            }
-
-            .sidebar-header {
-                padding: 1.25rem;
-            }
-
-            .chat-header {
-                padding: 1rem 1.25rem;
-            }
-
-            .chat-input-area {
-                padding: 1rem 1.25rem;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .chat-container {
-                height: 82vh;
-                margin: 1rem;
-                border-radius: 15px;
-                position: relative;
-            }
-
-            .sidebar {
-                position: absolute;
-                z-index: 10;
-                width: 100%;
-                height: 100%;
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-                border-radius: 15px 0 0 15px;
-            }
-
-            .sidebar.active {
-                transform: translateX(0);
-            }
-
-            .message-bubble {
-                max-width: 85%;
-                padding: 0.75rem 1rem;
-            }
-
-            .sidebar-toggle {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .chat-avatar {
-                width: 38px;
-                height: 38px;
-                font-size: 0.9rem;
-            }
-
-            .list-group-item {
-                padding: 0.875rem 1rem;
-            }
-
-            .sidebar-header {
-                padding: 1rem;
-            }
-
-            .sidebar-title {
-                font-size: 1.3rem;
-            }
-
-            .chat-header {
-                padding: 0.875rem 1rem;
-            }
-
-            .chat-input {
-                padding: 0.75rem 1rem;
-            }
-
-            .btn-send {
-                width: 44px;
-                height: 44px;
-            }
-
-            .empty-state {
-                padding: 2rem 1rem;
-            }
-
-            .empty-state-icon {
-                font-size: 3rem;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .chat-container {
-                height: 80vh;
-                margin: 0.75rem;
-                border-radius: 12px;
-            }
-
-            .message-bubble {
-                max-width: 90%;
-                padding: 0.625rem 0.875rem;
-            }
-
-            .chat-avatar {
-                width: 36px;
-                height: 36px;
-                font-size: 0.85rem;
-            }
-
-            .status-online {
-                width: 10px;
-                height: 10px;
-            }
-
-            .list-group-item {
-                padding: 0.75rem;
-            }
-
-            .sidebar-header {
-                padding: 0.875rem;
-            }
-
-            .sidebar-title {
-                font-size: 1.2rem;
-            }
-
-            .chat-header {
-                padding: 0.75rem;
-            }
-
-            .chat-input {
-                padding: 0.625rem 0.875rem;
-                font-size: 0.9rem;
-            }
-
-            .btn-send {
-                width: 40px;
-                height: 40px;
-                font-size: 0.9rem;
-            }
-
-            .btn-clear {
-                padding: 0.4rem 0.8rem;
-                font-size: 0.8rem;
-            }
-
-            .empty-state {
-                padding: 1.5rem 0.75rem;
-            }
-
-            .empty-state-icon {
-                font-size: 2.5rem;
-            }
-
-            .message-time {
-                font-size: 0.7rem;
-            }
-        }
-
-        @media (max-width: 400px) {
-            .chat-container {
-                height: 78vh;
-                margin: 0.5rem;
-                border-radius: 10px;
-            }
-
-            .message-bubble {
-                max-width: 95%;
-                padding: 0.5rem 0.75rem;
-            }
-
-            .chat-avatar {
-                width: 32px;
-                height: 32px;
-                font-size: 0.8rem;
-            }
-
-            .list-group-item {
-                padding: 0.625rem;
-            }
-
-            .sidebar-header {
-                padding: 0.75rem;
-            }
-
-            .sidebar-title {
-                font-size: 1.1rem;
-            }
-
-            .chat-header {
-                padding: 0.625rem;
-            }
-
-            .chat-input {
-                padding: 0.5rem 0.75rem;
-                font-size: 0.85rem;
-            }
-
-            .btn-send {
-                width: 36px;
-                height: 36px;
-                font-size: 0.8rem;
-            }
-
-            .empty-state {
-                padding: 1rem 0.5rem;
-            }
-
-            .empty-state-icon {
-                font-size: 2rem;
-            }
-        }
-
-        /* Sparkle effect seperti di landing page */
-        .sparkle {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            overflow: hidden;
-        }
-
-        /* Overlay untuk mobile saat sidebar aktif */
-        .sidebar-overlay {
-            display: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 9;
-            border-radius: 15px;
-        }
-
-        .sidebar-overlay.active {
-            display: block;
+        
+        .contact-list::-webkit-scrollbar-thumb {
+            background-color: #e2e8f0;
+            border-radius: 2px;
         }
     </style>
 
@@ -727,102 +123,113 @@
 @endpush
 
 @section('content')
-    <div class="d-flex chat-container rounded-4 shadow-lg overflow-hidden position-relative">
-        {{-- Tombol Toggle untuk Mobile --}}
-        <button class="sidebar-toggle" id="sidebarToggle">
-            <i class="fas fa-bars"></i>
-        </button>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col md:flex-row chat-container relative">
+            
+            {{-- Tombol Toggle untuk Mobile --}}
+            <button class="md:hidden absolute top-4 left-4 z-20 bg-white p-2 rounded-lg shadow-sm border border-gray-200 text-gray-600 hover:bg-gray-50 focus:outline-none" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
 
-        {{-- Overlay untuk mobile --}}
-        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+            {{-- Overlay untuk mobile --}}
+            <div class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 z-10 transition-opacity md:hidden" id="sidebarOverlay"></div>
 
-        {{-- 🔹 SIDEBAR LIST PENGGUNA --}}
-        <div class="col-12 col-md-4 sidebar d-flex flex-column">
-            <div class="sidebar-header">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 sidebar-title d-flex align-items-center gap-2">
-                        <i class="fas fa-comments"></i>
-                        <span>Pesan</span>
-                    </h5>
+            {{-- 🔹 SIDEBAR LIST PENGGUNA --}}
+            <div class="w-full md:w-1/3 lg:w-1/4 border-r border-gray-200 flex flex-col bg-white absolute md:relative z-20 h-full transition-transform duration-300 transform -translate-x-full md:translate-x-0" id="sidebar">
+                <div class="p-4 border-b border-gray-200 bg-gray-50/80 backdrop-blur-sm flex justify-between items-center h-16 md:h-auto pl-14 md:pl-4">
+                    <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                        <i class="fas fa-comments text-indigo-500"></i>
+                        Pesan
+                    </h2>
                     {{-- Tombol Hapus --}}
-                    <button id="clearChatBtn" class="btn-clear d-none" onclick="clearChat()">
-                        <i class="fas fa-trash me-1"></i> Hapus
+                    <button id="clearChatBtn" class="hidden text-xs px-2.5 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-md font-medium transition-colors" onclick="clearChat()">
+                        <i class="fas fa-trash-alt mr-1"></i> Hapus
                     </button>
                 </div>
-            </div>
 
-            <div id="userList" class="flex-grow-1 overflow-y-auto custom-scrollbar list-group list-group-flush">
-                {{-- AI Asisten --}}
-                <a href="#" onclick="openChat(0); return false;" data-user-id="0"
-                    class="list-group-item list-group-item-action d-flex align-items-center gap-3">
-                    <div class="position-relative">
-                        <div
-                            class="chat-avatar ai-avatar rounded-circle d-flex align-items-center justify-content-center fw-bold">
-                            <i class="fas fa-robot"></i>
-                        </div>
-                        <span class="status-online"></span>
-                    </div>
-                    <div class="flex-grow-1">
-                        <div class="fw-semibold text-white">Asisten AI</div>
-                        <div class="text-muted small">Selalu siap membantu Anda</div>
-                    </div>
-                </a>
-
-                {{-- Penjual --}}
-                @foreach ($users as $user)
-                    <a href="#" onclick="openChat({{ $user->id }}); return false;" data-user-id="{{ $user->id }}"
-                        class="list-group-item list-group-item-action d-flex align-items-center gap-3">
-                        <div class="position-relative">
-                            <div
-                                class="chat-avatar user-avatar rounded-circle d-flex align-items-center justify-content-center fw-bold text-white">
-                                {{ strtoupper(substr($user->name, 0, 1)) }}
+                <div id="userList" class="flex-1 overflow-y-auto contact-list">
+                    {{-- AI Asisten --}}
+                    <a href="#" onclick="openChat(0); return false;" data-user-id="0"
+                        class="contact-item block p-4 border-b border-gray-100 hover:bg-indigo-50/50 transition-colors cursor-pointer relative group">
+                        <div class="flex items-center gap-3">
+                            <div class="relative">
+                                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-500 flex items-center justify-center text-white shadow-sm group-hover:shadow transition-shadow">
+                                    <i class="fas fa-robot text-lg"></i>
+                                </div>
+                                <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-sm font-semibold text-gray-900 truncate">Asisten AI</h3>
+                                <p class="text-xs text-gray-500 truncate mt-0.5">Selalu siap membantu Anda</p>
                             </div>
                         </div>
-                        <div class="flex-grow-1">
-                            <div class="fw-semibold text-white">{{ $user->name }}</div>
-                            <div class="text-muted small text-truncate">{{ $user->email }}</div>
-                        </div>
                     </a>
-                @endforeach
-            </div>
-        </div>
 
-        {{-- 🔹 CHAT AREA --}}
-        <div class="flex-grow-1 d-flex flex-column">
-            {{-- Header --}}
-            <div id="chatHeader" class="chat-header">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="empty-state-icon">
-                        <i class="fas fa-comments"></i>
-                    </div>
-                    <div>
-                        <h6 class="mb-0 text-white fw-semibold">Pilih Percakapan</h6>
-                        <small class="text-muted">Pilih kontak untuk memulai percakapan</small>
-                    </div>
+                    {{-- Penjual --}}
+                    @foreach ($users as $user)
+                        <a href="#" onclick="openChat({{ $user->id }}); return false;" data-user-id="{{ $user->id }}"
+                            class="contact-item block p-4 border-b border-gray-100 hover:bg-indigo-50/50 transition-colors cursor-pointer group">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-sm group-hover:shadow transition-shadow flex-shrink-0">
+                                    {{ strtoupper(substr($user->name, 0, 1)) }}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between gap-1">
+                                        <h3 class="text-sm font-semibold text-gray-900 truncate">{{ $user->name }}</h3>
+                                        @if(isset($user->unread_count) && $user->unread_count > 0)
+                                            <span id="unread-badge-{{ $user->id }}" class="inline-flex items-center justify-center h-5 min-w-[20px] px-1.5 rounded-full bg-red-500 text-white text-[10px] font-bold shadow-sm ring-2 ring-white flex-shrink-0">
+                                                {{ $user->unread_count }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <p class="text-xs text-gray-500 truncate mt-0.5">{{ $user->email }}</p>
+                                </div>
+                            </div>
+                        </a>
+                    @endforeach
                 </div>
             </div>
 
-            {{-- Pesan --}}
-            <div id="chatMessages" class="flex-grow-1 overflow-y-auto custom-scrollbar p-4 chat-messages">
-                <div class="empty-state">
-                    <div class="empty-state-icon">
-                        <i class="fas fa-comment-dots"></i>
+            {{-- 🔹 CHAT AREA --}}
+            <div class="flex-1 flex flex-col h-full bg-gray-50/30">
+                {{-- Header --}}
+                <div id="chatHeader" class="p-4 border-b border-gray-200 bg-white shadow-sm z-10 flex items-center h-16 md:h-auto pl-14 md:pl-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
+                            <i class="fas fa-comment-dots"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-sm font-bold text-gray-900">Pilih Percakapan</h2>
+                            <p class="text-xs text-gray-500 mt-0.5">Pilih kontak di samping untuk memulai</p>
+                        </div>
                     </div>
-                    <p>Pilih percakapan untuk memulai chat</p>
                 </div>
-            </div>
 
-            {{-- Input --}}
-            <form id="chatForm" onsubmit="sendMessage(event)" class="chat-input-area">
-                <input type="hidden" id="receiver_id" value="">
-                <div class="d-flex gap-3 align-items-center">
-                    <input id="messageInput" type="text" class="chat-input flex-grow-1" placeholder="Ketik pesan Anda..."
-                        disabled>
-                    <button type="submit" class="btn-send" disabled>
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
+                {{-- Pesan --}}
+                <div id="chatMessages" class="flex-1 overflow-y-auto p-4 md:p-6 chat-messages">
+                    <div class="flex flex-col items-center justify-center h-full text-center text-gray-400">
+                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                            <i class="fas fa-comments text-2xl text-gray-300"></i>
+                        </div>
+                        <p class="text-sm">Pilih percakapan untuk memulai chat</p>
+                    </div>
                 </div>
-            </form>
+
+                {{-- Input --}}
+                <form id="chatForm" onsubmit="sendMessage(event)" class="p-4 bg-white border-t border-gray-200">
+                    <input type="hidden" id="receiver_id" value="">
+                    <div class="flex items-end gap-2 relative">
+                        <div class="relative flex-1">
+                            <input id="messageInput" type="text" 
+                                class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-full focus:ring-indigo-500 focus:border-indigo-500 block px-5 py-3 pr-12 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed" 
+                                placeholder="Pilih percakapan terlebih dahulu..." disabled autocomplete="off">
+                        </div>
+                        <button type="submit" class="inline-flex items-center justify-center w-11 h-11 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-95" disabled>
+                            <i class="fas fa-paper-plane text-sm -ml-0.5 mt-0.5"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -838,18 +245,23 @@
         const clearBtn = document.getElementById('clearChatBtn');
         const header = document.getElementById('chatHeader');
         const sidebarToggle = document.getElementById('sidebarToggle');
-        const sidebar = document.querySelector('.sidebar');
+        const sidebar = document.getElementById('sidebar');
         const sidebarOverlay = document.getElementById('sidebarOverlay');
 
         // Toggle sidebar untuk mobile
         function toggleSidebar() {
-            sidebar.classList.toggle('active');
-            sidebarOverlay.classList.toggle('active');
+            sidebar.classList.toggle('-translate-x-full');
+            sidebarOverlay.classList.toggle('hidden');
         }
 
         // Event listener untuk toggle sidebar
-        sidebarToggle.addEventListener('click', toggleSidebar);
-        sidebarOverlay.addEventListener('click', toggleSidebar);
+        if (sidebarToggle && sidebarOverlay) {
+            sidebarToggle.addEventListener('click', toggleSidebar);
+            sidebarOverlay.addEventListener('click', toggleSidebar);
+        }
+
+        // Style for active state
+        const activeClass = 'bg-indigo-50 border-l-4 border-indigo-500';
 
         // Inisialisasi Echo
         try {
@@ -877,33 +289,40 @@
             });
         }
 
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         function createBubble(chat) {
             const senderId = chat.sender_id || (chat.sender ? chat.sender.id : null);
             const isMine = senderId === authUserId;
             const isAI = chat.is_ai === true || chat.is_ai === 1;
 
             const wrapper = document.createElement('div');
-            wrapper.className = `d-flex ${isMine ? 'justify-content-end' : 'justify-content-start'} mb-3`;
+            wrapper.className = `flex ${isMine ? 'justify-end' : 'justify-start'} mb-4`;
 
             const bubble = document.createElement('div');
-            let bubbleClass = 'message-bubble bubble-appear ';
+            let bubbleClass = 'message-bubble bubble-appear px-4 py-2.5 shadow-sm ';
 
             if (isAI) {
-                bubbleClass += 'message-ai';
+                bubbleClass += 'message-ai border border-amber-200';
             } else if (isMine) {
                 bubbleClass += 'message-mine';
             } else {
-                bubbleClass += 'message-other';
+                bubbleClass += 'message-other border border-gray-200';
             }
 
             bubble.className = bubbleClass;
 
             const timestampText = formatTime(chat.created_at ?? new Date());
-            const timestampClass = isMine || isAI ? 'text-dark' : 'text-muted';
+            const timestampClass = isMine ? 'text-indigo-200' : (isAI ? 'text-amber-700/70' : 'text-gray-400');
 
             bubble.innerHTML = `
-                            <div style="line-height: 1.5;">${chat.message}</div>
-                            <div class="message-time text-end ${timestampClass}">${timestampText}</div>
+                            <div class="text-sm leading-relaxed">${escapeHtml(chat.message)}</div>
+                            <div class="text-[10px] text-right mt-1 ${timestampClass}">${timestampText}</div>
                         `;
 
             wrapper.appendChild(bubble);
@@ -922,23 +341,25 @@
                 msgInput.placeholder = "Ketik pesan Anda...";
                 msgInput.focus();
             } else {
-                msgInput.placeholder = "Pilih chat untuk memulai percakapan";
+                msgInput.placeholder = "Pilih percakapan terlebih dahulu...";
             }
         }
 
         function setActiveChat(userId) {
-            document.querySelectorAll('.list-group-item').forEach(item => {
-                item.classList.remove('active');
+            document.querySelectorAll('.contact-item').forEach(item => {
+                item.classList.remove('bg-indigo-50', 'border-l-4', 'border-indigo-500');
+                item.classList.add('border-b', 'border-gray-100');
             });
             const activeItem = document.querySelector(`[data-user-id="${userId}"]`);
             if (activeItem) {
-                activeItem.classList.add('active');
+                activeItem.classList.add('bg-indigo-50', 'border-l-4', 'border-indigo-500');
+                activeItem.classList.remove('border-b', 'border-gray-100');
             }
         }
 
         async function openChat(userId) {
             // Tutup sidebar di mobile saat chat dibuka
-            if (window.innerWidth <= 768) {
+            if (window.innerWidth <= 768 && !sidebar.classList.contains('-translate-x-full')) {
                 toggleSidebar();
             }
 
@@ -947,16 +368,22 @@
             setFormEnabled(true);
             setActiveChat(userId);
 
-            clearBtn.classList.toggle('d-none', userId !== 0);
+            if(userId === 0) {
+                clearBtn.classList.remove('hidden');
+                clearBtn.classList.add('block');
+            } else {
+                clearBtn.classList.add('hidden');
+                clearBtn.classList.remove('block');
+            }
 
             chatBox.innerHTML = `
-                            <div class="empty-state">
-                                <div class="loading-dots">
+                            <div class="flex flex-col items-center justify-center h-full text-center text-gray-500">
+                                <div class="loading-dots mb-4">
                                     <span></span>
                                     <span></span>
                                     <span></span>
                                 </div>
-                                <p class="mt-3">Memuat percakapan...</p>
+                                <p class="text-sm">Memuat percakapan...</p>
                             </div>
                         `;
 
@@ -965,32 +392,39 @@
             // Set header
             if (userId === 0) {
                 header.innerHTML = `
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="chat-avatar ai-avatar rounded-circle d-flex align-items-center justify-content-center fw-bold">
-                                        <i class="fas fa-robot"></i>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-500 flex items-center justify-center text-white shadow-sm relative">
+                                        <i class="fas fa-robot text-sm"></i>
+                                        <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></span>
                                     </div>
                                     <div>
-                                        <h6 class="mb-0 text-white fw-semibold">Asisten AI</h6>
-                                        <small class="text-success">Online • Selalu Tersedia</small>
+                                        <h2 class="text-sm font-bold text-gray-900">Asisten AI</h2>
+                                        <p class="text-xs text-green-600 mt-0.5 font-medium">Online • Selalu Tersedia</p>
                                     </div>
                                 </div>
                             `;
             } else {
                 const userButton = document.querySelector(`a[onclick="openChat(${userId}); return false;"]`);
-                const userName = userButton ? userButton.querySelector('.fw-semibold').textContent : `User #${userId}`;
+                const userName = userButton ? userButton.querySelector('h3').textContent : `User #${userId}`;
                 const userInitial = userName.charAt(0).toUpperCase();
 
                 header.innerHTML = `
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="chat-avatar user-avatar rounded-circle d-flex align-items-center justify-content-center fw-bold text-white">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-sm">
                                         ${userInitial}
                                     </div>
                                     <div>
-                                        <h6 class="mb-0 text-white fw-semibold">${userName}</h6>
-                                        <small class="text-muted">Penjual</small>
+                                        <h2 class="text-sm font-bold text-gray-900">${userName}</h2>
+                                        <p class="text-xs text-gray-500 mt-0.5">Penjual</p>
                                     </div>
                                 </div>
                             `;
+            }
+
+            // Hapus badge unread untuk kontak yang baru dibuka
+            const contactBadge = document.getElementById(`unread-badge-${userId}`);
+            if (contactBadge) {
+                contactBadge.remove();
             }
 
             try {
@@ -1000,15 +434,29 @@
                 const data = await res.json();
                 if (data.status !== 'ok') throw new Error(data.message || 'Format data tidak valid');
 
+                // Sinkronisasi badge unread di navbar dan mobile dock
+                if (typeof data.total_unread !== 'undefined') {
+                    const globalBadges = document.querySelectorAll('a[href*="chat"] span.rounded-full');
+                    globalBadges.forEach(badge => {
+                        if (data.total_unread > 0) {
+                            badge.textContent = data.total_unread;
+                            badge.classList.remove('hidden');
+                        } else {
+                            badge.remove();
+                        }
+                    });
+                }
+
                 chatBox.innerHTML = '';
 
                 if (data.chats.length === 0) {
                     chatBox.innerHTML = `
-                                    <div class="empty-state">
-                                        <div class="empty-state-icon">
-                                            <i class="fas fa-comment-slash"></i>
+                                    <div class="flex flex-col items-center justify-center h-full text-center text-gray-400">
+                                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                                            <i class="fas fa-paper-plane text-2xl text-gray-300"></i>
                                         </div>
-                                        <p>Belum ada pesan. Mulai percakapan!</p>
+                                        <p class="text-sm font-medium text-gray-600">Belum ada pesan</p>
+                                        <p class="text-xs mt-1">Kirim pesan pertama Anda sekarang!</p>
                                     </div>
                                 `;
                 } else {
@@ -1030,12 +478,12 @@
             } catch (err) {
                 console.error("❌ Gagal memuat riwayat:", err);
                 chatBox.innerHTML = `
-                                <div class="empty-state">
-                                    <div class="empty-state-icon text-danger">
-                                        <i class="fas fa-exclamation-triangle"></i>
+                                <div class="flex flex-col items-center justify-center h-full text-center text-red-500">
+                                    <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-4">
+                                        <i class="fas fa-exclamation-triangle text-2xl text-red-400"></i>
                                     </div>
-                                    <p class="text-danger">Gagal memuat percakapan</p>
-                                    <small class="text-muted">${err.message}</small>
+                                    <p class="text-sm font-medium">Gagal memuat percakapan</p>
+                                    <p class="text-xs mt-1 text-red-400">${err.message}</p>
                                 </div>
                             `;
             }
@@ -1046,6 +494,12 @@
             const msg = msgInput.value.trim();
             const receiver = document.getElementById('receiver_id').value;
             if (!msg || receiver === '') return;
+
+            // Hapus empty state jika ada
+            const emptyState = chatBox.querySelector('.flex-col.items-center.justify-center.h-full');
+            if (emptyState) {
+                emptyState.remove();
+            }
 
             const optimisticChat = {
                 sender_id: authUserId,
@@ -1058,7 +512,7 @@
             appendBubble(myBubble);
             msgInput.value = '';
 
-            const timestampElement = myBubble.querySelector('.message-time');
+            const timestampElement = myBubble.querySelector('.text-\\[10px\\]');
 
             try {
                 const res = await fetch(`/pembeli/chat/send`, {
@@ -1087,7 +541,7 @@
                 console.error("❌ Gagal mengirim:", error.message);
                 if (timestampElement) {
                     timestampElement.textContent = `(Gagal: ${error.message})`;
-                    timestampElement.classList.add('text-danger', 'fw-bold');
+                    timestampElement.classList.add('text-red-300', 'font-bold');
                 }
             }
         }
@@ -1103,11 +557,11 @@
                 const data = await res.json();
                 if (data.message) {
                     chatBox.innerHTML = `
-                                    <div class="empty-state">
-                                        <div class="empty-state-icon">
-                                            <i class="fas fa-trash"></i>
+                                    <div class="flex flex-col items-center justify-center h-full text-center text-gray-400">
+                                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                                            <i class="fas fa-trash-alt text-2xl text-gray-300"></i>
                                         </div>
-                                        <p>Semua riwayat chat AI telah dihapus</p>
+                                        <p class="text-sm font-medium text-gray-600">Riwayat chat telah dihapus</p>
                                     </div>
                                 `;
                 }
@@ -1130,8 +584,10 @@
             window.addEventListener('resize', function () {
                 // Jika ukuran layar > 768px, pastikan sidebar terlihat
                 if (window.innerWidth > 768) {
-                    sidebar.classList.remove('active');
-                    sidebarOverlay.classList.remove('active');
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebarOverlay.classList.add('hidden');
+                } else if(!sidebar.classList.contains('-translate-x-full') && sidebarOverlay.classList.contains('hidden')){
+                     sidebar.classList.add('-translate-x-full');
                 }
             });
         });

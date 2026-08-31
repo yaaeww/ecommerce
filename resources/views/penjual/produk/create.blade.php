@@ -2,415 +2,179 @@
 
 @section('page_title', 'Tambah Produk')
 
-@section('title')
-    <i class="fas fa-plus-circle me-2"></i> Tambah Produk
-@endsection
-
 @section('content')
-    <style>
-        .product-form-container {
-            background: linear-gradient(135deg, rgba(10, 22, 40, 0.8) 0%, rgba(26, 58, 95, 0.9) 100%);
-            border: 2px solid rgba(255, 215, 0, 0.3);
-            border-radius: 15px;
-            padding: 30px;
-            backdrop-filter: blur(10px);
-            margin-bottom: 50px;
-            /* Increased margin bottom */
-            position: relative;
-            min-height: auto;
-            overflow: visible;
-        }
+<div class="max-w-4xl mx-auto space-y-6">
 
-        .page-container {
-            padding-bottom: 80px;
-            /* Added padding bottom to ensure space for buttons */
-        }
-
-        .text-theme {
-            color: #e0e0e0 !important;
-        }
-
-        .text-gold {
-            color: var(--gold) !important;
-        }
-
-        .form-control {
-            background: rgba(26, 58, 95, 0.6);
-            border: 2px solid rgba(255, 215, 0, 0.2);
-            border-radius: 8px;
-            color: #e0e0e0;
-            padding: 12px 15px;
-            transition: all 0.3s ease;
-        }
-
-        .form-control:focus {
-            background: rgba(26, 58, 95, 0.8);
-            border-color: var(--gold);
-            color: #e0e0e0;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-            outline: none;
-        }
-
-        .form-control::placeholder {
-            color: #a0a0a0;
-        }
-
-        .form-label {
-            font-weight: 600;
-            color: var(--gold);
-            margin-bottom: 8px;
-            font-size: 1rem;
-        }
-
-        .alert-danger {
-            background: linear-gradient(135deg, rgba(220, 53, 69, 0.2) 0%, rgba(232, 62, 140, 0.3) 100%);
-            border: 2px solid rgba(220, 53, 69, 0.5);
-            border-radius: 12px;
-            backdrop-filter: blur(10px);
-            color: #e0e0e0;
-            margin-bottom: 25px;
-        }
-
-        .alert-danger ul {
-            margin-bottom: 0;
-        }
-
-        .alert-danger li {
-            list-style-type: none;
-            position: relative;
-            padding-left: 20px;
-        }
-
-        .alert-danger li::before {
-            content: "⚠";
-            position: absolute;
-            left: 0;
-            color: #ff6b6b;
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #28a745, #20c997);
-            border: none;
-            color: white;
-            font-weight: 700;
-            padding: 12px 35px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
-            font-size: 1.1rem;
-            margin: 10px 5px;
-        }
-
-        .btn-success:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.6);
-            background: linear-gradient(135deg, #20c997, #28a745);
-            color: white;
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, #6c757d, #868e96);
-            border: none;
-            color: white;
-            font-weight: 700;
-            padding: 12px 35px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4);
-            font-size: 1.1rem;
-            margin: 10px 5px;
-        }
-
-        .btn-secondary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(108, 117, 125, 0.6);
-            background: linear-gradient(135deg, #868e96, #6c757d);
-            color: white;
-        }
-
-        .discount-section {
-            background: linear-gradient(135deg, rgba(26, 58, 95, 0.6) 0%, rgba(42, 74, 127, 0.7) 100%);
-            border: 2px solid rgba(255, 215, 0, 0.3);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 25px 0;
-            backdrop-filter: blur(10px);
-        }
-
-        .discount-section legend {
-            font-weight: 600;
-            color: var(--gold);
-            font-size: 1.1rem;
-            padding: 0 10px;
-            width: auto;
-        }
-
-        .image-preview {
-            max-width: 100%;
-            max-height: 300px;
-            border: 2px solid rgba(255, 215, 0, 0.3);
-            border-radius: 8px;
-            padding: 5px;
-            background: rgba(26, 58, 95, 0.6);
-            display: none;
-            margin-top: 10px;
-        }
-
-        .image-preview-container {
-            text-align: center;
-        }
-
-        .file-input-label {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            color: var(--dark-blue);
-            padding: 10px 25px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-block;
-            font-weight: 600;
-            margin-bottom: 10px;
-            font-size: 1rem;
-        }
-
-        .file-input-label:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        select.form-control {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23ffd700' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 15px center;
-            background-size: 16px;
-            padding-right: 40px;
-        }
-
-        .section-title {
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 30px;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-align: center;
-        }
-
-        .button-container {
-            margin-top: 40px;
-            padding-top: 25px;
-            border-top: 1px solid rgba(255, 215, 0, 0.2);
-            text-align: center;
-            position: relative;
-            z-index: 10;
-        }
-
-        /* Ensure content doesn't get cut off */
-        .main-content-wrapper {
-            min-height: calc(100vh - 200px);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-content {
-            flex: 1;
-        }
-
-        /* Mobile responsiveness */
-        @media (max-width: 768px) {
-            .product-form-container {
-                padding: 20px 15px;
-                margin-bottom: 40px;
-            }
-
-            .button-container {
-                margin-top: 30px;
-                padding-top: 20px;
-            }
-
-            .btn-success,
-            .btn-secondary {
-                padding: 12px 25px;
-                font-size: 1rem;
-                display: block;
-                width: 100%;
-                margin: 8px 0;
-            }
-
-            .page-container {
-                padding-bottom: 60px;
-            }
-        }
-    </style>
-
-    <div class="container page-container">
-        <h2 class="section-title"><i class="fas fa-plus-circle me-3"></i>Tambah Produk Baru</h2>
-
-        <div class="product-form-container">
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <h5 class="text-gold mb-3"><i class="fas fa-exclamation-triangle me-2"></i>Terjadi Kesalahan</h5>
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
-            <div class="form-content">
-                <form action="{{ route('penjual.produk.store') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-
-                    {{-- Kategori Produk --}}
-                    <div class="form-group">
-                        <label for="kategori_produk_id" class="form-label">
-                            <i class="fas fa-tags me-2"></i>Kategori Produk
-                        </label>
-                        <select name="kategori_produk_id" id="kategori_produk_id" class="form-control" required>
-                            <option value="">Pilih Kategori</option>
-                            @foreach($kategoriProduks as $kategori)
-                                <option value="{{ $kategori->id }}"
-                                    {{ old('kategori_produk_id') == $kategori->id ? 'selected' : '' }}>
-                                    {{ $kategori->nama }}
-                                </option>
-                                @foreach ($kategori->children as $sub)
-                                    <option value="{{ $sub->id }}" {{ old('kategori_produk_id') == $sub->id ? 'selected' : '' }}>
-                                        — {{ $sub->nama }}
-                                    </option>
-                                @endforeach
-                            @endforeach
-                        </select>
-                    </div>
-
-                    {{-- Nama Produk --}}
-                    <div class="form-group">
-                        <label for="nama" class="form-label">
-                            <i class="fas fa-cube me-2"></i>Nama Produk
-                        </label>
-                        <input type="text" name="nama" id="nama" class="form-control" value="{{ old('nama') }}"
-                            placeholder="Masukkan nama produk" required>
-                    </div>
-
-                    {{-- Deskripsi Produk --}}
-                    <div class="form-group">
-                        <label for="deskripsi" class="form-label">
-                            <i class="fas fa-align-left me-2"></i>Deskripsi Produk
-                        </label>
-                        <textarea name="deskripsi" id="deskripsi" class="form-control" rows="5"
-                            placeholder="Deskripsikan produk Anda...">{{ old('deskripsi') }}</textarea>
-                    </div>
-
-                    <div class="row">
-                        {{-- Harga Produk --}}
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="harga" class="form-label">
-                                    <i class="fas fa-tag me-2"></i>Harga Produk (Rp)
-                                </label>
-                                <input type="number" name="harga" id="harga" class="form-control" value="{{ old('harga') }}"
-                                    min="0" placeholder="0" required>
-                            </div>
-                        </div>
-
-                        {{-- Stok Produk --}}
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="stok" class="form-label">
-                                    <i class="fas fa-boxes me-2"></i>Stok Produk
-                                </label>
-                                <input type="number" name="stok" id="stok" class="form-control" value="{{ old('stok') }}"
-                                    min="0" placeholder="0" required>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Gambar Produk --}}
-                    <div class="form-group">
-                        <label class="form-label d-block">
-                            <i class="fas fa-image me-2"></i>Gambar Produk
-                        </label>
-                        <label for="gambar" class="file-input-label">
-                            <i class="fas fa-upload me-2"></i>Pilih Gambar
-                        </label>
-                        <input type="file" name="gambar" id="gambar" class="d-none" accept="image/*"
-                            onchange="previewImage(event)">
-                        <div class="image-preview-container">
-                            <img id="preview" src="#" alt="Preview Gambar" class="image-preview">
-                        </div>
-                        <small class="text-muted d-block mt-2">Format: JPG, PNG, JPEG | Maksimal: 2MB</small>
-                    </div>
-
-                    {{-- Diskon Produk --}}
-                    <fieldset class="discount-section">
-                        <legend><i class="fas fa-percentage me-2"></i>Diskon (Opsional)</legend>
-
-                        <div class="form-group">
-                            <label for="persen_diskon" class="form-label">Persen Diskon (%)</label>
-                            <input type="number" name="persen_diskon" id="persen_diskon" class="form-control"
-                                value="{{ old('persen_diskon') }}" min="0" max="100" placeholder="Contoh: 10">
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="tanggal_mulai" class="form-label">Tanggal Mulai Diskon</label>
-                                    <input type="date" name="tanggal_mulai" id="tanggal_mulai" class="form-control"
-                                        value="{{ old('tanggal_mulai') }}">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="tanggal_berakhir" class="form-label">Tanggal Berakhir Diskon</label>
-                                    <input type="date" name="tanggal_berakhir" id="tanggal_berakhir" class="form-control"
-                                        value="{{ old('tanggal_berakhir') }}">
-                                </div>
-                            </div>
-                        </div>
-
-                        <small class="text-muted">
-                            <i class="fas fa-info-circle me-1"></i>
-                            Isi semua field diskon jika ingin memberikan diskon pada produk ini.
-                        </small>
-                    </fieldset>
-
-                    <div class="button-container">
-                        <button type="submit" class="btn btn-success btn-lg">
-                            <i class="fas fa-save me-2"></i>Simpan Produk
-                        </button>
-                        <a href="{{ route('penjual.produk.index') }}" class="btn btn-secondary btn-lg">
-                            <i class="fas fa-arrow-left me-2"></i>Kembali
-                        </a>
-                    </div>
-                </form>
-            </div>
+    <!-- Header Section -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h2 class="text-2xl font-bold text-slate-900 font-display">Tambah Produk Baru</h2>
+            <p class="text-sm text-slate-500 mt-1">Tambahkan produk baru ke dalam katalog toko Anda</p>
         </div>
+        <a href="{{ route('penjual.produk.index') }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-sm rounded-xl transition border border-slate-200">
+            <i class="fas fa-arrow-left"></i>
+            Kembali
+        </a>
     </div>
 
-    {{-- Preview Gambar Script --}}
-    <script>
-        function previewImage(event) {
+    @if ($errors->any())
+        <div class="p-4 rounded-xl bg-rose-50 border border-rose-200">
+            <div class="flex items-center gap-2 text-rose-700 font-bold mb-2">
+                <i class="fas fa-exclamation-triangle"></i> Terjadi Kesalahan
+            </div>
+            <ul class="list-disc list-inside text-sm text-rose-600 space-y-1">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <form action="{{ route('penjual.produk.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+        @csrf
+
+        <div class="card bg-white border border-slate-200/80 shadow-sm rounded-2xl overflow-hidden p-6 sm:p-8 space-y-6">
+            
+            <!-- Kategori -->
+            <div>
+                <label for="kategori_produk_id" class="block text-sm font-bold text-slate-700 mb-2">Kategori Produk <span class="text-rose-500">*</span></label>
+                <select name="kategori_produk_id" id="kategori_produk_id" class="w-full rounded-xl border-slate-200 bg-slate-50 text-sm focus:border-brand-500 focus:ring-brand-500 transition shadow-sm px-4 py-3" required>
+                    <option value="">Pilih Kategori</option>
+                    @foreach($kategoriProduks as $kategori)
+                        <option value="{{ $kategori->id }}" {{ old('kategori_produk_id') == $kategori->id ? 'selected' : '' }}>
+                            {{ $kategori->nama }}
+                        </option>
+                        @foreach ($kategori->children as $sub)
+                            <option value="{{ $sub->id }}" {{ old('kategori_produk_id') == $sub->id ? 'selected' : '' }}>
+                                — {{ $sub->nama }}
+                            </option>
+                        @endforeach
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Nama -->
+            <div>
+                <label for="nama" class="block text-sm font-bold text-slate-700 mb-2">Nama Produk <span class="text-rose-500">*</span></label>
+                <input type="text" name="nama" id="nama" class="w-full rounded-xl border-slate-200 bg-slate-50 text-sm focus:border-brand-500 focus:ring-brand-500 transition shadow-sm px-4 py-3" value="{{ old('nama') }}" placeholder="Contoh: Mangga Harum Manis Premium" required>
+            </div>
+
+            <!-- Deskripsi -->
+            <div>
+                <label for="deskripsi" class="block text-sm font-bold text-slate-700 mb-2">Deskripsi Produk</label>
+                <textarea name="deskripsi" id="deskripsi" rows="5" class="w-full rounded-xl border-slate-200 bg-slate-50 text-sm focus:border-brand-500 focus:ring-brand-500 transition shadow-sm px-4 py-3" placeholder="Jelaskan detail produk Anda di sini...">{{ old('deskripsi') }}</textarea>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <!-- Harga -->
+                <div>
+                    <label for="harga" class="block text-sm font-bold text-slate-700 mb-2">Harga (Rp) <span class="text-rose-500">*</span></label>
+                    <input type="number" name="harga" id="harga" min="0" class="w-full rounded-xl border-slate-200 bg-slate-50 text-sm focus:border-brand-500 focus:ring-brand-500 transition shadow-sm px-4 py-3" value="{{ old('harga') }}" placeholder="0" required>
+                </div>
+                <!-- Stok -->
+                <div>
+                    <label for="stok" class="block text-sm font-bold text-slate-700 mb-2">Stok <span class="text-rose-500">*</span></label>
+                    <input type="number" name="stok" id="stok" min="0" class="w-full rounded-xl border-slate-200 bg-slate-50 text-sm focus:border-brand-500 focus:ring-brand-500 transition shadow-sm px-4 py-3" value="{{ old('stok') }}" placeholder="0" required>
+                </div>
+            </div>
+
+            <!-- Gambar -->
+            <div>
+                <label class="block text-sm font-bold text-slate-700 mb-2">Gambar Produk</label>
+                
+                <div class="mt-2 flex justify-center rounded-xl border border-dashed border-slate-300 px-6 py-8 bg-slate-50 relative group hover:bg-slate-100 transition cursor-pointer" id="drop-area">
+                    <div class="text-center" id="upload-content">
+                        <i class="fas fa-cloud-upload-alt mx-auto h-12 w-12 text-slate-300 group-hover:text-brand-500 transition text-4xl mb-3"></i>
+                        <div class="mt-4 flex text-sm leading-6 text-slate-600 justify-center">
+                            <label for="gambar" class="relative cursor-pointer rounded-md font-bold text-brand-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-brand-600 focus-within:ring-offset-2 hover:text-brand-500">
+                                <span>Upload gambar</span>
+                                <input id="gambar" name="gambar" type="file" class="sr-only" accept="image/*" onchange="previewImage(event)">
+                            </label>
+                            <p class="pl-1">atau drag and drop</p>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1">PNG, JPG, GIF up to 2MB</p>
+                    </div>
+                    
+                    <div id="image-preview-container" class="hidden w-full">
+                        <div class="relative inline-block">
+                            <img id="preview" src="#" alt="Preview" class="max-h-48 rounded-lg shadow-sm border border-slate-200 object-cover">
+                            <button type="button" class="absolute -top-2 -right-2 bg-rose-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-sm hover:bg-rose-600 transition" onclick="clearImagePreview()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-slate-100 my-6"></div>
+
+            <!-- Diskon Section -->
+            <div>
+                <div class="flex items-center gap-2 mb-4">
+                    <i class="fas fa-tags text-brand-500"></i>
+                    <h3 class="font-bold text-slate-800">Pengaturan Diskon <span class="text-xs font-normal text-slate-500 ml-1">(Opsional)</span></h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label for="persen_diskon" class="block text-sm font-bold text-slate-700 mb-2">Persen Diskon (%)</label>
+                        <input type="number" name="persen_diskon" id="persen_diskon" class="w-full rounded-xl border-slate-200 bg-slate-50 text-sm focus:border-brand-500 focus:ring-brand-500 transition shadow-sm px-4 py-3" value="{{ old('persen_diskon') }}" min="0" max="100" placeholder="0">
+                    </div>
+                    <div>
+                        <label for="tanggal_mulai" class="block text-sm font-bold text-slate-700 mb-2">Tanggal Mulai</label>
+                        <input type="date" name="tanggal_mulai" id="tanggal_mulai" class="w-full rounded-xl border-slate-200 bg-slate-50 text-sm focus:border-brand-500 focus:ring-brand-500 transition shadow-sm px-4 py-3 text-slate-700" value="{{ old('tanggal_mulai') }}">
+                    </div>
+                    <div>
+                        <label for="tanggal_berakhir" class="block text-sm font-bold text-slate-700 mb-2">Tanggal Berakhir</label>
+                        <input type="date" name="tanggal_berakhir" id="tanggal_berakhir" class="w-full rounded-xl border-slate-200 bg-slate-50 text-sm focus:border-brand-500 focus:ring-brand-500 transition shadow-sm px-4 py-3 text-slate-700" value="{{ old('tanggal_berakhir') }}">
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="flex justify-end gap-3 mt-6">
+            <button type="submit" class="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm rounded-xl transition shadow-sm hover:shadow flex items-center gap-2">
+                <i class="fas fa-save"></i> Simpan Produk
+            </button>
+        </div>
+
+    </form>
+</div>
+
+<script>
+    const fileInput = document.getElementById('gambar');
+    const uploadContent = document.getElementById('upload-content');
+    const previewContainer = document.getElementById('image-preview-container');
+    const previewImageEl = document.getElementById('preview');
+
+    function previewImage(event) {
+        if(event.target.files && event.target.files[0]) {
             const reader = new FileReader();
-            reader.onload = function () {
-                const output = document.getElementById('preview');
-                output.src = reader.result;
-                output.style.display = 'block';
+            reader.onload = function() {
+                previewImageEl.src = reader.result;
+                uploadContent.classList.add('hidden');
+                previewContainer.classList.remove('hidden');
+                previewContainer.classList.add('flex', 'justify-center');
             };
             reader.readAsDataURL(event.target.files[0]);
         }
+    }
 
-        // Tambahkan nilai old untuk form jika ada
-        document.addEventListener('DOMContentLoaded', function () {
-            @if(old('gambar'))
-                // Jika ada gambar sebelumnya, tampilkan preview (ini hanya contoh, biasanya tidak bisa menampilkan file yang sudah diupload)
-                console.log('Data sebelumnya tersedia');
-            @endif
-        });
-    </script>
+    function clearImagePreview() {
+        fileInput.value = '';
+        previewImageEl.src = '#';
+        previewContainer.classList.add('hidden');
+        previewContainer.classList.remove('flex', 'justify-center');
+        uploadContent.classList.remove('hidden');
+    }
+    
+    // Allow clicking the drop area to trigger file input
+    document.getElementById('drop-area').addEventListener('click', function(e) {
+        // Prevent triggering if they clicked the clear button or the file input directly
+        if(e.target.tagName !== 'BUTTON' && e.target.tagName !== 'I' && e.target.tagName !== 'INPUT' && !previewContainer.classList.contains('flex')) {
+            fileInput.click();
+        }
+    });
+</script>
 @endsection

@@ -47,7 +47,7 @@ class ProdukPenjualController extends Controller
         $request->validate([
             'kategori_produk_id' => 'required|exists:kategori_produks,id',
             'nama' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
+            'deskripsi' => 'nullable|string|max:5000',
             'harga' => 'required|numeric|min:0',
             'stok' => 'required|integer|min:0',
             'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
@@ -84,7 +84,9 @@ class ProdukPenjualController extends Controller
 
     public function edit($id)
     {
-        $produk = Produk::with('diskon')->findOrFail($id);
+        if ($redirect = $this->ensureUserHasUMKM()) return $redirect;
+        $produk = $this->findProdukByUser($id);
+        $produk->load('diskon');
         $kategoriUtamas = KategoriProduk::whereNull('parent_id')->get();
 
         $subkategoris = KategoriProduk::where('parent_id', $produk->kategori->parent_id ?? $produk->kategori->id)->get();
@@ -101,7 +103,7 @@ class ProdukPenjualController extends Controller
         $request->validate([
             'kategori_produk_id' => 'required|exists:kategori_produks,id',
             'nama' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
+            'deskripsi' => 'nullable|string|max:5000',
             'harga' => 'required|numeric|min:0',
             'stok' => 'required|integer|min:0',
             'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',

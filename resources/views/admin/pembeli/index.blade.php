@@ -1,113 +1,77 @@
 @extends('layouts.app')
-@section('page_title', 'Kelola Akun Pembeli')
 
-@section('title')
-    <i class="fas fa-users me-2"></i> Kelola Akun Pembeli
-@endsection
+@section('page_title', 'Akun Pembeli')
 
 @section('content')
-<div class="container mt-5 pt-5">
-    <!-- Hero Section -->
-    <section class="hero mb-5">
-        <div class="sparkle"></div>
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-8">
-                    <div class="hero-content">
-                        <h1>Kelola Akun Pembeli</h1>
-                        <p class="mb-3">Kelola semua akun pembeli dalam platform UMKM Indramayu</p>
-                        <div class="d-flex flex-wrap gap-3 align-items-center">
-                            <span class="badge bg-gold text-dark fs-6 px-3 py-2">
-                                <i class="fas fa-user-shield me-2"></i>Admin Dashboard
-                            </span>
-                            <span class="text-gold"><i class="fas fa-shopping-cart me-2"></i>{{ $pembeli->count() }} Akun Pembeli</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 text-center">
-                    <div class="feature-icon">
-                        <i class="fas fa-users fa-6x text-gold"></i>
-                    </div>
-                </div>
-            </div>
+<div class="space-y-6">
+    
+    <!-- Top Action Bar -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h2 class="text-xl font-extrabold text-slate-900 tracking-tight font-display">Manajemen Akun Pembeli</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Daftar pelanggan dan pembeli retail komoditas Indramayu</p>
         </div>
-    </section>
+        <div class="flex items-center gap-2">
+            <span class="px-3.5 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 shadow-sm">
+                Total: <span class="text-brand-600 font-extrabold">{{ $pembeli->count() }}</span> Akun
+            </span>
+        </div>
+    </div>
 
-    <!-- Tabel Akun Pembeli -->
-    <section class="container mb-5">
-
-        <div class="table-container">
-            <table class="custom-table">
+    <!-- Table Card -->
+    <div class="card bg-white border border-slate-200/80 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="table w-full text-left">
                 <thead>
                     <tr>
-                        <th>Pembeli</th>
-                        <th>Kontak</th>
-                        <th class="text-center">Aktivitas</th>
-                        <th class="text-center">Status</th>
-                        <th class="text-center">Aksi</th>
+                        <th class="w-16">No</th>
+                        <th>Nama & Profil</th>
+                        <th>Email Akun</th>
+                        <th>Status</th>
+                        <th>Terdaftar Sejak</th>
+                        <th class="text-center w-28">Aksi</th>
                     </tr>
                 </thead>
-                <tbody>
-                    @forelse($pembeli as $user)
-                        <tr>
-                            <td>
-                                <div class="user-info">
-                                    <div class="user-avatar">
-                                        <i class="fas fa-user-circle"></i>
-                                    </div>
-                                    <div class="user-details">
-                                        <h5 class="user-name">{{ $user->name }}</h5>
-                                        <span class="user-role">Pembeli</span>
-                                    </div>
-                                </div>
+                <tbody class="divide-y divide-slate-100">
+                    @forelse($pembeli as $index => $user)
+                        <tr class="hover:bg-slate-50/70 transition">
+                            <td class="text-xs text-slate-400 font-bold">
+                                {{ $index + 1 }}
                             </td>
                             <td>
-                                <div class="contact-info">
-                                    <div class="email">
-                                        <i class="fas fa-envelope me-2 text-gold"></i>
-                                        {{ $user->email }}
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0">
+                                        {{ strtoupper(substr($user->name, 0, 2)) }}
                                     </div>
-                                    <div class="join-date mt-1">
-                                        <i class="fas fa-calendar me-2 text-gold"></i>
-                                        Bergabung {{ $user->created_at->diffForHumans() }}
+                                    <div>
+                                        <h4 class="font-bold text-xs text-slate-900">{{ $user->name }}</h4>
+                                        <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600">
+                                            Pembeli Retail
+                                        </span>
                                     </div>
                                 </div>
                             </td>
-                            <td class="text-center">
-                                <div class="activity-info">
-                                    <div class="order-count">
-                                        <i class="fas fa-shopping-bag me-1 text-gold"></i>
-                                        {{ $user->orders->count() }} Pesanan
-                                    </div>
-                                    @if($user->orders->count() > 0)
-                                    <div class="last-order mt-1">
-                                        <small>Terakhir: {{ $user->orders->last()->created_at->diffForHumans() }}</small>
-                                    </div>
-                                    @endif
-                                </div>
+                            <td>
+                                <span class="text-xs font-semibold text-slate-700">{{ $user->email }}</span>
+                            </td>
+                            <td>
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                    Aktif
+                                </span>
+                            </td>
+                            <td>
+                                <span class="text-xs text-slate-500">{{ $user->created_at ? $user->created_at->format('d M Y') : '-' }}</span>
                             </td>
                             <td class="text-center">
-                                @if ($user->orders->count() > 0)
-                                    <span class="status-badge active">
-                                        <i class="fas fa-check-circle me-1"></i>Aktif
-                                    </span>
-                                @else
-                                    <span class="status-badge inactive">
-                                        <i class="fas fa-clock me-1"></i>Belum Aktif
-                                    </span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                <div class="action-buttons">
-                                    <a href="{{ route('admin.pembeli.edit', $user->id) }}" class="btn-edit">
-                                        <i class="fas fa-edit me-1"></i>Edit
+                                <div class="flex items-center justify-center gap-2">
+                                    <a href="{{ route('admin.pembeli.edit', $user->id) }}" class="p-2 text-slate-500 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition" title="Edit Akun">
+                                        <i class="fas fa-pen-to-square text-xs"></i>
                                     </a>
-                                    <form action="{{ route('admin.pembeli.destroy', $user->id) }}" method="POST" 
-                                          onsubmit="return confirm('Yakin ingin menghapus akun ini?')">
+                                    <form action="{{ route('admin.pembeli.destroy', $user->id) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus akun pembeli {{ addslashes($user->name) }}?')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn-delete">
-                                            <i class="fas fa-trash me-1"></i>Hapus
+                                        <button type="submit" class="p-2 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Hapus Akun">
+                                            <i class="fas fa-trash-can text-xs"></i>
                                         </button>
                                     </form>
                                 </div>
@@ -115,377 +79,16 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center py-5">
-                                <div class="empty-table">
-                                    <i class="fas fa-users fa-4x text-gold mb-3 opacity-50"></i>
-                                    <h4 class="text-gold mb-2">Belum Ada Akun Pembeli</h4>
-                                    <p class="text-muted">Belum ada akun pembeli yang terdaftar.</p>
-                                </div>
+                            <td colspan="6" class="text-center py-12 text-slate-400 text-xs">
+                                <i class="fas fa-users text-3xl mb-2 block"></i>
+                                Belum ada akun pembeli terdaftar.
                             </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-    </section>
+    </div>
+
 </div>
-
-<style>
-:root {
-    --dark-blue: #0a1628;
-    --medium-blue: #1a3a5f;
-    --light-blue: #2a4a7f;
-    --gold: #ffd700;
-    --gold-light: #ffed4e;
-    --gold-dark: #d4af37;
-}
-
-.text-gold {
-    color: var(--gold) !important;
-}
-
-.bg-gold {
-    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%) !important;
-}
-
-/* Hero Section */
-.hero {
-    position: relative;
-    background: linear-gradient(135deg, var(--dark-blue) 0%, var(--medium-blue) 70%, var(--light-blue) 100%);
-    min-height: 40vh;
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-    padding: 100px 0 60px;
-    border-radius: 20px;
-    margin: 20px 0;
-    border: 1px solid rgba(255, 215, 0, 0.2);
-}
-
-.hero h1 {
-    font-size: 3rem;
-    font-weight: 800;
-    line-height: 1.2;
-    margin-bottom: 1rem;
-    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.hero p {
-    font-size: 1.2rem;
-    color: #c0c0c0;
-    margin-bottom: 1.5rem;
-}
-
-.feature-icon {
-    padding: 2rem;
-    border-radius: 50%;
-    background: rgba(255, 215, 0, 0.1);
-    border: 3px solid var(--gold);
-    width: 200px;
-    height: 200px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto;
-}
-
-/* Section Header */
-.section-header {
-    text-align: center;
-    margin-bottom: 3rem;
-}
-
-.section-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.section-subtitle {
-    color: #c0c0c0;
-    font-size: 1.1rem;
-}
-
-/* Table Container */
-.table-container {
-    background: linear-gradient(135deg, rgba(26, 58, 95, 0.7) 0%, rgba(42, 74, 127, 0.8) 100%);
-    border: 1px solid rgba(255, 215, 0, 0.2);
-    border-radius: 15px;
-    overflow: hidden;
-    backdrop-filter: blur(10px);
-    padding: 1rem;
-}
-
-.custom-table {
-    width: 100%;
-    border-collapse: collapse;
-    color: #c0c0c0;
-}
-
-.custom-table thead {
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 237, 78, 0.05) 100%);
-    border-bottom: 2px solid rgba(255, 215, 0, 0.3);
-}
-
-.custom-table th {
-    padding: 1.2rem 1rem;
-    font-weight: 600;
-    color: var(--gold);
-    text-align: left;
-    font-size: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.custom-table td {
-    padding: 1.2rem 1rem;
-    border-bottom: 1px solid rgba(255, 215, 0, 0.1);
-    vertical-align: middle;
-}
-
-.custom-table tbody tr {
-    transition: all 0.3s ease;
-    background: transparent;
-}
-
-.custom-table tbody tr:hover {
-    background: rgba(255, 215, 0, 0.05);
-    transform: translateX(5px);
-}
-
-/* Contact Info */
-.contact-info .email,
-.contact-info .join-date {
-    color: #c0c0c0;
-    font-size: 0.9rem;
-}
-
-.join-date {
-    font-size: 0.8rem !important;
-    color: #6c757d !important;
-}
-
-/* Activity Info */
-.activity-info {
-    text-align: center;
-}
-
-.order-count {
-    color: var(--gold);
-    font-weight: 600;
-    font-size: 0.9rem;
-}
-
-.last-order small {
-    color: #6c757d;
-    font-size: 0.7rem;
-}
-
-/* Status Badges */
-.status-badge {
-    padding: 0.4rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-}
-
-.status-badge.active {
-    background: rgba(40, 167, 69, 0.2);
-    color: #28a745;
-    border: 1px solid rgba(40, 167, 69, 0.3);
-}
-
-.status-badge.inactive {
-    background: rgba(108, 117, 125, 0.2);
-    color: #6c757d;
-    border: 1px solid rgba(108, 117, 125, 0.3);
-}
-
-/* Action Buttons */
-.action-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: center;
-}
-
-.btn-edit {
-    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-    color: var(--dark-blue);
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 0.8rem;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 100px;
-}
-
-.btn-edit:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
-    color: var(--dark-blue);
-}
-
-.btn-delete {
-    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 0.8rem;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 100px;
-    cursor: pointer;
-}
-
-.btn-delete:hover {
-    background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
-}
-
-/* Empty Table */
-.empty-table {
-    padding: 2rem;
-}
-
-/* Badges */
-.badge {
-    font-weight: 600;
-    padding: 0.5rem 1rem;
-    border-radius: 50px;
-}
-
-/* Sparkle effect */
-.sparkle {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    overflow: hidden;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .hero h1 {
-        font-size: 2rem;
-    }
-    
-    .hero p {
-        font-size: 1rem;
-    }
-    
-    .feature-icon {
-        width: 150px;
-        height: 150px;
-    }
-    
-    .feature-icon i {
-        font-size: 4rem !important;
-    }
-    
-    .section-title {
-        font-size: 2rem;
-    }
-    
-    .table-container {
-        padding: 0.5rem;
-        overflow-x: auto;
-    }
-    
-    .custom-table {
-        min-width: 800px;
-    }
-    
-    .custom-table th,
-    .custom-table td {
-        padding: 0.8rem 0.5rem;
-        font-size: 0.9rem;
-    }
-    
-    .user-info {
-        flex-direction: column;
-        text-align: center;
-        gap: 0.5rem;
-    }
-    
-    .user-avatar {
-        width: 40px;
-        height: 40px;
-    }
-    
-    .user-avatar i {
-        font-size: 1.2rem;
-    }
-    
-    .action-buttons {
-        flex-direction: row;
-        gap: 0.3rem;
-    }
-    
-    .btn-edit,
-    .btn-delete {
-        width: auto;
-        padding: 0.4rem 0.8rem;
-        font-size: 0.7rem;
-    }
-    
-    .activity-info {
-        text-align: left;
-    }
-}
-
-/* Animation for sparkle */
-@keyframes sparkleFloat {
-    0%, 100% {
-        transform: translateY(0) scale(1);
-        opacity: 0;
-    }
-    50% {
-        transform: translateY(-30px) scale(1.5);
-        opacity: 1;
-    }
-}
-</style>
-
-<script>
-// Sparkle animation
-document.addEventListener('DOMContentLoaded', function() {
-    const hero = document.querySelector('.hero');
-    setInterval(() => {
-        const sparkle = document.createElement('div');
-        sparkle.style.position = 'absolute';
-        sparkle.style.width = '3px';
-        sparkle.style.height = '3px';
-        sparkle.style.background = '#ffd700';
-        sparkle.style.borderRadius = '50%';
-        sparkle.style.boxShadow = '0 0 10px #ffd700';
-        sparkle.style.left = Math.random() * 100 + '%';
-        sparkle.style.top = Math.random() * 100 + '%';
-        sparkle.style.animation = 'sparkleFloat 2s forwards';
-        sparkle.style.pointerEvents = 'none';
-        hero.appendChild(sparkle);
-        
-        setTimeout(() => sparkle.remove(), 2000);
-    }, 500);
-});
-</script>
 @endsection

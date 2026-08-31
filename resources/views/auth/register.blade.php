@@ -1,511 +1,392 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="h-full bg-brand-cream">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pilih Tipe Akun - UMKM Indramayu</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-
+    <title>Daftar Akun — Juragan Pelem | Marketplace Mangga & UMKM Indramayu</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        display: ['"Outfit"', 'sans-serif'],
+                    },
+                    colors: {
+                        'brand-green': '#1B4D3E',
+                        'brand-green-dark': '#12352A',
+                        'brand-green-light': '#2D6A4F',
+                        'brand-amber': '#E88D14',
+                        'brand-amber-light': '#F3A638',
+                        'brand-cream': '#FAFAF7',
+                        'brand-slate': '#1E293B',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
     <style>
-        :root {
-            --dark-blue: #0a1628;
-            --medium-blue: #1a3a5f;
-            --light-blue: #2a4a7f;
-            --gold: #ffd700;
-            --gold-light: #ffed4e;
-            --gold-dark: #d4af37;
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #FAFAF7;
         }
-
-        body,
-        html {
-            height: 100%;
-            margin: 0;
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, var(--dark-blue) 0%, var(--medium-blue) 50%, var(--light-blue) 100%);
+        .role-card.active {
+            border-color: #1B4D3E;
+            background-color: rgba(27, 77, 62, 0.04);
+            box-shadow: 0 4px 12px rgba(27, 77, 62, 0.08);
         }
-
-        .register-page {
-            min-height: 100vh;
-            position: relative;
+        .role-card.active .role-check {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem 1rem;
-        }
-
-        .animated-bg {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: 0;
-        }
-
-        .animated-bg::before,
-        .animated-bg::after {
-            content: '';
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.15;
-            animation: float 20s infinite ease-in-out;
-        }
-
-        .animated-bg::before {
-            background: linear-gradient(45deg, var(--gold), var(--gold-light));
-            top: -10%;
-            left: -10%;
-            animation-delay: 0s;
-        }
-
-        .animated-bg::after {
-            background: linear-gradient(45deg, var(--light-blue), var(--medium-blue));
-            bottom: -10%;
-            right: -10%;
-            animation-delay: 5s;
-        }
-
-        @keyframes float {
-
-            0%,
-            100% {
-                transform: translate(0, 0) scale(1);
-            }
-
-            33% {
-                transform: translate(30px, -30px) scale(1.1);
-            }
-
-            66% {
-                transform: translate(-20px, 20px) scale(0.9);
-            }
-        }
-
-        .register-container {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            max-width: 480px;
-        }
-
-        .card {
-            background: rgba(30, 30, 46, 0.7);
-            border-radius: 24px;
-            padding: 3rem 2.5rem;
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-            color: white;
-        }
-
-        .card h4 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .text-muted {
-            color: rgba(255, 255, 255, 0.6) !important;
-        }
-
-        /* Role Selection */
-        .role-option {
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 255, 255, 0.1) !important;
-            border-radius: 16px;
-            padding: 1.5rem 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .role-option::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 237, 78, 0.1));
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .role-option:hover::before {
-            opacity: 1;
-        }
-
-        .role-option:hover {
-            transform: translateY(-4px);
-            border-color: rgba(255, 215, 0, 0.5) !important;
-            box-shadow: 0 8px 24px rgba(255, 215, 0, 0.2);
-        }
-
-        .role-option.active {
-            border-color: var(--gold) !important;
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 237, 78, 0.15));
-            box-shadow: 0 8px 32px rgba(255, 215, 0, 0.3);
-        }
-
-        .role-option.active::after {
-            content: '✓';
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 24px;
-            height: 24px;
-            background: var(--gold);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--dark-blue);
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        .role-option img {
-            height: 60px;
-            width: 60px;
-            border-radius: 50%;
-            margin-bottom: 0.75rem;
-            object-fit: cover;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .role-option p {
-            color: white;
-            font-weight: 600;
-            margin: 0;
-            font-size: 1rem;
-        }
-
-        /* Form Inputs */
-        .form-control {
-            background-color: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: white;
-            padding: 0.875rem 1.25rem;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            font-size: 0.95rem;
-        }
-
-        .form-control:focus {
-            background-color: rgba(255, 255, 255, 0.08);
-            border-color: var(--gold);
-            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.15);
-            color: white;
-        }
-
-        .form-control::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        /* Buttons */
-        .btn-primary {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            border: none;
-            padding: 0.875rem;
-            width: 100%;
-            font-weight: 600;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            font-size: 1rem;
-            letter-spacing: 0.5px;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
-            color: var(--dark-blue);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
-            background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
-            color: var(--dark-blue);
-        }
-
-        .btn-google {
-            background: rgba(255, 255, 255, 0.05);
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            width: 100%;
-            font-weight: 500;
-            padding: 0.875rem;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .btn-google:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-            color: white;
-        }
-
-        .btn-google img {
-            width: 20px;
-            height: 20px;
-        }
-
-        /* Divider */
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 1.5rem 0;
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.875rem;
-        }
-
-        .divider hr {
-            flex: 1;
-            border: none;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            margin: 0;
-        }
-
-        .divider span {
-            padding: 0 1rem;
-        }
-
-        /* Links */
-        a {
-            color: var(--gold);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        a:hover {
-            color: var(--gold-light);
-            text-decoration: underline;
-        }
-
-        /* Error Messages */
-        .text-danger {
-            color: #fca5a5 !important;
-            font-size: 0.875rem;
-            display: block;
-            margin-top: 0.25rem;
-        }
-
-        /* Top Navigation */
-        .top-nav {
-            position: absolute;
-            top: 2rem;
-            right: 2rem;
-            display: flex;
-            gap: 1.5rem;
-            z-index: 10;
-        }
-
-        .top-nav a {
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: color 0.3s ease;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .top-nav a:hover {
-            color: var(--gold);
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        /* Sparkle effect */
-        .sparkle {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            overflow: hidden;
-        }
-
-        @keyframes sparkleFloat {
-
-            0%,
-            100% {
-                transform: translateY(0) scale(1);
-                opacity: 0;
-            }
-
-            50% {
-                transform: translateY(-30px) scale(1.5);
-                opacity: 1;
-            }
-        }
-
-        /* Responsive */
-        @media (max-width: 576px) {
-            .card {
-                padding: 2rem 1.5rem;
-            }
-
-            .role-option {
-                padding: 1.25rem 0.75rem;
-            }
-
-            .role-option img {
-                height: 50px;
-                width: 50px;
-            }
-
-            .top-nav {
-                top: 1rem;
-                right: 1rem;
-                gap: 0.75rem;
-            }
-
-            .top-nav a {
-                font-size: 0.85rem;
-                padding: 0.4rem 0.75rem;
-            }
         }
     </style>
 </head>
 
-<body>
-    <div class="register-page">
-        <div class="animated-bg"></div>
-        <div class="sparkle"></div>
+<body class="h-full flex min-h-[100dvh]">
+    <div class="flex-1 flex flex-col lg:flex-row min-h-full">
+        
+        <!-- Left Side: Brand Showcase Panel (Visible on LG screens) -->
+        <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-brand-green-dark via-brand-green to-emerald-900 p-12 text-white flex-col justify-between relative overflow-hidden">
+            <!-- Subtle Radial Glows -->
+            <div class="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute bottom-0 left-0 w-96 h-96 bg-brand-amber/10 rounded-full blur-3xl pointer-events-none"></div>
 
-        <!-- Top Navigation -->
-        <div class="top-nav">
-            <a href="{{ route('login') }}">Login</a>
-            <a href="/">Beranda</a>
-            <a href="#" style="color: var(--gold); background: rgba(255, 215, 0, 0.1);">Daftar</a>
+            <!-- Top Header in Panel -->
+            <div class="relative z-10">
+                <a href="{{ route('landing') }}" class="inline-flex items-center gap-3 group">
+                    <div class="w-11 h-11 rounded-xl bg-white shadow-sm p-1.5 flex items-center justify-center group-hover:scale-105 transition-transform">
+                        <img src="{{ asset('aset/finalisasi logo.png') }}" alt="Juragan Pelem" class="h-full w-auto object-contain">
+                    </div>
+                    <div>
+                        <span class="text-2xl font-bold font-display text-white tracking-tight">Juragan<span class="text-brand-amber">Pelem</span></span>
+                        <span class="block text-[10px] tracking-wider uppercase font-semibold text-emerald-200/80 -mt-1">Agro-Commerce Indramayu</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Central Hero Narrative -->
+            <div class="space-y-6 relative z-10 max-w-lg">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur border border-white/20 text-emerald-200 text-xs font-bold uppercase tracking-wider">
+                    <i class="fas fa-seedling text-brand-amber"></i> Bergabung Bersama Kami
+                </div>
+
+                <h1 class="text-4xl sm:text-5xl font-extrabold font-display leading-tight tracking-tight text-white">
+                    Mulai Belanja atau <br>
+                    <span class="text-amber-300">Buka Toko UMKM</span> Anda.
+                </h1>
+
+                <p class="text-emerald-100/90 text-sm leading-relaxed">
+                    Satu akun untuk ribuan produk pertanian lokal berkualitas. Rasakan kemudahan transaksi aman, pengiriman terpercaya, dan dukungan nyata untuk petani Indramayu.
+                </p>
+
+                <!-- Benefits List -->
+                <div class="space-y-3 pt-2">
+                    <div class="flex items-center gap-3 text-xs text-emerald-100">
+                        <div class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-[10px]">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <span>Pilihan akun Pembeli untuk konsumsi atau Penjual untuk pemilik toko UMKM</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-xs text-emerald-100">
+                        <div class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-[10px]">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <span>Garansi kualitas segar dengan pengemasan tahan benturan</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-xs text-emerald-100">
+                        <div class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-[10px]">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <span>Dukungan pembayaran digital terintegrasi instan</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Note -->
+            <div class="p-4 rounded-2xl bg-white/5 border border-white/10 text-xs text-emerald-200/80">
+                <i class="fas fa-users text-brand-amber mr-2"></i> Lebih dari <strong>50+ UMKM & Kelompok Tani</strong> telah terdaftar dan aktif melayani pesanan.
+            </div>
+
         </div>
 
-        <div class="register-container">
-            <div class="card">
-                <div class="text-center mb-4">
-                    <h4>Pilih Tipe Akun</h4>
-                    <p class="text-muted small">Silakan isi formulir di bawah untuk mendaftar</p>
+        <!-- Right Side: Clean Auth Form -->
+        <div class="flex-1 flex flex-col justify-between p-6 sm:p-12 lg:p-16 bg-brand-cream overflow-y-auto">
+            
+            <!-- Top Nav Back Link -->
+            <div class="flex items-center justify-between">
+                <a href="{{ route('landing') }}" class="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-brand-green transition">
+                    <i class="fas fa-arrow-left"></i> Kembali ke Beranda
+                </a>
+                
+                <!-- Mobile Brand Logo (Visible only on mobile/tablet) -->
+                <a href="{{ route('landing') }}" class="flex lg:hidden items-center gap-2">
+                    <img src="{{ asset('aset/finalisasi logo.png') }}" alt="Juragan Pelem" class="h-8 w-auto">
+                    <span class="font-display font-bold text-brand-green text-lg">Juragan<span class="text-brand-amber">Pelem</span></span>
+                </a>
+            </div>
+
+            <!-- Form Container -->
+            <div class="max-w-md w-full mx-auto my-8">
+                
+                <!-- Header Title -->
+                <div class="mb-6">
+                    <h2 class="text-3xl font-extrabold text-brand-slate tracking-tight font-display">
+                        Buat Akun Baru
+                    </h2>
+                    <p class="text-sm text-slate-500 mt-1.5">
+                        Pilih peran Anda dan lengkapi formulir di bawah ini.
+                    </p>
                 </div>
 
-                <div class="d-flex justify-content-between mb-4 gap-3">
-                    <div class="role-option text-center flex-fill {{ old('role') == 'penjual' ? 'active' : '' }}"
-                        data-role="penjual">
-                        <img src="{{ asset('aset/iconpenjual.png') }}" alt="Penjual">
-                        <p>Penjual</p>
+                <!-- Validation Alerts -->
+                @if ($errors->any())
+                    <div class="mb-5 p-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl text-xs font-medium shadow-sm">
+                        <div class="flex items-center gap-2 font-bold mb-1">
+                            <i class="fas fa-triangle-exclamation text-red-500"></i> Mohon Periksa Input:
+                        </div>
+                        <ul class="list-disc list-inside space-y-0.5 pl-1">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
-                    <div class="role-option text-center flex-fill {{ old('role') == 'pembeli' ? 'active' : '' }}"
-                        data-role="pembeli">
-                        <img src="{{ asset('aset/iconpembeli.jpg') }}" alt="Pembeli">
-                        <p>Pembeli</p>
-                    </div>
-                </div>
+                @endif
 
-                <form method="POST" action="{{ route('register') }}">
+                <form method="POST" action="{{ route('register') }}" class="space-y-4">
                     @csrf
-                    <input type="hidden" name="role" id="roleInput" value="{{ old('role') }}">
 
-                    <div class="mb-3">
-                        <input id="name" class="form-control @error('name') is-invalid @enderror" type="text"
-                            name="name" placeholder="Nama Lengkap" value="{{ old('name') }}" required autofocus />
-                        @error('name') <span class="text-danger">{{ $message }}</span> @enderror
+                    <!-- Interactive Role Selector Cards -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-2">Pilih Peran Akun</label>
+                        <input type="hidden" name="role" id="roleInput" value="{{ old('role', 'pembeli') }}">
+                        
+                        <div class="grid grid-cols-2 gap-3">
+                            <!-- Option 1: Pembeli -->
+                            <div 
+                                id="roleCardPembeli" 
+                                onclick="selectRole('pembeli')" 
+                                class="role-card cursor-pointer p-4 rounded-2xl border-2 border-slate-200 bg-white transition relative flex flex-col justify-between {{ old('role', 'pembeli') === 'pembeli' ? 'active' : '' }}"
+                            >
+                                <div class="flex items-start justify-between">
+                                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-brand-green flex items-center justify-center text-lg">
+                                        <i class="fas fa-bag-shopping"></i>
+                                    </div>
+                                    <div class="role-check hidden w-5 h-5 rounded-full bg-brand-green text-white items-center justify-center text-[10px]">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <h4 class="font-bold text-xs text-brand-slate">Pembeli</h4>
+                                    <p class="text-[11px] text-slate-400 mt-0.5">Belanja mangga & olahan</p>
+                                </div>
+                            </div>
+
+                            <!-- Option 2: Penjual -->
+                            <div 
+                                id="roleCardPenjual" 
+                                onclick="selectRole('penjual')" 
+                                class="role-card cursor-pointer p-4 rounded-2xl border-2 border-slate-200 bg-white transition relative flex flex-col justify-between {{ old('role') === 'penjual' ? 'active' : '' }}"
+                            >
+                                <div class="flex items-start justify-between">
+                                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-brand-amber flex items-center justify-center text-lg">
+                                        <i class="fas fa-store"></i>
+                                    </div>
+                                    <div class="role-check hidden w-5 h-5 rounded-full bg-brand-green text-white items-center justify-center text-[10px]">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <h4 class="font-bold text-xs text-brand-slate">Penjual / UMKM</h4>
+                                    <p class="text-[11px] text-slate-400 mt-0.5">Buka toko & jual panen</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <input id="email" class="form-control @error('email') is-invalid @enderror" type="email"
-                            name="email" placeholder="Email" value="{{ old('email') }}" required />
-                        @error('email') <span class="text-danger">{{ $message }}</span> @enderror
+                    <!-- Name Input -->
+                    <div>
+                        <label for="name" class="block text-xs font-bold text-slate-700 mb-1.5">Nama Lengkap</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <i class="fas fa-user text-sm"></i>
+                            </div>
+                            <input 
+                                id="name" 
+                                type="text" 
+                                name="name" 
+                                value="{{ old('name') }}" 
+                                required 
+                                autofocus 
+                                placeholder="Nama lengkap Anda"
+                                class="w-full bg-white text-slate-800 text-sm pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:border-brand-green focus:ring-2 focus:ring-brand-green/20 outline-none transition shadow-sm"
+                            >
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <input id="password" class="form-control @error('password') is-invalid @enderror"
-                            type="password" name="password" placeholder="Password" required />
-                        @error('password') <span class="text-danger">{{ $message }}</span> @enderror
+                    <!-- Email Input -->
+                    <div>
+                        <label for="email" class="block text-xs font-bold text-slate-700 mb-1.5">Alamat Email</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <i class="fas fa-envelope text-sm"></i>
+                            </div>
+                            <input 
+                                id="email" 
+                                type="email" 
+                                name="email" 
+                                value="{{ old('email') }}" 
+                                required 
+                                placeholder="nama@email.com"
+                                class="w-full bg-white text-slate-800 text-sm pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:border-brand-green focus:ring-2 focus:ring-brand-green/20 outline-none transition shadow-sm"
+                            >
+                        </div>
                     </div>
 
-                    <div class="mb-4">
-                        <input id="password_confirmation"
-                            class="form-control @error('password_confirmation') is-invalid @enderror" type="password"
-                            name="password_confirmation" placeholder="Konfirmasi Password" required />
-                        @error('password_confirmation') <span class="text-danger">{{ $message }}</span> @enderror
+                    <!-- Password Input -->
+                    <div>
+                        <label for="password" class="block text-xs font-bold text-slate-700 mb-1.5">Kata Sandi</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <i class="fas fa-lock text-sm"></i>
+                            </div>
+                            <input 
+                                id="password" 
+                                type="password" 
+                                name="password" 
+                                required 
+                                placeholder="Minimal 8 karakter"
+                                class="w-full bg-white text-slate-800 text-sm pl-10 pr-10 py-3 rounded-xl border border-slate-200 focus:border-brand-green focus:ring-2 focus:ring-brand-green/20 outline-none transition shadow-sm"
+                            >
+                            <button 
+                                type="button" 
+                                onclick="togglePasswordVisibility('password', 'password-toggle-icon-1')" 
+                                class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition"
+                            >
+                                <i id="password-toggle-icon-1" class="fas fa-eye text-sm"></i>
+                            </button>
+                        </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary mb-3">
-                        <i class="fas fa-user-plus me-2"></i>Daftar
+                    <!-- Password Confirmation Input -->
+                    <div>
+                        <label for="password_confirmation" class="block text-xs font-bold text-slate-700 mb-1.5">Konfirmasi Kata Sandi</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <i class="fas fa-lock-check text-sm"></i>
+                            </div>
+                            <input 
+                                id="password_confirmation" 
+                                type="password" 
+                                name="password_confirmation" 
+                                required 
+                                placeholder="Ulangi kata sandi"
+                                class="w-full bg-white text-slate-800 text-sm pl-10 pr-10 py-3 rounded-xl border border-slate-200 focus:border-brand-green focus:ring-2 focus:ring-brand-green/20 outline-none transition shadow-sm"
+                            >
+                            <button 
+                                type="button" 
+                                onclick="togglePasswordVisibility('password_confirmation', 'password-toggle-icon-2')" 
+                                class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition"
+                            >
+                                <i id="password-toggle-icon-2" class="fas fa-eye text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button 
+                        type="submit" 
+                        class="w-full py-3.5 bg-brand-green hover:bg-brand-green-dark text-white font-bold text-sm rounded-xl transition shadow-lg shadow-brand-green/20 hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center gap-2 mt-2"
+                    >
+                        <i class="fas fa-user-plus"></i> Daftar Akun Baru
                     </button>
 
-                    <div class="divider">
-                        <hr>
-                        <span>atau</span>
-                        <hr>
+                    <!-- Or Divider -->
+                    <div class="relative my-6 text-center">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-slate-200"></div>
+                        </div>
+                        <span class="relative bg-brand-cream px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                            atau daftar dengan
+                        </span>
                     </div>
 
-                    <a href="{{ route('auth.google') }}" class="btn btn-google mb-3">
-                        <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google">
+                    <!-- Google SSO Button -->
+                    <a 
+                        href="{{ route('auth.google') }}" 
+                        class="w-full py-3 px-4 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-sm rounded-xl transition shadow-sm flex items-center justify-center gap-3 hover:-translate-y-0.5"
+                    >
+                        <svg class="w-4 h-4" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                        </svg>
                         <span>Daftar dengan Google</span>
                     </a>
-
-                    <p class="text-center mt-3 small text-muted">
-                        Sudah punya akun? <a href="{{ route('login') }}" class="fw-semibold">Login</a>
-                    </p>
                 </form>
+
+                <!-- Switch to Login -->
+                <div class="text-center mt-8 pt-6 border-t border-slate-200/80">
+                    <p class="text-xs text-slate-500">
+                        Sudah memiliki akun? 
+                        <a href="{{ route('login') }}" class="font-bold text-brand-green hover:underline">
+                            Masuk Sekarang
+                        </a>
+                    </p>
+                </div>
+
             </div>
+
+            <!-- Footer Small -->
+            <div class="text-center text-[11px] text-slate-400">
+                &copy; {{ date('Y') }} Juragan Pelem Indramayu. Seluruh hak cipta dilindungi.
+            </div>
+
         </div>
+
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Scripts -->
     <script>
-        document.querySelectorAll('.role-option').forEach(btn => {
-            btn.addEventListener('click', function () {
-                const role = this.getAttribute('data-role');
-                const roleInput = document.getElementById('roleInput');
-                const roleOptions = document.querySelectorAll('.role-option');
+        function selectRole(role) {
+            document.getElementById('roleInput').value = role;
+            const cardPembeli = document.getElementById('roleCardPembeli');
+            const cardPenjual = document.getElementById('roleCardPenjual');
 
-                roleInput.value = role;
-                roleOptions.forEach(el => el.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const initialRole = document.getElementById('roleInput').value;
-            if (initialRole) {
-                const activeRoleBtn = document.querySelector(`.role-option[data-role="${initialRole}"]`);
-                if (activeRoleBtn) {
-                    activeRoleBtn.classList.add('active');
-                }
+            if (role === 'pembeli') {
+                cardPembeli.classList.add('active');
+                cardPenjual.classList.remove('active');
+            } else {
+                cardPenjual.classList.add('active');
+                cardPembeli.classList.remove('active');
             }
-        });
+        }
 
-        // Add sparkle animation on page load
-        window.addEventListener('load', () => {
-            const registerPage = document.querySelector('.register-page');
-            setInterval(() => {
-                const sparkle = document.createElement('div');
-                sparkle.style.position = 'absolute';
-                sparkle.style.width = '4px';
-                sparkle.style.height = '4px';
-                sparkle.style.background = '#ffd700';
-                sparkle.style.borderRadius = '50%';
-                sparkle.style.boxShadow = '0 0 10px #ffd700';
-                sparkle.style.left = Math.random() * 100 + '%';
-                sparkle.style.top = Math.random() * 100 + '%';
-                sparkle.style.animation = 'sparkleFloat 2s forwards';
-                sparkle.style.pointerEvents = 'none';
-                registerPage.appendChild(sparkle);
-
-                setTimeout(() => sparkle.remove(), 2000);
-            }, 500);
-        });
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
     </script>
 </body>
 

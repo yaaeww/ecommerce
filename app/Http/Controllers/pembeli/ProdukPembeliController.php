@@ -36,7 +36,7 @@ class ProdukPembeliController extends Controller
     // Menampilkan detail produk beserta ulasan dan produk terkait, dengan harga diskon
     public function show($id)
     {
-        $produk = Produk::with(['user', 'diskon'])->findOrFail($id);
+        $produk = Produk::with(['user', 'umkm', 'kategori', 'diskon'])->findOrFail($id);
 
         $today = now();
         $diskon = $produk->diskon;
@@ -66,12 +66,12 @@ class ProdukPembeliController extends Controller
 
         $produk->rating = round($avgBintang ?? 0, 2);
 
-        // Produk terkait dari penjual yang sama
-        $produkTerkait = Produk::with('diskon')
+        // Produk terkait dari penjual atau kategori
+        $produkTerkait = Produk::with(['umkm', 'diskon'])
             ->where('user_id', $produk->user_id)
             ->where('id', '!=', $produk->id)
             ->latest()
-            ->take(3)
+            ->take(4)
             ->get();
 
         // Hitung harga diskon untuk produk terkait juga

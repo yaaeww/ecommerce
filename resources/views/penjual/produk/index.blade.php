@@ -2,391 +2,120 @@
 
 @section('page_title', 'Daftar Produk')
 
-@section('title')
-    <i class="fas fa-boxes me-2"></i> Daftar Produk
-@endsection
-
 @section('content')
-    <style>
-        .products-container {
-            background: linear-gradient(135deg, rgba(10, 22, 40, 0.8) 0%, rgba(26, 58, 95, 0.9) 100%);
-            border: 2px solid rgba(255, 215, 0, 0.3);
-            border-radius: 15px;
-            padding: 30px;
-            backdrop-filter: blur(10px);
-            margin-bottom: 30px;
-        }
+<div class="space-y-6">
 
-        .text-theme {
-            color: #e0e0e0 !important;
-        }
+    <!-- Header Section -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h2 class="text-2xl font-bold text-slate-900 font-display">Daftar Produk Saya</h2>
+            <p class="text-sm text-slate-500 mt-1">Kelola katalog produk toko Anda</p>
+        </div>
+        <a href="{{ route('penjual.produk.create') }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm rounded-xl transition shadow-sm hover:shadow">
+            <i class="fas fa-plus"></i>
+            Tambah Produk
+        </a>
+    </div>
 
-        .text-gold {
-            color: var(--gold) !important;
-        }
+    @if (session('success'))
+    <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center gap-3">
+        <i class="fas fa-check-circle text-emerald-500 text-xl"></i>
+        <p class="font-bold text-sm">{{ session('success') }}</p>
+    </div>
+    @endif
 
-        .btn-primary {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            border: none;
-            color: var(--dark-blue);
-            font-weight: 700;
-            padding: 12px 25px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
-            color: var(--dark-blue);
-        }
-
-        .product-card {
-            background: linear-gradient(135deg, rgba(26, 58, 95, 0.7) 0%, rgba(42, 74, 127, 0.8) 100%);
-            border: 2px solid rgba(255, 215, 0, 0.2);
-            border-radius: 12px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            height: 100%;
-            backdrop-filter: blur(10px);
-        }
-
-        .product-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 30px rgba(255, 215, 0, 0.25);
-            border-color: var(--gold);
-        }
-
-        .product-image {
-            height: 200px;
-            object-fit: cover;
-            width: 100%;
-            transition: transform 0.3s ease;
-        }
-
-        .product-card:hover .product-image {
-            transform: scale(1.05);
-        }
-
-        .product-card-body {
-            padding: 20px;
-            text-align: center;
-        }
-
-        .product-title {
-            color: var(--gold);
-            font-weight: 600;
-            font-size: 1.1rem;
-            margin-bottom: 10px;
-            min-height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .product-price {
-            margin-bottom: 15px;
-        }
-
-        .original-price {
-            color: #c0c0c0;
-            text-decoration: line-through;
-            font-size: 0.9rem;
-        }
-
-        .discount-price {
-            color: #ff6b6b;
-            font-weight: 700;
-            font-size: 1.2rem;
-        }
-
-        .normal-price {
-            color: var(--gold-light);
-            font-weight: 700;
-            font-size: 1.2rem;
-        }
-
-        .product-actions {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .btn-info {
-            background: linear-gradient(135deg, #17a2b8, #20c997);
-            border: none;
-            color: white;
-            font-weight: 600;
-            padding: 8px 15px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            transition: all 0.3s ease;
-        }
-
-        .btn-info:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(23, 162, 184, 0.4);
-            color: white;
-        }
-
-        .btn-warning {
-            background: linear-gradient(135deg, #ffc107, #fd7e14);
-            border: none;
-            color: white;
-            font-weight: 600;
-            padding: 8px 15px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            transition: all 0.3s ease;
-        }
-
-        .btn-warning:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
-            color: white;
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, #dc3545, #e83e8c);
-            border: none;
-            color: white;
-            font-weight: 600;
-            padding: 8px 15px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            transition: all 0.3s ease;
-        }
-
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
-            color: white;
-        }
-
-        .alert-success {
-            background: linear-gradient(135deg, rgba(40, 167, 69, 0.2) 0%, rgba(32, 201, 151, 0.3) 100%);
-            border: 2px solid rgba(40, 167, 69, 0.5);
-            border-radius: 12px;
-            backdrop-filter: blur(10px);
-            color: #e0e0e0;
-            margin-bottom: 25px;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #c0c0c0;
-        }
-
-        .empty-state i {
-            font-size: 4rem;
-            color: rgba(255, 215, 0, 0.3);
-            margin-bottom: 20px;
-        }
-
-        .empty-state h4 {
-            color: var(--gold);
-            margin-bottom: 15px;
-        }
-
-        .pagination-container {
-            margin-top: 30px;
-        }
-
-        .pagination .page-link {
-            background: rgba(26, 58, 95, 0.6);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            color: var(--gold);
-            padding: 8px 16px;
-        }
-
-        .pagination .page-item.active .page-link {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            border-color: var(--gold);
-            color: var(--dark-blue);
-            font-weight: 600;
-        }
-
-        .pagination .page-link:hover {
-            background: rgba(255, 215, 0, 0.1);
-            border-color: var(--gold);
-            color: var(--gold-light);
-        }
-
-        .section-title {
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 30px;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-align: center;
-        }
-
-        .badge-discount {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: linear-gradient(135deg, #dc3545, #e83e8c);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            z-index: 2;
-        }
-
-        /* Mobile responsiveness */
-        @media (max-width: 768px) {
-            .products-container {
-                padding: 20px 15px;
-            }
-
-            .product-actions {
-                flex-direction: column;
-                gap: 5px;
-            }
-
-            .btn-info,
-            .btn-warning,
-            .btn-danger {
-                width: 100%;
-                padding: 10px;
-            }
-
-            .product-title {
-                min-height: auto;
-                font-size: 1rem;
-            }
-        }
-    </style>
-
-    <div class="container">
-        <h2 class="section-title"><i class="fas fa-boxes me-3"></i>Daftar Produk Saya</h2>
-
-        <div class="products-container">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <a href="{{ route('penjual.produk.create') }}" class="btn btn-primary">
-                    <i class="fas fa-plus-circle me-2"></i>Tambah Produk Baru
-                </a>
-
-                <div class="text-theme">
-                    <small>Total: <strong>{{ $produks->total() }}</strong> produk</small>
-                </div>
+    <!-- Content Card -->
+    <div class="card bg-white border border-slate-200/80 shadow-sm rounded-2xl overflow-hidden">
+        
+        <!-- Controls: Search & Filter placeholder if needed -->
+        <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+            <div class="text-sm font-bold text-slate-500">
+                Total: <span class="text-slate-900">{{ $produks->total() }}</span> produk
             </div>
+            <!-- Pagination summary can go here -->
+        </div>
 
-            @if (session('success'))
-                <div class="alert alert-success">
-                    <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-                </div>
-            @endif
-
-            <div class="row">
+        <div class="p-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 @forelse($produks as $produk)
-                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
-                        <div class="product-card">
-                            <div class="position-relative">
-                                @if ($produk->gambar)
-                                    <img src="{{ asset('storage/' . $produk->gambar) }}" class="product-image" alt="Gambar Produk">
-                                @else
-                                    <div class="product-image d-flex align-items-center justify-content-center bg-dark">
-                                        <i class="fas fa-image fa-3x text-gold" style="opacity: 0.5;"></i>
-                                    </div>
-                                @endif
+                    <div class="group bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition duration-300 hover:border-brand-300 flex flex-col h-full">
+                        <div class="relative aspect-video sm:aspect-square overflow-hidden bg-slate-100">
+                            @if ($produk->gambar)
+                                <img src="{{ asset('storage/' . $produk->gambar) }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="{{ $produk->nama }}">
+                            @else
+                                <div class="w-full h-full flex items-center justify-center text-slate-300">
+                                    <i class="fas fa-image fa-3x"></i>
+                                </div>
+                            @endif
 
-                                {{-- Badge diskon jika ada --}}
+                            {{-- Badge diskon jika ada --}}
+                            @if ($produk->diskon && now()->between($produk->diskon->tanggal_mulai, $produk->diskon->tanggal_berakhir))
+                                <div class="absolute top-3 right-3 bg-rose-500 text-white text-xs font-bold px-2 py-1 rounded-lg shadow-sm">
+                                    <i class="fas fa-tag mr-1"></i>{{ $produk->diskon->persen_diskon }}% OFF
+                                </div>
+                            @endif
+                        </div>
+
+                        <div class="p-4 flex-1 flex flex-col">
+                            <h3 class="font-bold text-slate-900 text-base mb-2 line-clamp-2">{{ $produk->nama }}</h3>
+                            
+                            <div class="mb-4">
                                 @if ($produk->diskon && now()->between($produk->diskon->tanggal_mulai, $produk->diskon->tanggal_berakhir))
-                                    <span class="badge-discount">
-                                        <i class="fas fa-tag me-1"></i>{{ $produk->diskon->persen_diskon }}% OFF
-                                    </span>
+                                    <div class="text-xs text-slate-400 line-through mb-0.5">
+                                        Rp {{ number_format($produk->harga, 0, ',', '.') }}
+                                    </div>
+                                    <div class="text-lg font-bold text-rose-600 font-display">
+                                        Rp {{ number_format($produk->harga_setelah_diskon, 0, ',', '.') }}
+                                    </div>
+                                @else
+                                    <div class="text-lg font-bold text-brand-700 font-display">
+                                        Rp {{ number_format($produk->harga, 0, ',', '.') }}
+                                    </div>
                                 @endif
                             </div>
 
-                            <div class="product-card-body">
-                                <h5 class="product-title">{{ $produk->nama }}</h5>
+                            <div class="flex items-center gap-4 text-xs text-slate-500 font-medium mb-4 mt-auto pt-4 border-t border-slate-100">
+                                <span class="flex items-center gap-1.5"><i class="fas fa-box text-slate-400"></i> Stok: {{ $produk->stok }}</span>
+                                <span class="flex items-center gap-1.5"><i class="fas fa-eye text-slate-400"></i> View: {{ $produk->views ?? 0 }}</span>
+                            </div>
 
-                                <div class="product-price">
-                                    {{-- Tampilkan harga diskon jika ada dan aktif --}}
-                                    @if ($produk->diskon && now()->between($produk->diskon->tanggal_mulai, $produk->diskon->tanggal_berakhir))
-                                        <div class="original-price mb-1">
-                                            Rp {{ number_format($produk->harga, 0, ',', '.') }}
-                                        </div>
-                                        <div class="discount-price">
-                                            Rp {{ number_format($produk->harga_setelah_diskon, 0, ',', '.') }}
-                                        </div>
-                                    @else
-                                        <div class="normal-price">
-                                            Rp {{ number_format($produk->harga, 0, ',', '.') }}
-                                        </div>
-                                    @endif
-                                </div>
-
-                                <div class="product-stats mb-3">
-                                    <small class="text-theme">
-                                        <i class="fas fa-box me-1"></i>Stok: {{ $produk->stok }} |
-                                        <i class="fas fa-eye me-1"></i>Dilihat: {{ $produk->views ?? 0 }}
-                                    </small>
-                                </div>
-
-                                <div class="product-actions">
-                                    <a href="{{ route('penjual.produk.show', $produk->id) }}" class="btn btn-info">
-                                        <i class="fas fa-eye me-1"></i>Detail
-                                    </a>
-                                    <a href="{{ route('penjual.produk.edit', $produk->id) }}" class="btn btn-warning">
-                                        <i class="fas fa-edit me-1"></i>Edit
-                                    </a>
-                                    <form action="{{ route('penjual.produk.destroy', $produk->id) }}" method="POST"
-                                        onsubmit="return confirm('Yakin mau hapus produk {{ $produk->nama }}?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger">
-                                            <i class="fas fa-trash me-1"></i>Hapus
-                                        </button>
-                                    </form>
-                                </div>
+                            <div class="flex items-center gap-2 mt-auto">
+                                <a href="{{ route('penjual.produk.show', $produk->id) }}" class="flex-1 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 text-center rounded-xl text-xs font-bold border border-slate-200 transition" title="Detail">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{{ route('penjual.produk.edit', $produk->id) }}" class="flex-1 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 text-center rounded-xl text-xs font-bold border border-amber-200 transition" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form action="{{ route('penjual.produk.destroy', $produk->id) }}" method="POST" class="flex-1 inline-flex" onsubmit="return confirm('Yakin mau hapus produk {{ $produk->nama }}?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="w-full py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl text-xs font-bold border border-rose-200 transition" title="Hapus">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
                 @empty
-                    <div class="col-12">
-                        <div class="empty-state">
-                            <i class="fas fa-box-open"></i>
-                            <h4>Belum Ada Produk</h4>
-                            <p class="mb-4">Mulai jualan dengan menambahkan produk pertama Anda!</p>
-                            <a href="{{ route('penjual.produk.create') }}" class="btn btn-primary btn-lg">
-                                <i class="fas fa-plus-circle me-2"></i>Tambah Produk Pertama
-                            </a>
+                    <div class="col-span-full py-12 flex flex-col items-center justify-center text-center">
+                        <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+                            <i class="fas fa-box-open text-3xl text-slate-300"></i>
                         </div>
+                        <h3 class="text-lg font-bold text-slate-900 mb-1">Belum Ada Produk</h3>
+                        <p class="text-slate-500 text-sm mb-6 max-w-sm">Mulai jualan dengan menambahkan produk pertama Anda di toko ini!</p>
+                        <a href="{{ route('penjual.produk.create') }}" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm rounded-xl transition shadow-sm">
+                            <i class="fas fa-plus mr-2"></i> Tambah Produk Pertama
+                        </a>
                     </div>
                 @endforelse
             </div>
 
             @if($produks->hasPages())
-                <div class="pagination-container">
-                    <div class="d-flex justify-content-center">
-                        {{ $produks->links() }}
-                    </div>
+                <div class="mt-8 pt-6 border-t border-slate-100 flex justify-center">
+                    {{ $produks->links() }}
                 </div>
             @endif
         </div>
     </div>
-
-    <script>
-        // Konfirmasi sebelum menghapus produk
-        document.addEventListener('DOMContentLoaded', function () {
-            const deleteForms = document.querySelectorAll('form[action*="destroy"]');
-
-            deleteForms.forEach(form => {
-                form.addEventListener('submit', function (e) {
-                    const productName = this.closest('.product-card').querySelector('.product-title').textContent;
-                    if (!confirm(`Apakah Anda yakin ingin menghapus produk "${productName}"?`)) {
-                        e.preventDefault();
-                    }
-                });
-            });
-        });
-    </script>
+</div>
 @endsection

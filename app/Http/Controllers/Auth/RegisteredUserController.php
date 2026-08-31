@@ -34,12 +34,15 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'role' => ['nullable', 'in:penjual,pembeli'],
         ]);
+
+        $role = in_array($request->role, ['penjual', 'pembeli']) ? $request->role : 'pembeli';
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'role' => $request->role, // <<-- tambahkan ini!
+            'role' => $role,
             'password' => Hash::make($request->password),
         ]);
         

@@ -12,6 +12,7 @@ use App\Models\User;
 use Midtrans\Config;
 use Midtrans\Snap;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -49,25 +50,76 @@ class OrderController extends Controller
         return $produk->harga;
     }
 
-    public function showForm($produkId)
+    public function showForm($produkId = null, $quantity = null)
     {
-        $produk = Produk::with('diskon')->findOrFail($produkId);
         $userId = Auth::id();
 
-        $keranjang = Keranjang::where('produk_id', $produkId)
-            ->where('user_id', $userId)
-            ->first();
+        if ($produkId) {
+            // Checkout single product (Beli Langsung)
+            $produk = Produk::with('diskon')->findOrFail($produkId);
+            $quantity = $quantity ?? 1;
+            
+            $keranjang = Keranjang::where('produk_id', $produkId)
+                ->where('user_id', $userId)
+                ->first();
+            
+            if ($keranjang) {
+                $quantity = $keranjang->jumlah;
+            }
 
-        $quantity = $keranjang ? $keranjang->jumlah : 1;
-        $harga_diskon = $this->hitungHargaSetelahDiskon($produk);
-        $total_harga = $harga_diskon * $quantity;
+            if ($quantity > $produk->stok) {
+                return redirect()->back()->with('error', 'Stok produk "' . $produk->nama . '" tidak mencukupi (Tersisa: ' . $produk->stok . ').');
+            }
 
-        return view('pembeli.order', compact('produk', 'quantity', 'harga_diskon', 'total_harga'));
+            $harga_diskon = $this->hitungHargaSetelahDiskon($produk);
+            $total_harga = $harga_diskon * $quantity;
+            $items = [(object)[
+                'produk' => $produk,
+                'jumlah' => $quantity,
+                'harga_satuan' => $harga_diskon,
+                'subtotal' => $total_harga,
+                'keranjang_id' => $keranjang ? $keranjang->id : null
+            ]];
+            $is_cart = false;
+        } else {
+            // Checkout entire cart
+            $keranjangs = Keranjang::with('produk.diskon')->where('user_id', $userId)->get();
+            if ($keranjangs->isEmpty()) {
+                return redirect()->route('pembeli.keranjang.index')->with('error', 'Keranjang kosong.');
+            }
+            
+            $items = [];
+            $total_harga = 0;
+            foreach($keranjangs as $k) {
+                if ($k->jumlah > $k->produk->stok) {
+                    return redirect()->route('pembeli.keranjang.index')->with('error', 'Stok produk "' . $k->produk->nama . '" tidak mencukupi (Tersisa: ' . $k->produk->stok . ').');
+                }
+
+                $harga_diskon = $this->hitungHargaSetelahDiskon($k->produk);
+                $sub = $harga_diskon * $k->jumlah;
+                $total_harga += $sub;
+                $items[] = (object)[
+                    'produk' => $k->produk,
+                    'jumlah' => $k->jumlah,
+                    'harga_satuan' => $harga_diskon,
+                    'subtotal' => $sub,
+                    'keranjang_id' => $k->id
+                ];
+            }
+            $is_cart = true;
+        }
+
+        return view('pembeli.order', compact('items', 'total_harga', 'is_cart', 'produkId', 'quantity'));
     }
 
     public function konfirmasiPembelian($produk_id, $quantity)
     {
         $produk = Produk::with('diskon')->findOrFail($produk_id);
+
+        if ($quantity > $produk->stok) {
+            return redirect()->back()->with('error', 'Stok produk "' . $produk->nama . '" tidak mencukupi (Tersisa: ' . $produk->stok . ').');
+        }
+
         $harga_diskon = $this->hitungHargaSetelahDiskon($produk);
         $total_harga = $harga_diskon * $quantity;
 
@@ -79,72 +131,143 @@ class OrderController extends Controller
     {
         try {
             $request->validate([
-                'produk_id' => 'required|exists:produks,id',
-                'jumlah' => 'required|integer|min:1',
+                'is_cart' => 'required|boolean',
+                'produk_id' => 'nullable|exists:produks,id',
+                'jumlah' => 'nullable|integer|min:1',
                 'name' => 'required|string',
                 'phone' => 'required|string',
                 'alamat' => 'required|string',
             ]);
 
-            $produk = Produk::findOrFail($request->produk_id);
-            $quantity = $request->jumlah;
-            $total_harga = $produk->harga * $quantity;
+            $user = Auth::user();
+            $is_cart = $request->is_cart;
+
+            $items = [];
+            $total_harga = 0;
+            
+            if ($is_cart) {
+                // Ambil dari keranjang
+                $keranjangs = Keranjang::with('produk')->where('user_id', $user->id)->get();
+                if ($keranjangs->isEmpty()) {
+                    return back()->with('error', 'Keranjang kosong.');
+                }
+                foreach($keranjangs as $k) {
+                    if ($k->jumlah > $k->produk->stok) {
+                        return back()->with('error', 'Stok produk "' . $k->produk->nama . '" tidak mencukupi (Tersisa: ' . $k->produk->stok . ').');
+                    }
+
+                    $harga = $this->hitungHargaSetelahDiskon($k->produk);
+                    $sub = $harga * $k->jumlah;
+                    $total_harga += $sub;
+                    $items[] = (object)[
+                        'produk' => $k->produk,
+                        'jumlah' => $k->jumlah,
+                        'harga_satuan' => $harga,
+                        'subtotal' => $sub,
+                        'keranjang_id' => $k->id
+                    ];
+                }
+            } else {
+                // Beli langsung
+                if (!$request->produk_id || !$request->jumlah) {
+                    return back()->with('error', 'Data produk tidak valid.');
+                }
+                $produk = Produk::findOrFail($request->produk_id);
+
+                if ($request->jumlah > $produk->stok) {
+                    return back()->with('error', 'Stok produk "' . $produk->nama . '" tidak mencukupi (Tersisa: ' . $produk->stok . ').');
+                }
+
+                $harga = $this->hitungHargaSetelahDiskon($produk);
+                $total_harga = $harga * $request->jumlah;
+                $items[] = (object)[
+                    'produk' => $produk,
+                    'jumlah' => $request->jumlah,
+                    'harga_satuan' => $harga,
+                    'subtotal' => $total_harga,
+                    'keranjang_id' => null
+                ];
+            }
 
             // Generate order_id yang UNIK
-            $orderIdMidtrans = 'WEB-' . date('YmdHis') . '-' . Auth::id() . '-' . rand(1000, 9999);
+            $orderIdMidtrans = 'WEB-' . date('YmdHis') . '-' . $user->id . '-' . rand(1000, 9999);
 
             // Cek apakah sudah ada order dengan order_id_midtrans yang sama
             while (Order::where('order_id_midtrans', $orderIdMidtrans)->exists()) {
-                $orderIdMidtrans = 'WEB-' . date('YmdHis') . '-' . Auth::id() . '-' . rand(10000, 99999);
+                $orderIdMidtrans = 'WEB-' . date('YmdHis') . '-' . $user->id . '-' . rand(10000, 99999);
             }
 
-            // Buat order baru
-            $order = Order::create([
-                'user_id' => Auth::id(),
-                'produk_id' => $produk->id,
-                'jumlah' => $quantity,
-                'total_harga' => $total_harga,
-                'status' => 'pending',
-                'name' => $request->name,
-                'phone' => $request->phone,
-                'alamat' => $request->alamat,
-                'order_id_midtrans' => $orderIdMidtrans,
-            ]);
+            $orders = [];
+            $itemDetails = [];
 
-            Log::info('Web Checkout - Order Created:', [
+            foreach ($items as $item) {
+                // Buat order untuk setiap produk
+                $order = Order::create([
+                    'user_id' => $user->id,
+                    'produk_id' => $item->produk->id,
+                    'jumlah' => $item->jumlah,
+                    'total_harga' => $item->subtotal,
+                    'status' => 'pending',
+                    'name' => $request->name,
+                    'phone' => $request->phone,
+                    'alamat' => $request->alamat,
+                    'order_id_midtrans' => $orderIdMidtrans,
+                ]);
+
+                $orders[] = $order;
+
+                $itemDetails[] = [
+                    'id' => $item->produk->id,
+                    'price' => round($item->harga_satuan),
+                    'quantity' => $item->jumlah,
+                    'name' => substr($item->produk->nama, 0, 50),
+                ];
+            }
+
+            Log::info('Web Checkout - Orders Created:', [
                 'order_id' => $orderIdMidtrans,
-                'produk_id' => $produk->id,
-                'total' => $total_harga
+                'total_amount' => $total_harga,
+                'items_count' => count($items)
             ]);
 
             // Siapkan parameter untuk Midtrans
             $params = [
                 'transaction_details' => [
-                    'order_id' => $orderIdMidtrans, // PASTIKAN ini tidak kosong
-                    'gross_amount' => $total_harga,
+                    'order_id' => $orderIdMidtrans,
+                    'gross_amount' => round($total_harga),
                 ],
                 'customer_details' => [
                     'first_name' => $request->name,
-                    'email' => Auth::user()->email,
+                    'email' => $user->email,
                     'phone' => $request->phone,
                 ],
-                'item_details' => [
-                    [
-                        'id' => $produk->id,
-                        'price' => $produk->harga,
-                        'quantity' => $quantity,
-                        'name' => $produk->nama,
-                    ]
-                ],
+                'item_details' => $itemDetails,
             ];
 
             // Dapatkan Snap Token
             $snapToken = Snap::getSnapToken($params);
 
-            // Update order dengan snap token
-            $order->update(['snap_token' => $snapToken]);
+            // Update semua orders dengan snap token
+            foreach ($orders as $o) {
+                $o->update(['snap_token' => $snapToken]);
+            }
 
-            return view('pembeli.checkout', compact('snapToken', 'order'));
+            // Kosongkan keranjang jika dari keranjang
+            if ($is_cart) {
+                Keranjang::where('user_id', $user->id)->delete();
+            } else {
+                // Jika dari "Beli Langsung", hapus produk ini dari keranjang jika ada
+                if ($items[0]->keranjang_id) {
+                    Keranjang::where('id', $items[0]->keranjang_id)->delete();
+                } else {
+                    Keranjang::where('user_id', $user->id)->where('produk_id', $items[0]->produk->id)->delete();
+                }
+            }
+
+            // Kita pakai order pertama untuk view pembeli.checkout karena view saat ini mengharapkan $order (walaupun kita akan update view-nya juga)
+            $order = $orders[0];
+
+            return view('pembeli.checkout', compact('snapToken', 'order', 'items', 'total_harga', 'orders'));
         } catch (\Exception $e) {
             Log::error('Web Checkout Error:', [
                 'message' => $e->getMessage(),
@@ -206,6 +329,16 @@ class OrderController extends Controller
                     'success' => false,
                     'message' => 'Keranjang kosong'
                 ], 400);
+            }
+
+            // Validasi ketersediaan stok
+            foreach ($keranjangItems as $item) {
+                if ($item->jumlah > $item->produk->stok) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Stok produk "' . $item->produk->nama . '" tidak mencukupi (Tersisa: ' . $item->produk->stok . ').'
+                    ], 400);
+                }
             }
 
             // 2. Generate order_id yang UNIK
@@ -349,6 +482,12 @@ class OrderController extends Controller
         try {
             Log::info('Midtrans Callback Received:', $request->all());
 
+            // Validasi gross_amount harus positif
+            if ((float) $request->gross_amount <= 0) {
+                Log::warning('Midtrans Callback: Invalid gross_amount', ['gross_amount' => $request->gross_amount]);
+                return response()->json(['message' => 'Invalid gross amount'], 400);
+            }
+
             $serverKey = config('midtrans.server_key');
 
             // Verifikasi signature
@@ -362,29 +501,42 @@ class OrderController extends Controller
                 return response()->json(['message' => 'Invalid signature'], 403);
             }
 
-            // Cari semua orders dengan order_id_midtrans yang sama
-            $orders = Order::where('order_id_midtrans', $request->order_id)->get();
-
-            if ($orders->isEmpty()) {
-                Log::warning('Orders not found for Midtrans callback:', ['order_id' => $request->order_id]);
-                return response()->json(['message' => 'Orders not found'], 404);
-            }
-
             $statusBaru = $this->mapTransactionStatus($request->transaction_status);
 
-            // Update semua orders
-            foreach ($orders as $order) {
-                $order->status = $statusBaru;
-                $order->save();
+            // Gunakan transaksi database dan lockForUpdate untuk mencegah race condition & replay callback
+            $processed = DB::transaction(function () use ($request, $statusBaru) {
+                $orders = Order::where('order_id_midtrans', $request->order_id)
+                    ->lockForUpdate()
+                    ->get();
 
-                // Jika status complete, kurangi stok
-                if ($statusBaru === 'complete') {
-                    $produk = Produk::find($order->produk_id);
-                    if ($produk && $produk->stok >= $order->jumlah) {
-                        $produk->stok -= $order->jumlah;
-                        $produk->save();
+                if ($orders->isEmpty()) {
+                    return false;
+                }
+
+                foreach ($orders as $order) {
+                    $statusLama = $order->status;
+
+                    if ($statusLama !== $statusBaru) {
+                        $order->status = $statusBaru;
+                        $order->save();
+
+                        // Kurangi stok HANYA saat status bertransisi dari non-complete menjadi complete
+                        if ($statusBaru === 'complete' && $statusLama !== 'complete') {
+                            $produk = Produk::where('id', $order->produk_id)->lockForUpdate()->first();
+                            if ($produk) {
+                                $produk->stok = max(0, $produk->stok - $order->jumlah);
+                                $produk->save();
+                            }
+                        }
                     }
                 }
+
+                return true;
+            });
+
+            if (!$processed) {
+                Log::warning('Orders not found for Midtrans callback:', ['order_id' => $request->order_id]);
+                return response()->json(['message' => 'Orders not found'], 404);
             }
 
             return response()->json([
@@ -421,7 +573,11 @@ class OrderController extends Controller
     // Tampilkan invoice
     public function invoice($id)
     {
-        $order = Order::with('produk')->findOrFail($id);
+        $order = Order::with('produk')
+            ->where('id', $id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
         return view('pembeli.invoice', compact('order'));
     }
 
@@ -442,18 +598,26 @@ class OrderController extends Controller
     // Bayar ulang untuk pending order
     public function pending($order_id_midtrans)
     {
-        $order = Order::with('produk')
+        $orders = Order::with('produk')
             ->where('order_id_midtrans', $order_id_midtrans)
-            ->firstOrFail();
+            ->get();
+
+        if ($orders->isEmpty()) {
+            abort(404);
+        }
+
+        $order = $orders->first();
 
         if ($order->user_id !== auth()->id()) {
             abort(403);
         }
+        
+        $total_harga = $orders->sum('total_harga');
 
         $params = [
             'transaction_details' => [
                 'order_id' => $order->order_id_midtrans,
-                'gross_amount' => $order->total_harga,
+                'gross_amount' => round($total_harga),
             ],
             'customer_details' => [
                 'first_name' => $order->name,
@@ -462,13 +626,15 @@ class OrderController extends Controller
         ];
 
         $snapToken = Snap::getSnapToken($params);
-        return view('pembeli.pending', compact('order', 'snapToken'));
+        return view('pembeli.pending', compact('order', 'snapToken', 'orders', 'total_harga'));
     }
 
     // Batalkan pesanan manual
     public function batal($id)
     {
-        $order = Order::findOrFail($id);
+        $order = Order::where('id', $id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
 
         if ($order->status === 'pending') {
             $order->status = 'canceled';

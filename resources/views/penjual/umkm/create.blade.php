@@ -1,44 +1,98 @@
 @extends('layouts.app')
 
-@section('page_title', 'Toko Saya')
-
-@section('title')
-    <i class="icon-copy bi bi-shop"></i> Toko Saya
-@endsection
+@section('page_title', 'Pendaftaran Toko Baru')
 
 @section('content')
-<div class="container text-theme">
+<div class="max-w-4xl mx-auto space-y-6">
 
-
-    <form action="{{ route('penjual.umkm.store') }}" method="POST" enctype="multipart/form-data">
-        @csrf
-
-        <div class="mb-3">
-            <label class="form-label">Nama Toko</label>
-            <input type="text" name="nama_toko" class="form-control" required>
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h2 class="text-2xl font-bold text-slate-900 font-display">Pendaftaran Toko</h2>
+            <p class="text-sm text-slate-500 mt-1">Lengkapi informasi untuk mendaftarkan toko baru Anda.</p>
         </div>
+        <a href="{{ route('penjual.umkm.index') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-sm rounded-xl transition border border-slate-200">
+            <i class="fas fa-arrow-left"></i> Kembali
+        </a>
+    </div>
 
-        <div class="mb-3">
-            <label class="form-label">Deskripsi</label>
-            <textarea name="deskripsi" class="form-control"></textarea>
-        </div>
+    <!-- Form Container -->
+    <div class="card bg-white border border-slate-200/80 shadow-sm rounded-2xl overflow-hidden p-6 sm:p-8">
+        <form action="{{ route('penjual.umkm.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+            @csrf
 
-        <div class="mb-3">
-            <label class="form-label">Alamat</label>
-            <input type="text" name="alamat" class="form-control" required>
-        </div>
+            <!-- Form Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                <!-- Left: Basic Info -->
+                <div class="lg:col-span-8 space-y-6">
+                    <div>
+                        <label for="nama_toko" class="block text-sm font-bold text-slate-900 mb-2">Nama Toko <span class="text-rose-500">*</span></label>
+                        <input type="text" id="nama_toko" name="nama_toko" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition" placeholder="Masukkan nama toko Anda" required>
+                    </div>
 
-        <div class="mb-3">
-            <label class="form-label">No Telepon</label>
-            <input type="text" name="no_telp" class="form-control">
-        </div>
+                    <div>
+                        <label for="deskripsi" class="block text-sm font-bold text-slate-900 mb-2">Deskripsi Toko</label>
+                        <textarea id="deskripsi" name="deskripsi" rows="4" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition" placeholder="Ceritakan sedikit tentang toko Anda"></textarea>
+                    </div>
 
-        <div class="mb-3">
-            <label class="form-label">Logo Toko</label>
-            <input type="file" name="logo" class="form-control">
-        </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="alamat" class="block text-sm font-bold text-slate-900 mb-2">Alamat Lengkap <span class="text-rose-500">*</span></label>
+                            <input type="text" id="alamat" name="alamat" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition" placeholder="Alamat lengkap toko" required>
+                        </div>
+                        <div>
+                            <label for="no_telp" class="block text-sm font-bold text-slate-900 mb-2">Nomor Telepon</label>
+                            <input type="text" id="no_telp" name="no_telp" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition" placeholder="08xxxxxxxxxx">
+                        </div>
+                    </div>
+                </div>
 
-        <button type="submit" class="btn btn-primary">Kirim Pendaftaran</button>
-    </form>
+                <!-- Right: Logo Upload -->
+                <div class="lg:col-span-4">
+                    <label class="block text-sm font-bold text-slate-900 mb-2">Logo Toko</label>
+                    <div class="relative group cursor-pointer border-2 border-dashed border-slate-200 bg-slate-50 rounded-2xl p-6 text-center hover:bg-slate-100 hover:border-brand-500 transition h-[250px] flex flex-col justify-center items-center overflow-hidden" id="logoUploadArea">
+                        
+                        <input type="file" id="logo" name="logo" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept="image/*" onchange="previewImage(this)">
+                        
+                        <div id="uploadPlaceholder" class="flex flex-col items-center justify-center">
+                            <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-slate-400 mb-3 shadow-sm group-hover:text-brand-500 group-hover:scale-110 transition">
+                                <i class="fas fa-cloud-upload-alt text-2xl"></i>
+                            </div>
+                            <span class="text-sm font-bold text-slate-700">Pilih Logo</span>
+                            <span class="text-xs text-slate-400 mt-1">PNG, JPG up to 2MB</span>
+                        </div>
+
+                        <img id="imagePreview" src="#" alt="Preview" class="hidden absolute inset-0 w-full h-full object-cover z-0">
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Submit Section -->
+            <div class="pt-6 border-t border-slate-100 flex justify-end">
+                <button type="submit" class="inline-flex items-center gap-2 px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl transition shadow-sm hover:shadow">
+                    <i class="fas fa-paper-plane"></i> Kirim Pendaftaran
+                </button>
+            </div>
+        </form>
+    </div>
+
 </div>
+
+<script>
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            
+            reader.onload = function (e) {
+                document.getElementById('imagePreview').src = e.target.result;
+                document.getElementById('imagePreview').classList.remove('hidden');
+                document.getElementById('uploadPlaceholder').classList.add('hidden');
+            }
+            
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
 @endsection

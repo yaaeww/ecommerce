@@ -44,6 +44,7 @@ class GoogleController extends Controller
 
             // Login langsung jika user sudah ada
             Auth::login($user);
+            request()->session()->regenerate();
 
             return $this->redirectByRole($user);
         } catch (Exception $e) {
@@ -84,6 +85,7 @@ class GoogleController extends Controller
         ]);
 
         Auth::login($user);
+        $request->session()->regenerate();
         session()->forget('google_user');
 
         return $this->redirectByRole($user);

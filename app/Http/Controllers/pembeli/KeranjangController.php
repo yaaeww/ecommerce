@@ -102,10 +102,14 @@ class KeranjangController extends Controller
 
         // Validasi stok
         if ($request->jumlah > $produk->stok) {
-            $errorMessage = 'Stok produk tidak mencukupi.';
+            $errorMessage = 'Stok produk tidak mencukupi (Tersisa: ' . $produk->stok . ').';
 
             return $request->expectsJson()
-                ? response()->json(['success' => false, 'message' => $errorMessage], 400)
+                ? response()->json([
+                    'success' => false, 
+                    'message' => $errorMessage,
+                    'max_stok' => $produk->stok
+                ], 400)
                 : redirect()->back()->with('error', $errorMessage);
         }
 
@@ -120,14 +124,96 @@ class KeranjangController extends Controller
                 : redirect()->back()->with('error', $errorMessage);
         }
 
-        return $request->expectsJson()
-            ? response()->json(['success' => true, 'message' => 'Jumlah produk diperbarui.'])
-            : redirect()->back()->with('success', 'Jumlah produk diperbarui.');
+        if ($request->expectsJson()) {
+            // Hitung harga item setelah diskon
+            $today = now();
+            $hargaDiskon = $produk->harga;
+            if ($produk->diskon && $today->between($produk->diskon->tanggal_mulai, $produk->diskon->tanggal_berakhir)) {
+                $hargaDiskon = round($produk->harga * (1 - ($produk->diskon->persen_diskon / 100)), 2);
+            }
+            $itemSubtotal = $hargaDiskon * $request->jumlah;
+
+            // Hitung total seluruh keranjang user
+            $userId = Auth::id();
+            $allKeranjang = KeranjangModel::with('produk.diskon')->where('user_id', $userId)->get();
+            $totalKeranjang = 0;
+            $totalCount = 0;
+            $stokAman = true;
+
+            foreach ($allKeranjang as $k) {
+                if ($k->produk) {
+                    $h = $k->produk->harga;
+                    if ($k->produk->diskon && $today->between($k->produk->diskon->tanggal_mulai, $k->produk->diskon->tanggal_berakhir)) {
+                        $h = round($k->produk->harga * (1 - ($k->produk->diskon->persen_diskon / 100)), 2);
+                    }
+                    $totalKeranjang += $h * $k->jumlah;
+                    $totalCount += $k->jumlah;
+
+                    if ($k->jumlah > $k->produk->stok) {
+                        $stokAman = false;
+                    }
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Jumlah berhasil diperbarui.',
+                'item_id' => $id,
+                'jumlah' => (int)$request->jumlah,
+                'max_stok' => $produk->stok,
+                'subtotal_raw' => $itemSubtotal,
+                'subtotal_formatted' => 'Rp ' . number_format($itemSubtotal, 0, ',', '.'),
+                'total_keranjang_raw' => $totalKeranjang,
+                'total_keranjang_formatted' => 'Rp ' . number_format($totalKeranjang, 0, ',', '.'),
+                'total_count' => $totalCount,
+                'stok_aman' => $stokAman
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Jumlah produk diperbarui.');
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $deleted = KeranjangService::hapusKeranjang($id);
+
+        if ($request->expectsJson()) {
+            if (!$deleted) {
+                return response()->json(['success' => false, 'message' => 'Gagal menghapus produk.'], 404);
+            }
+
+            $userId = Auth::id();
+            $today = now();
+            $allKeranjang = KeranjangModel::with('produk.diskon')->where('user_id', $userId)->get();
+            $totalKeranjang = 0;
+            $totalCount = 0;
+            $stokAman = true;
+
+            foreach ($allKeranjang as $k) {
+                if ($k->produk) {
+                    $h = $k->produk->harga;
+                    if ($k->produk->diskon && $today->between($k->produk->diskon->tanggal_mulai, $k->produk->diskon->tanggal_berakhir)) {
+                        $h = round($k->produk->harga * (1 - ($k->produk->diskon->persen_diskon / 100)), 2);
+                    }
+                    $totalKeranjang += $h * $k->jumlah;
+                    $totalCount += $k->jumlah;
+
+                    if ($k->jumlah > $k->produk->stok) {
+                        $stokAman = false;
+                    }
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Produk dihapus dari keranjang.',
+                'is_empty' => $allKeranjang->isEmpty(),
+                'total_keranjang_raw' => $totalKeranjang,
+                'total_keranjang_formatted' => 'Rp ' . number_format($totalKeranjang, 0, ',', '.'),
+                'total_count' => $totalCount,
+                'stok_aman' => $stokAman
+            ]);
+        }
 
         return $deleted
             ? redirect()->back()->with('success', 'Produk dihapus dari keranjang.')

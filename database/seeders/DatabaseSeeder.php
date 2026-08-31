@@ -61,7 +61,7 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Sari Wijaya',
                 'email' => 'sari@gmail.com',
                 'password' => Hash::make('11111111'),
-                'role' => 'penjuai',
+                'role' => 'penjual',
                 'avatar' => 'storage/avatars/sari.png',
             ],
             [

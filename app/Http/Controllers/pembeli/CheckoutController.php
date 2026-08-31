@@ -146,24 +146,29 @@ class CheckoutController extends Controller
         $transaction = $notif->transaction_status;
         $order_id = $notif->order_id;
 
-        $order = Order::where('order_id_midtrans', $order_id)->first();
+        $orders = Order::where('order_id_midtrans', $order_id)->get();
 
-        if (!$order) {
+        if ($orders->isEmpty()) {
             return response()->json(['message' => 'Order tidak ditemukan'], 404);
         }
 
-        if (in_array($transaction, ['capture', 'settlement']) && $order->status !== 'complete') {
-            $produk = Produk::find($order->produk_id);
-
-            if ($produk && $produk->stok >= $order->jumlah) {
-                $produk->decrement('stok', $order->jumlah);
-                $order->update([
-                    'status' => 'complete',
-                    'stok_dikurangi' => 1,
-                ]);
+        foreach ($orders as $order) {
+            if (in_array($transaction, ['capture', 'settlement']) && $order->status !== 'complete') {
+                $produk = Produk::find($order->produk_id);
+    
+                if ($produk && $produk->stok >= $order->jumlah) {
+                    $produk->decrement('stok', $order->jumlah);
+                    $order->update([
+                        'status' => 'complete',
+                        'stok_dikurangi' => 1,
+                    ]);
+                } else {
+                    // Jika stok tidak mencukupi, set status cancel / failed
+                    $order->update(['status' => 'cancel']);
+                }
+            } elseif (in_array($transaction, ['cancel', 'expire', 'deny'])) {
+                $order->update(['status' => 'cancel']);
             }
-        } elseif (in_array($transaction, ['cancel', 'expire', 'deny'])) {
-            $order->update(['status' => 'cancel']);
         }
 
         return response()->json(['message' => 'Notifikasi diproses']);

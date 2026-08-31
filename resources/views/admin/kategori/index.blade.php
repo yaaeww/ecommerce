@@ -1,393 +1,226 @@
 @extends('layouts.app')
-@section('page_title', 'Kategori')
 
-@section('title')
-    <i class="bi bi-tags-fill" style="color: var(--gold);"></i> Kategori
-@endsection
-
-@push('style')
-    <style>
-        :root {
-            --dark-blue: #0a1628;
-            --medium-blue: #1a3a5f;
-            --light-blue: #2a4a7f;
-            --gold: #ffd700;
-            --gold-light: #ffed4e;
-            --gold-dark: #d4af37;
-            --text-primary: #100f0f;
-            --text-secondary: #a0aec0;
-            --success-color: #28a745;
-            --danger-color: #dc3545;
-            --warning-color: #ffc107;
-        }
-
-        .card {
-            background: linear-gradient(135deg, rgba(10, 22, 40, 0.95) 0%, rgba(26, 58, 95, 0.9) 100%) !important;
-            border: 2px solid var(--gold);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(255, 215, 0, 0.15);
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--gold), transparent);
-            animation: shimmer 3s infinite;
-        }
-
-        @keyframes shimmer {
-
-            0%,
-            100% {
-                opacity: 0;
-            }
-
-            50% {
-                opacity: 1;
-            }
-        }
-
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 40px rgba(255, 215, 0, 0.25);
-        }
-
-        .card-body {
-            color: var(--text-primary);
-        }
-
-        h4.mb-3 {
-            color: var(--text-primary);
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* Button Styling */
-        .btn-primary {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            border: 2px solid var(--gold);
-            color: var(--dark-blue);
-            font-weight: 700;
-            padding: 10px 20px;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
-            background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
-            color: var(--dark-blue);
-        }
-
-        .btn-warning {
-            background: linear-gradient(135deg, var(--warning-color) 0%, #ffd54f 100%);
-            border: 2px solid var(--warning-color);
-            color: var(--dark-blue);
-            font-weight: 600;
-            padding: 6px 12px;
-            border-radius: 6px;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
-        }
-
-        .btn-warning:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
-            background: linear-gradient(135deg, #ffd54f 0%, var(--warning-color) 100%);
-            color: var(--dark-blue);
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, var(--danger-color) 0%, #e74c3c 100%);
-            border: 2px solid var(--danger-color);
-            color: white;
-            font-weight: 600;
-            padding: 6px 12px;
-            border-radius: 6px;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
-        }
-
-        .btn-danger:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
-            background: linear-gradient(135deg, #e74c3c 0%, var(--danger-color) 100%);
-            color: white;
-        }
-
-        /* Alert Styling */
-        .alert-success {
-            background: linear-gradient(135deg, rgba(40, 167, 69, 0.9) 0%, rgba(52, 195, 85, 0.8) 100%);
-            border: 2px solid var(--success-color);
-            color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-        }
-
-        .alert-danger {
-            background: linear-gradient(135deg, rgba(220, 53, 69, 0.9) 0%, rgba(231, 76, 60, 0.8) 100%);
-            border: 2px solid var(--danger-color);
-            color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
-        }
-
-        /* Table Styling */
-        .table {
-            background: transparent;
-            border-radius: 15px;
-            overflow: hidden;
-            margin-bottom: 0;
-        }
-
-        .table-theme {
-            background: linear-gradient(135deg, var(--dark-blue) 0%, var(--medium-blue) 100%);
-            border-bottom: 2px solid var(--gold);
-        }
-
-        .table-theme th {
-            color: var(--gold);
-            font-weight: 700;
-            padding: 15px;
-            text-align: center;
-            border: none;
-            font-size: 1rem;
-        }
-
-        .table-hover tbody tr {
-            transition: all 0.3s ease;
-            background: rgba(10, 22, 40, 0.7);
-        }
-
-        .table-hover tbody tr:hover {
-            background: rgba(255, 215, 0, 0.1);
-            transform: translateX(5px);
-        }
-
-        .table-hover tbody tr td {
-            color: var(--text-primary);
-            padding: 15px;
-            text-align: center;
-            vertical-align: middle;
-            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
-        }
-
-        .text-theme {
-            color: var(--text-primary) !important;
-        }
-
-        /* Image Styling */
-        .table img {
-            border-radius: 8px;
-            border: 2px solid var(--gold);
-            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .table img:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.5);
-        }
-
-        /* Text Muted */
-        .text-muted {
-            color: var(--text-secondary) !important;
-        }
-
-        /* Form Styling */
-        form.d-inline {
-            display: inline-block;
-        }
-
-        /* Icon Styling in Table */
-        .bi-arrow-return-right {
-            color: var(--gold);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .table-responsive {
-                border-radius: 10px;
-                border: 1px solid var(--gold);
-            }
-
-            .btn {
-                padding: 8px 16px;
-                font-size: 0.875rem;
-            }
-
-            .table-theme th,
-            .table-hover tbody tr td {
-                padding: 10px 8px;
-                font-size: 0.875rem;
-            }
-        }
-
-        /* Animation for new elements */
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Badge for hierarchy */
-        .hierarchy-level {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            background: var(--gold);
-            color: var(--dark-blue);
-            border-radius: 50%;
-            text-align: center;
-            line-height: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            margin-right: 8px;
-        }
-    </style>
-@endpush
+@section('page_title', 'Kategori Produk')
 
 @section('content')
-    <div class="card fade-in">
-        <div class="card-body">
-            <h4 class="mb-3">Daftar Kategori Produk</h4>
-
-            <a href="{{ route('admin.kategori.create') }}" class="btn btn-primary mb-3">
-                <i class="bi bi-plus-circle me-2"></i>Tambah Kategori
+<div class="space-y-6">
+    
+    <!-- Top Action Bar -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h2 class="text-xl font-extrabold text-slate-900 tracking-tight font-display">Manajemen Kategori Produk</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Kelola taksonomi komoditas mangga, pangan olahan, dan kerajinan UMKM</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <a 
+                href="{{ route('admin.kategori.create') }}" 
+                class="inline-flex items-center gap-2 px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs rounded-xl transition shadow-sm hover:shadow"
+            >
+                <i class="fas fa-plus text-xs"></i> Tambah Kategori
             </a>
+        </div>
+    </div>
 
-            @if (session('success'))
-                <div class="alert alert-success fade-in">{{ session('success') }}</div>
-            @endif
+    <!-- Filter & Search Toolbar -->
+    <div class="card p-4 sm:p-5 bg-white border border-slate-200/80 shadow-sm">
+        <form method="GET" action="{{ route('admin.kategori.index') }}" class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            
+            <!-- Search Input -->
+            <div class="relative flex-1 max-w-md">
+                <i class="fas fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input 
+                    type="text" 
+                    name="search" 
+                    value="{{ $search }}" 
+                    placeholder="Cari nama kategori atau subkategori..." 
+                    class="w-full pl-9 pr-8 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none focus:border-brand-500 focus:bg-white transition"
+                >
+                @if($search)
+                    <a href="{{ route('admin.kategori.index', ['filter' => $filter]) }}" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs" title="Hapus pencarian">
+                        <i class="fas fa-times"></i>
+                    </a>
+                @endif
+            </div>
 
-            @if (session('error'))
-                <div class="alert alert-danger fade-in">{{ session('error') }}</div>
-            @endif
+            <!-- Filter Type Pills / Selector -->
+            <div class="flex items-center gap-2 flex-wrap">
+                <a 
+                    href="{{ route('admin.kategori.index', ['filter' => 'all', 'search' => $search]) }}" 
+                    class="px-3 py-2 rounded-xl text-xs font-bold transition {{ $filter === 'all' ? 'bg-brand-50 text-brand-700 border border-brand-200' : 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100' }}"
+                >
+                    Semua
+                </a>
+                <a 
+                    href="{{ route('admin.kategori.index', ['filter' => 'induk', 'search' => $search]) }}" 
+                    class="px-3 py-2 rounded-xl text-xs font-bold transition {{ $filter === 'induk' ? 'bg-brand-50 text-brand-700 border border-brand-200' : 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100' }}"
+                >
+                    Hanya Induk ({{ $totalInduk }})
+                </a>
+                <a 
+                    href="{{ route('admin.kategori.index', ['filter' => 'sub', 'search' => $search]) }}" 
+                    class="px-3 py-2 rounded-xl text-xs font-bold transition {{ $filter === 'sub' ? 'bg-brand-50 text-brand-700 border border-brand-200' : 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100' }}"
+                >
+                    Hanya Sub ({{ $totalSub }})
+                </a>
+            </div>
+        </form>
+    </div>
 
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover text-theme">
-                    <thead class="table-theme">
-                        <tr>
-                            <th>Gambar</th>
-                            <th>Nama Kategori</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @php
-                            function tampilkanKategori($kategori, $level = 0)
+    <!-- Table Card -->
+    <div class="card bg-white border border-slate-200/80 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="table w-full text-left">
+                <thead>
+                    <tr>
+                        <th class="w-24">Gambar</th>
+                        <th>Nama Kategori & Hirarki</th>
+                        <th>Induk / Status</th>
+                        <th class="w-32 text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    @php
+                        if (!function_exists('renderKategoriRow')) {
+                            function renderKategoriRow($kategori, $level = 0)
                             {
-                                $indent = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $level);
-                                echo '<tr class="fade-in">';
-                                echo '<td>';
-                                if ($kategori->gambar && file_exists(public_path('storage/kategori/' . $kategori->gambar))) {
-                                    echo '<img src="' . asset('storage/kategori/' . $kategori->gambar) . '" width="60" height="60" style="object-fit: cover;" alt="gambar kategori">';
-                                } else {
-                                    echo '<span class="text-muted"><i class="bi bi-image me-1"></i>Tidak ada gambar</span>';
-                                }
-                                echo '</td>';
-                                echo '<td class="text-start">' . $indent;
-                                if ($level > 0) {
-                                    echo '<i class="bi bi-arrow-return-right me-2" style="color: var(--black);"></i>';
-                                }
-                                echo '<strong>' . e($kategori->nama) . '</strong>';
-                                echo '</td>';
-                                echo '<td>';
-                                echo '<div class="d-flex gap-2 justify-content-center">';
-                                echo '<a href="' . route('admin.kategori.edit', $kategori->id) . '" class="btn btn-warning btn-sm">';
-                                echo '<i class="bi bi-pencil me-1"></i>Edit';
-                                echo '</a>';
-                                echo '<form action="' . route('admin.kategori.destroy', $kategori->id) . '" method="POST" class="d-inline" onsubmit="return confirm(\'Yakin hapus kategori ' . addslashes($kategori->nama) . '?\')">';
-                                echo csrf_field();
-                                echo method_field('DELETE');
-                                echo '<button class="btn btn-danger btn-sm">';
-                                echo '<i class="bi bi-trash me-1"></i>Hapus';
-                                echo '</button>';
-                                echo '</form>';
-                                echo '</div>';
-                                echo '</td>';
-                                echo '</tr>';
+                            $indentPx = $level * 28;
+                            echo '<tr class="hover:bg-slate-50/70 transition">';
+                            
+                            // Image / Icon
+                            echo '<td>';
+                            echo '<div class="w-11 h-11 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 overflow-hidden shrink-0">';
+                            if ($kategori->gambar && file_exists(public_path('storage/kategori/' . $kategori->gambar))) {
+                                echo '<img src="' . asset('storage/kategori/' . $kategori->gambar) . '" class="w-full h-full object-cover" alt="' . e($kategori->nama) . '">';
+                            } else {
+                                echo '<i class="fas fa-layer-group text-brand-600 text-sm"></i>';
+                            }
+                            echo '</div>';
+                            echo '</td>';
 
+                            // Name with Indentation
+                            echo '<td>';
+                            echo '<div class="flex items-center gap-2" style="padding-left: ' . $indentPx . 'px;">';
+                            if ($level > 0) {
+                                echo '<i class="fas fa-arrow-turn-down text-slate-300 text-xs rotate-[270deg]"></i>';
+                                echo '<span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">Sub</span>';
+                                echo '<span class="font-semibold text-xs text-slate-800">' . e($kategori->nama) . '</span>';
+                            } else {
+                                echo '<span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-bold bg-brand-50 text-brand-700 border border-brand-200">Induk</span>';
+                                echo '<span class="font-extrabold text-sm text-slate-900">' . e($kategori->nama) . '</span>';
+                            }
+                            echo '</div>';
+                            echo '</td>';
+
+                            // Parent Name
+                            echo '<td>';
+                            if ($kategori->parent) {
+                                echo '<span class="text-xs text-slate-500 font-semibold flex items-center gap-1.5"><i class="fas fa-turn-up text-[10px] text-slate-400 rotate-90"></i>' . e($kategori->parent->nama) . '</span>';
+                            } else {
+                                echo '<span class="text-[11px] text-slate-400 font-medium">Kategori Utama (' . $kategori->children->count() . ' sub)</span>';
+                            }
+                            echo '</td>';
+
+                            // Actions
+                            echo '<td class="text-center">';
+                            echo '<div class="flex items-center justify-center gap-2">';
+                            echo '<a href="' . route('admin.kategori.edit', $kategori->id) . '" class="p-2 text-slate-500 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition" title="Edit">';
+                            echo '<i class="fas fa-pen-to-square text-xs"></i>';
+                            echo '</a>';
+                            echo '<form action="' . route('admin.kategori.destroy', $kategori->id) . '" method="POST" class="inline" onsubmit="return confirm(\'Yakin hapus kategori ' . addslashes($kategori->nama) . '?\')">';
+                            echo csrf_field();
+                            echo method_field('DELETE');
+                            echo '<button type="submit" class="p-2 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Hapus">';
+                            echo '<i class="fas fa-trash-can text-xs"></i>';
+                            echo '</button>';
+                            echo '</form>';
+                            echo '</div>';
+                            echo '</td>';
+
+                            echo '</tr>';
+
+                            if (isset($kategori->children) && $kategori->children->isNotEmpty()) {
                                 foreach ($kategori->children as $child) {
-                                    tampilkanKategori($child, $level + 1);
+                                    renderKategoriRow($child, $level + 1);
                                 }
                             }
-                        @endphp
+                        }
+                    }
+                    @endphp
 
-                        @foreach ($kategoris as $kategori)
-                            @if (is_null($kategori->parent_id))
-                                {!! tampilkanKategori($kategori) !!}
-                            @endif
-                        @endforeach
-
-                        @if($kategoris->isEmpty())
-                            <tr>
-                                <td colspan="3" class="text-center text-muted py-4">
-                                    <i class="bi bi-inbox me-2"></i>Belum ada kategori
+                    @forelse ($kategoris as $kategori)
+                        @if ($isHierarchical)
+                            {!! renderKategoriRow($kategori) !!}
+                        @else
+                            <tr class="hover:bg-slate-50/70 transition">
+                                <td>
+                                    <div class="w-11 h-11 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 overflow-hidden shrink-0">
+                                        @if ($kategori->gambar && file_exists(public_path('storage/kategori/' . $kategori->gambar)))
+                                            <img src="{{ asset('storage/kategori/' . $kategori->gambar) }}" class="w-full h-full object-cover" alt="{{ $kategori->nama }}">
+                                        @else
+                                            <i class="fas fa-layer-group text-brand-600 text-sm"></i>
+                                        @endif
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="flex items-center gap-2">
+                                        @if($kategori->parent_id)
+                                            <span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">Sub</span>
+                                        @else
+                                            <span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-bold bg-brand-50 text-brand-700 border border-brand-200">Induk</span>
+                                        @endif
+                                        <span class="font-bold text-xs text-slate-900">{{ $kategori->nama }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    @if($kategori->parent)
+                                        <span class="text-xs text-slate-500 font-semibold flex items-center gap-1.5">
+                                            <i class="fas fa-turn-up text-[10px] text-slate-400 rotate-90"></i>
+                                            {{ $kategori->parent->nama }}
+                                        </span>
+                                    @else
+                                        <span class="text-[11px] text-slate-400 font-medium">Kategori Utama</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <a href="{{ route('admin.kategori.edit', $kategori->id) }}" class="p-2 text-slate-500 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition" title="Edit">
+                                            <i class="fas fa-pen-to-square text-xs"></i>
+                                        </a>
+                                        <form action="{{ route('admin.kategori.destroy', $kategori->id) }}" method="POST" class="inline" onsubmit="return confirm('Yakin hapus kategori {{ addslashes($kategori->nama) }}?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="p-2 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Hapus">
+                                                <i class="fas fa-trash-can text-xs"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         @endif
-                    </tbody>
-                </table>
-            </div>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="text-center py-12 text-slate-400 text-xs">
+                                <i class="fas fa-inbox text-3xl mb-2 block"></i>
+                                Tidak ada kategori yang sesuai dengan filter pencarian.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
+
+        <!-- Pagination Bar -->
+        @if($kategoris->hasPages())
+            <div class="p-4 border-t border-slate-100 flex items-center justify-between">
+                <p class="text-xs text-slate-500">
+                    Menampilkan <span class="font-bold text-slate-800">{{ $kategoris->firstItem() ?? 0 }}</span> - <span class="font-bold text-slate-800">{{ $kategoris->lastItem() ?? 0 }}</span> dari <span class="font-bold text-slate-800">{{ $kategoris->total() }}</span> entri
+                </p>
+                <div>
+                    {{ $kategoris->links() }}
+                </div>
+            </div>
+        @endif
     </div>
+
+</div>
 @endsection
-
-@push('script')
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Add fade-in animation to table rows
-            const tableRows = document.querySelectorAll('tbody tr');
-            tableRows.forEach((row, index) => {
-                row.style.animationDelay = `${index * 0.1}s`;
-            });
-
-            // Enhanced confirmation for delete
-            const deleteForms = document.querySelectorAll('form[onsubmit]');
-            deleteForms.forEach(form => {
-                form.onsubmit = function (e) {
-                    e.preventDefault();
-                    const categoryName = this.closest('tr').querySelector('td:nth-child(2) strong').textContent;
-                    Swal.fire({
-                        title: 'Hapus Kategori?',
-                        text: `Yakin ingin menghapus kategori "${categoryName}"?`,
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#ffd700',
-                        cancelButtonColor: '#dc3545',
-                        confirmButtonText: 'Ya, Hapus!',
-                        cancelButtonText: 'Batal',
-                        background: '#0a1628',
-                        color: '#ffffff'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            this.submit();
-                        }
-                    });
-                };
-            });
-        });
-    </script>
-@endpush

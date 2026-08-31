@@ -1,341 +1,107 @@
-@extends('layouts.pembeli-navbar')
-
+@extends('layouts.public')
 @section('title', 'Pesanan Dikemas')
-
 @section('content')
-    <style>
-        :root {
-            --dark-blue: #0a1628;
-            --medium-blue: #1a3a5f;
-            --light-blue: #2a4a7f;
-            --gold: #ffd700;
-            --gold-light: #ffed4e;
-            --gold-dark: #d4af37;
-            --success-color: #28a745;
-            --warning-color: #ffc107;
-            --danger-color: #dc3545;
-            --info-color: #17a2b8;
-            --secondary-color: #6c757d;
-        }
-
-        body {
-            background-color: #000 !important;
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .container {
-            padding-top: 20px;
-            max-width: relative;
-        }
-
-        .page-header {
-            margin-bottom: 2rem;
-        }
-
-        .page-title {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 700;
-            font-size: 2.2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .page-subtitle {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 1.1rem;
-            margin-bottom: 0;
-        }
-
-        .orders-container {
-            background: rgba(30, 30, 46, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            overflow: hidden;
-            padding: 2rem;
-            backdrop-filter: blur(10px);
-            margin-bottom: 2rem;
-        }
-
-        .order-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            transition: all 0.3s ease;
-            border-left: 4px solid var(--info-color);
-        }
-
-        .order-card:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 215, 0, 0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        .order-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .order-title {
-            color: var(--gold);
-            font-weight: 600;
-            font-size: 1.2rem;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .badge {
-            padding: 0.5rem 0.75rem;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .badge-info {
-            background: linear-gradient(135deg, var(--info-color), #138496);
-            color: white;
-        }
-
-        .order-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .detail-item {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .detail-label {
-            color: var(--gold);
-            font-weight: 600;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .detail-value {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1rem;
-        }
-
-        .price-value {
-            color: var(--gold-light);
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem 2rem;
-            background: rgba(30, 30, 46, 0.5);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-        }
-
-        .empty-state-icon {
-            font-size: 3rem;
-            color: var(--gold);
-            margin-bottom: 1rem;
-        }
-
-        .empty-state h5 {
-            color: var(--gold);
-            margin-bottom: 0.5rem;
-        }
-
-        .empty-state p {
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 0;
-        }
-
-        .btn {
-            border: none;
-            border-radius: 8px;
-            padding: 0.75rem 1.5rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            color: var(--dark-blue);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
-            background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
-        }
-
-        .action-section {
-            text-align: center;
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .container {
-                padding-top: 70px;
-            }
-
-            .page-title {
-                font-size: 1.8rem;
-            }
-
-            .orders-container {
-                padding: 1.5rem;
-            }
-
-            .order-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .order-details {
-                grid-template-columns: 1fr;
-            }
-
-            .order-card {
-                padding: 1.25rem;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .container {
-                padding-top: 60px;
-            }
-
-            .page-title {
-                font-size: 1.6rem;
-            }
-
-            .orders-container {
-                padding: 1rem;
-            }
-
-            .order-card {
-                padding: 1rem;
-            }
-
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-    </style>
-
-    <div class="container">
-        <!-- Page Header -->
-        <div class="page-header">
-            <h1 class="page-title">
-                <i class="fas fa-cube me-2"></i>Pesanan Sedang Dikemas
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Page Header -->
+    <div class="mb-8 text-center sm:text-left flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-extrabold text-gray-900 flex items-center justify-center sm:justify-start gap-3">
+                <i class="fas fa-box text-indigo-600"></i>
+                Pesanan Dikemas
             </h1>
-            <p class="page-subtitle">Pesanan Anda sedang dipersiapkan oleh penjual</p>
+            <p class="mt-2 text-sm text-gray-600">Pesanan Anda sedang dipersiapkan oleh penjual.</p>
         </div>
+        <a href="{{ route('pembeli.pesanan.index') }}" class="inline-flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+            <i class="fas fa-arrow-left mr-2 text-gray-400"></i>
+            Kembali
+        </a>
+    </div>
 
-        <div class="orders-container">
-            @if($orders->count() > 0)
-                @foreach($orders as $order)
-                    <div class="order-card">
-                        <div class="order-header">
-                            <h3 class="order-title">
-                                <i class="fas fa-receipt"></i>
-                                Invoice: {{ $order->invoice ?? 'INV-' . $order->id }}
-                            </h3>
-                            <span class="badge badge-info">
-                                <i class="fas fa-box me-1"></i>
-                                {{ ucfirst($order->status_pesanan ?? '-') }}
+    <!-- Orders List -->
+    <div class="space-y-6">
+        @if($orders->count() > 0)
+            @foreach($orders as $order)
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300 relative">
+                    <!-- Decorator Line -->
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-indigo-500"></div>
+                    
+                    <div class="p-6 sm:p-8">
+                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6 border-b border-gray-100 pb-4">
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+                                    <i class="fas fa-receipt text-indigo-500"></i>
+                                    Invoice: {{ $order->invoice ?? 'INV-' . $order->id }}
+                                </h3>
+                                <p class="text-sm text-gray-500 mt-1">
+                                    <i class="fas fa-calendar-alt mr-1.5"></i>
+                                    {{ $order->created_at ? $order->created_at->format('d-m-Y H:i') : '-' }}
+                                </p>
+                            </div>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200 self-start">
+                                <i class="fas fa-box mr-1.5"></i> {{ ucfirst(str_replace('_', ' ', $order->status_pesanan ?? '-')) }}
                             </span>
                         </div>
 
-                        <div class="order-details">
-                            <div class="detail-item">
-                                <span class="detail-label">
-                                    <i class="fas fa-cube"></i>Produk
-                                </span>
-                                <span class="detail-value">{{ $order->produk->nama ?? 'Tidak tersedia' }}</span>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
+                            <div>
+                                <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                                    <i class="fas fa-cube text-gray-400"></i> Produk
+                                </dt>
+                                <dd class="text-sm font-semibold text-gray-900">{{ $order->produk->nama ?? 'Tidak tersedia' }}</dd>
                             </div>
-
-                            <div class="detail-item">
-                                <span class="detail-label">
-                                    <i class="fas fa-shopping-cart"></i>Jumlah
-                                </span>
-                                <span class="detail-value">{{ $order->jumlah ?? 0 }} item</span>
+                            <div>
+                                <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                                    <i class="fas fa-shopping-cart text-gray-400"></i> Jumlah
+                                </dt>
+                                <dd class="text-sm font-semibold text-gray-900">{{ $order->jumlah ?? 0 }} item</dd>
                             </div>
-
-                            <div class="detail-item">
-                                <span class="detail-label">
-                                    <i class="fas fa-money-bill-wave"></i>Total Harga
-                                </span>
-                                <span class="detail-value price-value">
-                                    Rp{{ number_format($order->total_harga ?? 0, 0, ',', '.') }}
-                                </span>
-                            </div>
-
-                            <div class="detail-item">
-                                <span class="detail-label">
-                                    <i class="fas fa-calendar"></i>Tanggal Pesanan
-                                </span>
-                                <span class="detail-value">
-                                    {{ $order->created_at ? $order->created_at->format('d-m-Y H:i') : '-' }}
-                                </span>
+                            <div>
+                                <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                                    <i class="fas fa-money-bill-wave text-gray-400"></i> Total Harga
+                                </dt>
+                                <dd class="text-lg font-extrabold text-indigo-700">Rp {{ number_format($order->total_harga ?? 0, 0, ',', '.') }}</dd>
                             </div>
                         </div>
-
-                        <div class="progress-info">
-                            <div class="detail-label mb-2">
-                                <i class="fas fa-tasks"></i>Status Pengemasan
+                        
+                        <!-- Progress Indicator -->
+                        <div class="mt-6 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-xs font-semibold text-gray-700 uppercase tracking-wider flex items-center gap-2">
+                                    <i class="fas fa-tasks text-indigo-500"></i>
+                                    Status Pengemasan
+                                </span>
+                                <span class="text-xs font-medium text-indigo-600">Proses...</span>
                             </div>
-                            <div class="progress" style="height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px;">
-                                <div class="progress-bar bg-info" role="progressbar" style="width: 75%; border-radius: 4px;" 
-                                     aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                                <div class="bg-indigo-600 h-2.5 rounded-full relative" style="width: 50%">
+                                    <div class="absolute top-0 right-0 bottom-0 left-0 overflow-hidden">
+                                        <div class="w-full h-full animate-pulse bg-white opacity-20"></div>
+                                    </div>
+                                </div>
                             </div>
-                            <small class="text-muted mt-1 d-block">Pesanan sedang dikemas dan akan segera dikirim</small>
+                            <p class="text-xs text-gray-500 mt-2">
+                                Pesanan Anda sedang dikemas dengan rapi dan aman.
+                            </p>
                         </div>
                     </div>
-                @endforeach
-            @else
-                <div class="empty-state">
-                    <div class="empty-state-icon">
-                        <i class="fas fa-box-open"></i>
-                    </div>
-                    <h5>Belum ada pesanan yang sedang dikemas</h5>
-                    <p>Semua pesanan Anda telah diproses atau belum ada pesanan yang masuk tahap pengemasan.</p>
                 </div>
-            @endif
-
-            <div class="action-section">
-                <a href="{{ route('pembeli.pesanan.index') }}" class="btn btn-primary">
-                    <i class="fas fa-arrow-left me-2"></i>Kembali ke Daftar Pesanan
+            @endforeach
+        @else
+            <!-- Empty State -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-12 text-center">
+                <div class="w-20 h-20 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-box-open text-3xl text-indigo-400"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">Belum ada pesanan yang sedang dikemas</h3>
+                <p class="text-gray-500 text-sm max-w-sm mx-auto mb-6">
+                    Semua pesanan Anda telah diproses atau belum ada pesanan yang masuk tahap pengemasan saat ini.
+                </p>
+                <a href="{{ route('pembeli.produk.index') }}" class="inline-flex justify-center items-center px-6 py-3 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                    <i class="fas fa-shopping-bag mr-2"></i>
+                    Belanja Sekarang
                 </a>
             </div>
-        </div>
+        @endif
     </div>
+</div>
 @endsection

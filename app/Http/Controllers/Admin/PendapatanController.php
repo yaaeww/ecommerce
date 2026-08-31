@@ -117,7 +117,7 @@ class PendapatanController extends Controller
                 11 => 'November',
                 12 => 'Desember'
             ];
-            return $bulanList[$bulan] . ' ' . $tahun;
+            return ($bulanList[(int)$bulan] ?? 'Bulan ' . $bulan) . ' ' . $tahun;
         }
 
         return 'Semua Waktu';

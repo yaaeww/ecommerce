@@ -1,445 +1,161 @@
 @extends('layouts.app')
 
-@section('page_title', 'Pendapatan')
-
-@section('title')
-    <i class="fas fa-chart-line me-2"></i> Detail Pendapatan
-@endsection
+@section('page_title', 'Detail Pendapatan')
 
 @section('content')
-    <style>
-        .revenue-container {
-            background: linear-gradient(135deg, rgba(10, 22, 40, 0.8) 0%, rgba(26, 58, 95, 0.9) 100%);
-            border: 2px solid rgba(255, 215, 0, 0.3);
-            border-radius: 15px;
-            padding: 30px;
-            backdrop-filter: blur(10px);
-            margin-bottom: 30px;
-        }
+<div class="max-w-7xl mx-auto space-y-6">
 
-        .text-theme {
-            color: #000000 !important;
-        }
-
-        .text-gold {
-            color: var(--gold) !important;
-        }
-
-        .section-title {
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 30px;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-align: center;
-        }
-
-        .product-header {
-            background: linear-gradient(135deg, rgba(26, 58, 95, 0.7) 0%, rgba(42, 74, 127, 0.8) 100%);
-            border: 2px solid rgba(255, 215, 0, 0.2);
-            border-radius: 12px;
-            padding: 20px;
-            backdrop-filter: blur(10px);
-            margin-bottom: 25px;
-        }
-
-        .product-info {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .product-image {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 8px;
-            border: 2px solid rgba(255, 215, 0, 0.3);
-        }
-
-        .product-details h4 {
-            color: var(--gold);
-            margin-bottom: 5px;
-        }
-
-        .product-details p {
-            color: #c0c0c0;
-            margin-bottom: 0;
-        }
-
-        .export-buttons {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #28a745, #20c997);
-            border: none;
-            color: white;
-            font-weight: 600;
-            padding: 10px 20px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-        }
-
-        .btn-success:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.5);
-            background: linear-gradient(135deg, #20c997, #28a745);
-            color: white;
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, #dc3545, #e83e8c);
-            border: none;
-            color: white;
-            font-weight: 600;
-            padding: 10px 20px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
-        }
-
-        .btn-danger:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.5);
-            background: linear-gradient(135deg, #e83e8c, #dc3545);
-            color: white;
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, #6c757d, #868e96);
-            border: none;
-            color: white;
-            font-weight: 600;
-            padding: 10px 25px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
-        }
-
-        .btn-secondary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.5);
-            background: linear-gradient(135deg, #868e96, #6c757d);
-            color: white;
-        }
-
-        .table-custom {
-            background: rgba(26, 58, 95, 0.6);
-            border: 2px solid rgba(255, 215, 0, 0.2);
-            border-radius: 8px;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-        }
-
-        .table-custom thead {
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 237, 78, 0.05) 100%);
-            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
-        }
-
-        .table-custom th {
-            color: #000000;
-            font-weight: 600;
-            padding: 15px 12px;
-            border: none;
-        }
-
-        .table-custom td {
-            color: #000000;
-            padding: 12px;
-            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
-            vertical-align: middle;
-        }
-
-        .table-custom tbody tr {
-            transition: all 0.3s ease;
-        }
-
-        .table-custom tbody tr:hover {
-            background: rgba(255, 215, 0, 0.05);
-            transform: translateX(5px);
-        }
-
-        .table-custom tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        .alert-warning {
-            background: linear-gradient(135deg, rgba(255, 193, 7, 0.2) 0%, rgba(255, 215, 0, 0.3) 100%);
-            border: 2px solid rgba(255, 193, 7, 0.5);
-            border-radius: 12px;
-            backdrop-filter: blur(10px);
-            color: #e0e0e0;
-            padding: 25px;
-            text-align: center;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #c0c0c0;
-        }
-
-        .empty-state i {
-            font-size: 3rem;
-            color: rgba(255, 215, 0, 0.3);
-            margin-bottom: 15px;
-        }
-
-        .empty-state h5 {
-            color: var(--gold);
-            margin-bottom: 10px;
-        }
-
-        .stats-card {
-            background: linear-gradient(135deg, rgba(26, 58, 95, 0.7) 0%, rgba(42, 74, 127, 0.8) 100%);
-            border: 2px solid rgba(255, 215, 0, 0.2);
-            border-radius: 8px;
-            padding: 20px;
-            backdrop-filter: blur(10px);
-            margin-bottom: 20px;
-        }
-
-        .stats-title {
-            font-size: 1rem;
-            color: var(--gold);
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        .stats-value {
-            font-size: 1.5rem;
-            color: var(--gold-light);
-            font-weight: 700;
-        }
-
-        .price-amount {
-            color: #000000;
-            font-weight: 600;
-        }
-
-        .customer-name {
-            color: #000000;
-            font-weight: 500;
-        }
-
-        .order-id {
-            color: #000000;
-            font-family: monospace;
-            font-size: 0.9rem;
-        }
-
-        /* Mobile responsiveness */
-        @media (max-width: 768px) {
-            .revenue-container {
-                padding: 20px 15px;
-            }
-
-            .product-info {
-                flex-direction: column;
-                text-align: center;
-                gap: 15px;
-            }
-
-            .export-buttons {
-                flex-direction: column;
-            }
-
-            .btn-success,
-            .btn-danger,
-            .btn-secondary {
-                width: 100%;
-                text-align: center;
-            }
-
-            .table-custom {
-                font-size: 0.9rem;
-            }
-
-            .table-custom th,
-            .table-custom td {
-                padding: 8px 6px;
-            }
-
-            .section-title {
-                font-size: 1.8rem;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .table-responsive {
-                border: 1px solid rgba(255, 215, 0, 0.2);
-                border-radius: 8px;
-            }
-        }
-
-        .summary-section {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .action-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 30px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-    </style>
-
-    <div class="container">
-        <h2 class="section-title"><i class="fas fa-chart-line me-3"></i>Detail Pendapatan</h2>
-
-        <div class="revenue-container">
-            <!-- Header Produk -->
-            <div class="product-header">
-                <div class="product-info">
-                    @if($produk->gambar)
-                        <img src="{{ asset('storage/' . $produk->gambar) }}" alt="{{ $produk->nama }}" class="product-image">
-                    @else
-                        <div class="product-image d-flex align-items-center justify-content-center bg-dark">
-                            <i class="fas fa-image fa-2x text-gold" style="opacity: 0.5;"></i>
-                        </div>
-                    @endif
-                    <div class="product-details">
-                        <h4>{{ $produk->nama }}</h4>
-                        <p><i class="fas fa-tag me-2"></i>Harga: Rp {{ number_format($produk->harga, 0, ',', '.') }}</p>
-                        <p><i class="fas fa-box me-2"></i>Stok Tersedia: {{ $produk->stok }}</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Ringkasan Statistik -->
+    <!-- Header Section -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h2 class="text-2xl font-bold text-slate-900 font-display">Detail Pendapatan</h2>
+            <p class="text-sm text-slate-500 mt-1">Laporan lengkap penjualan untuk produk spesifik</p>
+        </div>
+        <div class="flex items-center gap-2">
             @if(!$detail->isEmpty())
-                @php
-                    $totalPendapatan = $detail->sum('total_harga');
-                    $totalTerjual = $detail->sum('jumlah');
-                    $totalTransaksi = $detail->count();
-                    $rataRata = $totalTransaksi > 0 ? $totalPendapatan / $totalTransaksi : 0;
-                @endphp
-
-                <div class="summary-section">
-                    <div class="stats-card">
-                        <div class="stats-title"><i class="fas fa-money-bill-wave me-2"></i>Total Pendapatan</div>
-                        <div class="stats-value">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</div>
-                    </div>
-                    <div class="stats-card">
-                        <div class="stats-title"><i class="fas fa-shopping-cart me-2"></i>Total Terjual</div>
-                        <div class="stats-value">{{ $totalTerjual }} unit</div>
-                    </div>
-                    <div class="stats-card">
-                        <div class="stats-title"><i class="fas fa-receipt me-2"></i>Total Transaksi</div>
-                        <div class="stats-value">{{ $totalTransaksi }} transaksi</div>
-                    </div>
-                    <div class="stats-card">
-                        <div class="stats-title"><i class="fas fa-chart-bar me-2"></i>Rata-rata/Transaksi</div>
-                        <div class="stats-value">Rp {{ number_format($rataRata, 0, ',', '.') }}</div>
-                    </div>
-                </div>
-            @endif
-
-            <!-- Tombol Export -->
-            @if(!$detail->isEmpty())
-                <div class="export-buttons">
-                    <a href="{{ route('penjual.pendapatan.detail.export.excel', $produk->id) }}" class="btn btn-success">
-                        <i class="fas fa-file-excel me-2"></i> Export Excel
-                    </a>
-                    <a href="{{ route('penjual.pendapatan.detail.export.pdf', $produk->id) }}" class="btn btn-danger">
-                        <i class="fas fa-file-pdf me-2"></i> Export PDF
-                    </a>
-                </div>
-            @endif
-
-            <!-- Tabel Transaksi -->
-            @if($detail->isEmpty())
-                <div class="alert alert-warning">
-                    <div class="empty-state">
-                        <i class="fas fa-chart-line"></i>
-                        <h5>Belum Ada Transaksi</h5>
-                        <p>Belum ada transaksi untuk produk ini.</p>
-                    </div>
-                </div>
-            @else
-                <div class="table-responsive">
-                    <table class="table table-custom">
-                        <thead>
-                            <tr>
-                                <th>ID ORDER</th>
-                                <th>NAMA PEMBELI</th>
-                                <th>JUMLAH</th>
-                                <th>TOTAL HARGA</th>
-                                <th>TANGGAL TRANSAKSI</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($detail as $item)
-                                <tr>
-                                    <td>
-                                        <span class="order-id">#{{ $item->id }}</span>
-                                    </td>
-                                    <td>
-                                        <span class="customer-name">{{ $item->nama_pemesan ?? 'Tidak diketahui' }}</span>
-                                    </td>
-                                    <td>{{ $item->jumlah }}</td>
-                                    <td>
-                                        <span class="price-amount">Rp {{ number_format($item->total_harga, 0, ',', '.') }}</span>
-                                    </td>
-                                    <td>{{ \Carbon\Carbon::parse($item->created_at)->translatedFormat('d F Y H:i') }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @endif
-
-            <!-- Tombol Aksi -->
-            <div class="action-section">
-                <a href="{{ route('penjual.pendapatan.index') }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left me-2"></i> Kembali ke Daftar Pendapatan
+                <a href="{{ route('penjual.pendapatan.detail.export.excel', $produk->id) }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm rounded-xl transition shadow-sm" onclick="this.innerHTML='<i class=\'fas fa-spinner fa-spin\'></i> Mengekspor...'; setTimeout(() => { this.innerHTML='<i class=\'fas fa-file-excel\'></i> Export Excel'; }, 3000);">
+                    <i class="fas fa-file-excel"></i> Export Excel
                 </a>
+                <a href="{{ route('penjual.pendapatan.detail.export.pdf', $produk->id) }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-rose-500 hover:bg-rose-600 text-white font-bold text-sm rounded-xl transition shadow-sm" onclick="this.innerHTML='<i class=\'fas fa-spinner fa-spin\'></i> Mengekspor...'; setTimeout(() => { this.innerHTML='<i class=\'fas fa-file-pdf\'></i> Export PDF'; }, 3000);">
+                    <i class="fas fa-file-pdf"></i> Export PDF
+                </a>
+            @endif
+            <a href="{{ route('penjual.pendapatan.index') }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-sm rounded-xl transition border border-slate-200">
+                <i class="fas fa-arrow-left"></i> Kembali
+            </a>
+        </div>
+    </div>
 
-                @if(!$detail->isEmpty())
-                    <div class="text-theme">
-                        <small>
-                            <i class="fas fa-info-circle me-1"></i>
-                            Menampilkan {{ $detail->count() }} transaksi
-                        </small>
-                    </div>
-                @endif
+    <!-- Product Info -->
+    <div class="card bg-white border border-slate-200/80 shadow-sm rounded-2xl p-6 flex flex-col sm:flex-row items-center sm:items-start gap-6">
+        <div class="w-24 h-24 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden shrink-0">
+            @if($produk->gambar)
+                <img src="{{ asset('storage/' . $produk->gambar) }}" alt="{{ $produk->nama }}" class="w-full h-full object-cover">
+            @else
+                <div class="w-full h-full flex items-center justify-center text-slate-300">
+                    <i class="fas fa-image text-3xl"></i>
+                </div>
+            @endif
+        </div>
+        <div class="flex-1 text-center sm:text-left">
+            <h3 class="text-xl font-bold text-slate-900 font-display mb-2">{{ $produk->nama }}</h3>
+            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-4">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-brand-50 text-brand-700 text-sm font-bold border border-brand-200">
+                    <i class="fas fa-tag"></i> Rp {{ number_format($produk->harga, 0, ',', '.') }}
+                </span>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-50 text-slate-700 text-sm font-bold border border-slate-200">
+                    <i class="fas fa-box"></i> Stok: {{ $produk->stok }}
+                </span>
             </div>
         </div>
     </div>
 
-    <script>
-        // Tambahkan efek loading pada tombol export
-        document.addEventListener('DOMContentLoaded', function () {
-            const exportButtons = document.querySelectorAll('a[href*="export"]');
+    @if(!$detail->isEmpty())
+        @php
+            $totalPendapatan = $detail->sum('total_harga');
+            $totalTerjual = $detail->sum('jumlah');
+            $totalTransaksi = $detail->count();
+            $rataRata = $totalTransaksi > 0 ? $totalPendapatan / $totalTransaksi : 0;
+        @endphp
 
-            exportButtons.forEach(button => {
-                button.addEventListener('click', function (e) {
-                    const originalText = this.innerHTML;
-                    const isExcel = this.href.includes('excel');
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="card bg-white border border-slate-200/80 shadow-sm rounded-2xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider">Total Pendapatan</h3>
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                </div>
+                <p class="text-2xl font-bold text-slate-900 font-display">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</p>
+            </div>
+            
+            <div class="card bg-white border border-slate-200/80 shadow-sm rounded-2xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider">Total Terjual</h3>
+                    <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center">
+                        <i class="fas fa-box-open"></i>
+                    </div>
+                </div>
+                <p class="text-2xl font-bold text-slate-900 font-display">{{ $totalTerjual }} <span class="text-sm text-slate-500 font-medium">unit</span></p>
+            </div>
 
-                    this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>' +
-                        (isExcel ? 'Mengekspor Excel...' : 'Mengekspor PDF...');
-                    this.style.pointerEvents = 'none';
+            <div class="card bg-white border border-slate-200/80 shadow-sm rounded-2xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider">Total Transaksi</h3>
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                        <i class="fas fa-receipt"></i>
+                    </div>
+                </div>
+                <p class="text-2xl font-bold text-slate-900 font-display">{{ $totalTransaksi }} <span class="text-sm text-slate-500 font-medium">trx</span></p>
+            </div>
 
-                    // Reset setelah 3 detik jika masih di halaman yang sama
-                    setTimeout(() => {
-                        this.innerHTML = originalText;
-                        this.style.pointerEvents = 'auto';
-                    }, 3000);
-                });
-            });
-        });
-    </script>
+            <div class="card bg-white border border-slate-200/80 shadow-sm rounded-2xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider">Rata-rata/Trx</h3>
+                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                </div>
+                <p class="text-2xl font-bold text-slate-900 font-display">Rp {{ number_format($rataRata, 0, ',', '.') }}</p>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="card bg-white border border-slate-200/80 shadow-sm rounded-2xl overflow-hidden">
+            <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+                <h3 class="text-lg font-bold text-slate-900">Riwayat Transaksi</h3>
+                <span class="text-sm text-slate-500">Menampilkan {{ $detail->count() }} transaksi</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-slate-600">
+                    <thead class="bg-slate-50 text-slate-500 text-xs uppercase font-bold border-b border-slate-200">
+                        <tr>
+                            <th class="px-6 py-4 whitespace-nowrap">ID Order</th>
+                            <th class="px-6 py-4 whitespace-nowrap">Pembeli</th>
+                            <th class="px-6 py-4 whitespace-nowrap">Jumlah</th>
+                            <th class="px-6 py-4 whitespace-nowrap">Total Harga</th>
+                            <th class="px-6 py-4 whitespace-nowrap">Tanggal</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @foreach($detail as $item)
+                            <tr class="hover:bg-slate-50/50 transition">
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-md bg-slate-100 text-slate-700 text-xs font-mono font-bold">
+                                        #{{ $item->id }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 font-bold text-slate-900">
+                                    {{ $item->nama_pemesan ?? 'Tidak diketahui' }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    {{ $item->jumlah }}
+                                </td>
+                                <td class="px-6 py-4 font-bold text-brand-700">
+                                    Rp {{ number_format($item->total_harga, 0, ',', '.') }}
+                                </td>
+                                <td class="px-6 py-4 text-slate-500">
+                                    {{ \Carbon\Carbon::parse($item->created_at)->translatedFormat('d M Y H:i') }}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    @else
+        <!-- Empty State -->
+        <div class="card bg-white border border-slate-200/80 shadow-sm rounded-2xl p-12 text-center max-w-3xl mx-auto">
+            <div class="w-20 h-20 bg-slate-50 text-slate-300 rounded-2xl flex items-center justify-center mx-auto mb-6 transform -rotate-3">
+                <i class="fas fa-receipt text-4xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 mb-2 font-display">Belum Ada Transaksi</h3>
+            <p class="text-slate-500 max-w-md mx-auto leading-relaxed">
+                Produk ini belum memiliki riwayat transaksi penjualan.
+            </p>
+        </div>
+    @endif
+
+</div>
 @endsection

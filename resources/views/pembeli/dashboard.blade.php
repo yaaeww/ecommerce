@@ -1,700 +1,215 @@
-@extends('layouts.pembeli-navbar')
+@extends('layouts.public')
 
-@push('style')
-    <style>
-        :root {
-            --dark-blue: #0a1628;
-            --medium-blue: #1a3a5f;
-            --light-blue: #2a4a7f;
-            --gold: #ffd700;
-            --gold-light: #ffed4e;
-            --gold-dark: #d4af37;
-        }
-
-        .main-content-push {
-            padding-top: 80px !important;
-        }
-
-        .section-title {
-            margin-bottom: 30px;
-            text-align: center;
-            color: var(--gold);
-        }
-
-        .section-title h1,
-        .section-title h2,
-        .section-title h3,
-        .section-title h4 {
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .section-title p.lead {
-            color: rgba(255, 255, 255, 0.8) !important;
-            margin-bottom: 0;
-        }
-
-        /* Carousel Produk Terlaris */
-        .carousel-container {
-            overflow: hidden;
-            position: relative;
-            width: 100%;
-            margin-bottom: 40px;
-            padding: 0 15px;
-        }
-
-        .carousel-track {
-            display: flex;
-            gap: 15px;
-            animation: scrollCarousel 30s linear infinite;
-            width: max-content;
-        }
-
-        @keyframes scrollCarousel {
-            0% {
-                transform: translateX(0);
-            }
-
-            100% {
-                transform: translateX(-50%);
-            }
-        }
-
-        .kategori-item {
-            flex: 0 0 auto;
-            width: 180px;
-            position: relative;
-            border-radius: 12px;
-            overflow: hidden;
-            transition: transform 0.3s ease;
-            cursor: pointer;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .kategori-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.3);
-            border-color: var(--gold);
-        }
-
-        .kategori-item img {
-            width: 100%;
-            height: 120px;
-            object-fit: cover;
-        }
-
-        .kategori-overlay {
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.8), rgba(255, 237, 78, 0.8));
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1;
-        }
-
-        .kategori-item:hover .kategori-overlay {
-            opacity: 1;
-        }
-
-        .kategori-overlay h5 {
-            color: var(--dark-blue);
-            font-weight: 700;
-            text-align: center;
-            font-size: 0.9rem;
-            padding: 0 5px;
-        }
-
-        /* Kartu Kategori & Produk */
-        .product-card,
-        .kategori-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            height: 100%;
-            color: white;
-            backdrop-filter: blur(10px);
-        }
-
-        .kategori-card:hover,
-        .product-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 35px rgba(255, 215, 0, 0.3);
-            border-color: var(--gold);
-        }
-
-        .card-img-top {
-            height: 160px;
-            object-fit: cover;
-            transition: transform 0.4s ease;
-        }
-
-        .kategori-card .card-img-top {
-            height: 150px;
-        }
-
-        .kategori-card:hover .card-img-top,
-        .product-card:hover .card-img-top {
-            transform: scale(1.05);
-        }
-
-        .product-overlay {
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.8), rgba(255, 237, 78, 0.8));
-            opacity: 0;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1;
-        }
-
-        .kategori-card:hover .kategori-overlay,
-        .product-card:hover .product-overlay {
-            opacity: 1;
-        }
-
-        .product-overlay h5 {
-            color: var(--dark-blue);
-            font-weight: 700;
-            text-align: center;
-        }
-
-        /* Subkategori Grid */
-        .subkategori-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: center;
-            margin-bottom: 40px;
-        }
-
-        .card-subkategori {
-            width: 100%;
-            max-width: 280px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
-        .card-subkategori:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.2);
-            border-color: var(--gold);
-        }
-
-        .card-subkategori a {
-            color: white;
-            text-decoration: none;
-        }
-
-        .img-fixed {
-            height: 140px;
-            object-fit: cover;
-        }
-
-        .card-subkategori .card-body h5 {
-            color: var(--gold);
-            font-weight: 600;
-            font-size: 1rem;
-        }
-
-        .card-subkategori .card-body ul {
-            max-height: 80px;
-            overflow: auto;
-            padding-left: 20px;
-            margin-top: 5px;
-            list-style: disc;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .card-footer.bg-light {
-            background: rgba(255, 255, 255, 0.05) !important;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 12px;
-            color: white;
-        }
-
-        .card-footer .badge {
-            background: linear-gradient(135deg, var(--gold), var(--gold-light)) !important;
-            color: var(--dark-blue) !important;
-            border: none;
-            font-size: 0.75rem;
-        }
-
-        /* Produk Detail */
-        .product-card .card-body {
-            padding: 12px;
-            text-align: left;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-
-        .product-card .card-body h5 {
-            color: var(--gold);
-            font-size: 1rem;
-        }
-
-        .product-card .card-body p {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.85rem;
-        }
-
-        .product-card .card-body .fs-5 {
-            color: var(--gold-light) !important;
-            font-weight: 700;
-            font-size: 1rem !important;
-        }
-
-        /* Alert Styles */
-        .alert {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            color: white;
-            backdrop-filter: blur(10px);
-            margin: 0 15px 20px;
-        }
-
-        .alert-success {
-            border-color: rgba(40, 167, 69, 0.3);
-        }
-
-        .alert-warning {
-            border-color: rgba(255, 193, 7, 0.3);
-        }
-
-        .alert-info {
-            border-color: rgba(23, 162, 184, 0.3);
-        }
-
-        /* Responsive Styles */
-        @media (min-width: 576px) {
-            .main-content-push {
-                padding-top: 90px !important;
-            }
-
-            .section-title {
-                margin-bottom: 40px;
-            }
-
-            .carousel-container {
-                margin-bottom: 50px;
-                padding: 0;
-            }
-
-            .carousel-track {
-                gap: 20px;
-            }
-
-            .kategori-item {
-                width: 200px;
-            }
-
-            .kategori-item img {
-                height: 140px;
-            }
-
-            .kategori-overlay h5 {
-                font-size: 1rem;
-            }
-
-            .card-img-top {
-                height: 180px;
-            }
-
-            .kategori-card .card-img-top {
-                height: 160px;
-            }
-
-            .subkategori-grid {
-                gap: 20px;
-                justify-content: flex-start;
-            }
-
-            .card-subkategori {
-                width: calc(50% - 10px);
-            }
-
-            .img-fixed {
-                height: 150px;
-            }
-
-            .product-card .card-body {
-                padding: 15px;
-            }
-
-            .product-card .card-body h5 {
-                font-size: 1.1rem;
-            }
-
-            .product-card .card-body p {
-                font-size: 0.9rem;
-            }
-
-            .product-card .card-body .fs-5 {
-                font-size: 1.1rem !important;
-            }
-
-            .alert {
-                margin: 0 0 20px;
-            }
-        }
-
-        @media (min-width: 768px) {
-            .kategori-item {
-                width: 220px;
-            }
-
-            .kategori-item img {
-                height: 150px;
-            }
-
-            .card-img-top {
-                height: 200px;
-            }
-
-            .kategori-card .card-img-top {
-                height: 180px;
-            }
-
-            .card-subkategori {
-                width: calc(33.333% - 14px);
-            }
-
-            .img-fixed {
-                height: 160px;
-            }
-
-            .card-subkategori .card-body h5 {
-                font-size: 1.1rem;
-            }
-
-            .card-footer .badge {
-                font-size: 0.8rem;
-            }
-        }
-
-        @media (min-width: 992px) {
-            .card-subkategori {
-                width: calc(25% - 15px);
-            }
-        }
-
-        @media (max-width: 575.98px) {
-            .main-content-push {
-                padding-top: 70px !important;
-            }
-
-            .section-title h1 {
-                font-size: 1.5rem;
-            }
-
-            .section-title h2 {
-                font-size: 1.3rem;
-            }
-
-            .section-title h3 {
-                font-size: 1.2rem;
-            }
-
-            .section-title h4 {
-                font-size: 1.1rem;
-            }
-
-            .section-title p.lead {
-                font-size: 0.9rem;
-            }
-
-            .carousel-track {
-                gap: 10px;
-            }
-
-            .kategori-item {
-                width: 150px;
-            }
-
-            .kategori-item img {
-                height: 100px;
-            }
-
-            .kategori-overlay h5 {
-                font-size: 0.8rem;
-            }
-
-            .card-img-top,
-            .kategori-card .card-img-top {
-                height: 140px;
-            }
-
-            .subkategori-grid {
-                gap: 10px;
-            }
-
-            .img-fixed {
-                height: 120px;
-            }
-
-            .card-subkategori .card-body h5 {
-                font-size: 0.9rem;
-            }
-
-            .card-footer.bg-light {
-                padding: 10px;
-            }
-
-            .card-footer .badge {
-                font-size: 0.7rem;
-            }
-
-            .product-card .card-body {
-                padding: 10px;
-            }
-
-            .product-card .card-body h6 {
-                font-size: 0.9rem;
-            }
-
-            .btn-primary {
-                padding: 0.5rem 1rem;
-                font-size: 0.85rem;
-            }
-        }
-
-        /* Pause animation on hover */
-        .carousel-container:hover .carousel-track {
-            animation-play-state: paused;
-        }
-
-        /* Pagination responsive */
-        .pagination {
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .pagination .page-link {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--gold);
-            margin: 2px;
-        }
-
-        .pagination .page-item.active .page-link {
-            background: var(--gold);
-            border-color: var(--gold);
-            color: var(--dark-blue);
-        }
-
-        @media (max-width: 400px) {
-            .kategori-item {
-                width: 130px;
-            }
-
-            .kategori-item img {
-                height: 90px;
-            }
-
-            .card-img-top,
-            .kategori-card .card-img-top {
-                height: 120px;
-            }
-
-            .section-title h1 {
-                font-size: 1.3rem;
-            }
-
-            .section-title h2 {
-                font-size: 1.2rem;
-            }
-        }
-    </style>
-@endpush
+@section('title', 'Beranda Belanja - Juragan Pelem')
 
 @section('content')
-    <div class="container main-content-push">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
 
-        <div class="section-title">
-            <h2><i class="fas fa-fire me-2"></i>Produk Teratas</h2>
-            <p class="lead">Jangan lewatkan produk terlaris di bulan ini!</p>
+    <!-- Header Section -->
+    <div class="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm relative overflow-hidden">
+        <div class="absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-indigo-600/10 to-transparent"></div>
+        <div class="relative z-10">
+            <h1 class="text-3xl md:text-4xl font-bold font-display text-slate-800 mb-2">Selamat datang, {{ Auth::user()->name }}!</h1>
+            <p class="text-slate-600">Temukan produk mangga dan olahan UMKM terbaik dari Indramayu.</p>
         </div>
+    </div>
 
-        @if ($produkTerlaris->count())
-            <div class="carousel-container">
-                <div class="carousel-track">
-                    @foreach (array_merge($produkTerlaris->all(), $produkTerlaris->all()) as $produk)
-                        <div class="kategori-item">
-                            <a href="{{ route('pembeli.produk.show', $produk->id) }}" class="text-decoration-none">
-                                <img src="{{ $produk->gambar ? asset('storage/' . $produk->gambar) : asset('images/default.jpg') }}"
-                                    alt="{{ $produk->nama }}" loading="lazy">
-                                <div class="kategori-overlay">
-                                    <h5>{{ $produk->nama }}</h5>
-                                </div>
-                            </a>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        @else
-            <div class="alert alert-warning text-center">
-                <i class="fas fa-info-circle me-2"></i>Belum ada produk terlaris tersedia.
-            </div>
-        @endif
-
-        <div class="section-title">
-            <h1><i class="fas fa-layer-group me-2"></i>KATEGORI PRODUK</h1>
-            <p class="lead">Temukan produk terbaik dari UMKM Indramayu</p>
+    <!-- Alert / Messages -->
+    @if (session('success'))
+        <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl p-4 flex items-center gap-3">
+            <i class="fas fa-check-circle text-emerald-500"></i>
+            <p class="text-sm font-medium">{{ session('success') }}</p>
         </div>
+    @endif
 
-        {{-- Session Alert & Search Info --}}
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"
-                    style="filter: brightness(0) invert(1);"></button>
-            </div>
-        @endif
+    @if (request('search'))
+        <div class="bg-blue-50 border border-blue-200 text-blue-800 rounded-2xl p-4 flex items-center gap-3">
+            <i class="fas fa-search text-blue-500"></i>
+            <p class="text-sm font-medium">Menampilkan hasil pencarian untuk: <strong>{{ request('search') }}</strong></p>
+            <a href="{{ route('pembeli.dashboard') }}" class="ml-auto text-sm underline hover:text-blue-900">Reset</a>
+        </div>
+    @endif
 
-        @if (request('search'))
-            <div class="alert alert-info">
-                <i class="fas fa-search me-2"></i>Hasil pencarian untuk: <strong>{{ request('search') }}</strong>
-            </div>
-        @endif
-
-        <div class="row mb-5">
+    <!-- Kategori Utama -->
+    <section>
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold font-display text-slate-800">Kategori Produk</h2>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
             @forelse($kategoris as $kategori)
-                <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-4">
-                    <div class="card kategori-card border-0">
-                        <img src="{{ $kategori->gambar ? asset('storage/kategori/' . basename($kategori->gambar)) : asset('images/default.jpg') }}"
-                            class="card-img-top" alt="{{ $kategori->nama }}" loading="lazy">
-                        <div class="kategori-overlay product-overlay">
-                            <h5 class="text-center px-2">{{ $kategori->nama }}</h5>
-                        </div>
-                        <a href="{{ route('pembeli.dashboard', ['kategori' => $kategori->id]) }}" class="stretched-link"
-                            aria-label="Lihat kategori {{ $kategori->nama }}"></a>
+                <a href="{{ route('pembeli.dashboard', ['kategori' => $kategori->id]) }}" class="group relative bg-white rounded-2xl p-4 border border-slate-100 shadow-sm hover:shadow-md hover:border-indigo-600/30 transition-all text-center flex flex-col items-center justify-center gap-3 {{ $kategoriAktif && $kategoriAktif->id == $kategori->id ? 'ring-2 ring-indigo-600' : '' }}">
+                    <div class="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center p-2 group-hover:scale-110 transition-transform">
+                        <img src="{{ $kategori->gambar ? asset('storage/kategori/' . basename($kategori->gambar)) : asset('images/default.jpg') }}" alt="{{ $kategori->nama }}" class="w-full h-full object-cover rounded-full">
                     </div>
-                </div>
+                    <span class="text-sm font-semibold text-slate-700 group-hover:text-indigo-600 transition">{{ $kategori->nama }}</span>
+                </a>
             @empty
-                <div class="col-12 text-center">
-                    <div class="alert alert-warning">
-                        <i class="fas fa-exclamation-triangle me-2"></i>Belum ada kategori tersedia.
-                    </div>
+                <div class="col-span-full bg-slate-50 rounded-2xl p-8 text-center border border-slate-100">
+                    <i class="fas fa-box-open text-3xl text-slate-400 mb-3"></i>
+                    <p class="text-slate-500 font-medium">Belum ada kategori tersedia.</p>
                 </div>
             @endforelse
         </div>
+    </section>
 
-        @if ($kategoriAktif)
-            <div class="section-title">
-                <h3><i class="fas fa-folder-open me-2"></i>Subkategori & Produk dalam: <span
-                        style="color: var(--gold);">{{ $kategoriAktif->nama }}</span></h3>
-            </div>
+    <!-- Subkategori & Produk Filtered -->
+    @if ($kategoriAktif)
+        <section class="bg-white rounded-3xl p-6 md:p-8 border border-slate-100 shadow-sm">
+            <h3 class="text-xl font-bold font-display text-slate-800 mb-6 flex items-center gap-2">
+                <i class="fas fa-folder-open text-amber-500"></i> Eksplorasi: <span class="text-indigo-600">{{ $kategoriAktif->nama }}</span>
+            </h3>
 
             {{-- Subkategori Grid --}}
             @if ($subkategoris->count())
-                <div class="subkategori-grid mb-5">
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-8">
                     @foreach ($subkategoris as $sub)
-                        <div class="card card-subkategori">
-                            <a href="{{ route('pembeli.dashboard', ['kategori' => $sub->id]) }}" class="text-decoration-none">
-                                <img src="{{ $sub->gambar ? asset('storage/kategori/' . basename($sub->gambar)) : asset('images/default.jpg') }}"
-                                    class="card-img-top img-fixed" alt="{{ $sub->nama }}" loading="lazy">
-                                <div class="card-body text-center">
-                                    <h5>{{ $sub->nama }}</h5>
-                                    @if ($sub->produks->count())
-                                        <p class="text-success small mb-0 fw-bold">
-                                            <i class="fas fa-box me-1"></i>{{ $sub->produks->count() }} Produk
-                                        </p>
-                                    @else
-                                        <p class="text-muted small mb-0">
-                                            <i class="fas fa-box-open me-1"></i>Belum ada produk.
-                                        </p>
-                                    @endif
-                                </div>
-                            </a>
-
-                            {{-- Subchildren (jika ada) --}}
-                            @if ($sub->children->count())
-                                <div class="card-footer bg-light">
-                                    <strong class="d-block text-center mb-2">
-                                        <i class="fas fa-sitemap me-1"></i>Lihat Turunan:
-                                    </strong>
-                                    <div class="d-flex flex-wrap justify-content-center gap-2">
-                                        @foreach ($sub->children as $subchild)
-                                            <a href="{{ route('pembeli.dashboard', ['kategori' => $subchild->id]) }}"
-                                                class="badge text-decoration-none">
-                                                {{ $subchild->nama }}
-                                            </a>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            @endif
-                        </div>
+                        <a href="{{ route('pembeli.dashboard', ['kategori' => $sub->id]) }}" class="group bg-slate-50 rounded-2xl border border-slate-100 overflow-hidden hover:border-indigo-600/30 hover:shadow-md transition-all">
+                            <div class="h-24 w-full bg-slate-200 overflow-hidden">
+                                <img src="{{ $sub->gambar ? asset('storage/kategori/' . basename($sub->gambar)) : asset('images/default.jpg') }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform" alt="{{ $sub->nama }}" loading="lazy">
+                            </div>
+                            <div class="p-3 text-center">
+                                <h5 class="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition truncate">{{ $sub->nama }}</h5>
+                                <span class="text-xs font-medium text-slate-500 mt-1 block">{{ $sub->produks->count() }} Produk</span>
+                            </div>
+                        </a>
                     @endforeach
-                </div>
-            @else
-                <div class="alert alert-info text-center">
-                    <i class="fas fa-info-circle me-2"></i>Tidak ada subkategori turunan di bawah kategori
-                    <strong>{{ $kategoriAktif->nama }}</strong>.
                 </div>
             @endif
 
-            {{-- Daftar Produk dari Kategori Aktif --}}
+            {{-- Daftar Produk --}}
             @if ($produks->isNotEmpty())
-                <div class="section-title">
-                    <h4><i class="fas fa-boxes me-2"></i>Semua Produk dalam kategori <strong>{{ $kategoriAktif->nama }}</strong>
-                    </h4>
-                </div>
-                <div class="row">
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     @foreach ($produks as $produk)
-                        <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-4">
-                            <div class="card product-card border-0 h-100 d-flex flex-column">
-                                <a href="{{ route('pembeli.produk.show', $produk->id) }}" class="text-decoration-none">
-                                    <img src="{{ $produk->gambar ? asset('storage/' . $produk->gambar) : asset('images/default.jpg') }}"
-                                        class="card-img-top" alt="{{ $produk->nama }}" loading="lazy">
-                                    <div class="product-overlay">
-                                        <h5>{{ $produk->nama }}</h5>
+                        <div class="bento-card group flex flex-col overflow-hidden bg-white">
+                            <!-- Image -->
+                            <div class="relative aspect-[4/3] overflow-hidden bg-slate-100">
+                                <img src="{{ $produk->gambar ? asset('storage/' . $produk->gambar) : asset('images/default.jpg') }}" alt="{{ $produk->nama }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                @if($produk->kategori)
+                                    <span class="absolute top-3 left-3 px-2.5 py-1 bg-white/90 backdrop-blur text-[10px] font-bold uppercase tracking-wider text-indigo-600 rounded-lg shadow-sm">
+                                        {{ $produk->kategori->nama }}
+                                    </span>
+                                @endif
+                            </div>
+                            <!-- Content -->
+                            <div class="p-5 flex flex-col flex-1">
+                                <h3 class="font-display font-bold text-slate-800 mb-1 group-hover:text-indigo-600 transition-colors line-clamp-2">
+                                    <a href="{{ route('pembeli.produk.show', $produk->id) }}">{{ $produk->nama }}</a>
+                                </h3>
+                                <p class="text-xs text-slate-500 mb-4 line-clamp-2">{{ $produk->deskripsi }}</p>
+                                
+                                <div class="mt-auto flex items-end justify-between pt-4 border-t border-slate-100">
+                                    <div>
+                                        <span class="block text-xs text-slate-400 mb-0.5">Harga</span>
+                                        <span class="text-lg font-bold text-amber-500">Rp {{ number_format($produk->harga, 0, ',', '.') }}</span>
                                     </div>
-                                </a>
-                                <div class="card-body d-flex flex-column">
-                                    <h6 class="fw-bold mb-1 text-truncate">{{ $produk->nama }}</h6>
-                                    <p class="card-text small flex-grow-1">{{ Str::limit($produk->deskripsi, 40) }}</p>
-
-                                    <div class="mt-auto pt-2 border-top">
-                                        <p class="fw-bold mb-2 fs-5">
-                                            Rp. {{ number_format($produk->harga, 0, ',', '.') }}
-                                        </p>
-                                        <a href="{{ route('pembeli.produk.show', $produk->id) }}" class="btn btn-primary w-100">
-                                            <i class="fas fa-eye me-1"></i>Lihat Detail
-                                        </a>
-                                    </div>
+                                    <a href="{{ route('pembeli.produk.show', $produk->id) }}" class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                                        <i class="fas fa-arrow-right"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>
                     @endforeach
                 </div>
-                <div class="d-flex justify-content-center mt-4">
+                
+                <div class="mt-8 flex justify-center">
                     {{ $produks->links() }}
                 </div>
             @else
-                <div class="alert alert-warning text-center">
-                    <i class="fas fa-exclamation-triangle me-2"></i>Tidak ada produk ditemukan langsung di bawah kategori ini.
+                <div class="bg-slate-50 rounded-2xl p-8 text-center border border-slate-100">
+                    <i class="fas fa-search text-3xl text-slate-400 mb-3"></i>
+                    <p class="text-slate-500 font-medium">Tidak ada produk ditemukan di kategori ini.</p>
                 </div>
             @endif
+        </section>
+    @else
+        <!-- Produk Terlaris (Only show if no category filter is applied) -->
+        @if ($produkTerlaris->count())
+        <section>
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold font-display text-slate-800 flex items-center gap-2">
+                        <i class="fas fa-fire text-amber-500"></i> Produk Terlaris
+                    </h2>
+                    <p class="text-sm text-slate-500 mt-1">Jangan lewatkan produk paling diminati bulan ini!</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                @foreach ($produkTerlaris->take(4) as $produk)
+                    <div class="bento-card group flex flex-col overflow-hidden bg-white">
+                        <div class="relative aspect-[4/3] overflow-hidden bg-slate-100">
+                            <img src="{{ $produk->gambar ? asset('storage/' . $produk->gambar) : asset('images/default.jpg') }}" alt="{{ $produk->nama }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <span class="absolute top-3 left-3 px-2.5 py-1 bg-amber-500 text-[10px] font-bold uppercase tracking-wider text-white rounded-lg shadow-sm">
+                                Best Seller
+                            </span>
+                        </div>
+                        <div class="p-5 flex flex-col flex-1">
+                            <h3 class="font-display font-bold text-slate-800 mb-1 group-hover:text-indigo-600 transition-colors line-clamp-1">
+                                <a href="{{ route('pembeli.produk.show', $produk->id) }}">{{ $produk->nama }}</a>
+                            </h3>
+                            <div class="mt-auto pt-3 flex items-center justify-between">
+                                <span class="text-lg font-bold text-indigo-600">Rp {{ number_format($produk->harga, 0, ',', '.') }}</span>
+                                <a href="{{ route('pembeli.produk.show', $produk->id) }}" class="text-sm font-semibold text-amber-500 hover:text-indigo-600 transition">Detail <i class="fas fa-chevron-right text-xs"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </section>
         @endif
-    </div>
+
+        <!-- Semua Produk -->
+        <section>
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold font-display text-slate-800">Eksplorasi Katalog</h2>
+            </div>
+            
+            @if ($produks->isNotEmpty())
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    @foreach ($produks as $produk)
+                        <div class="bento-card group flex flex-col overflow-hidden bg-white">
+                            <!-- Image -->
+                            <div class="relative aspect-[4/3] overflow-hidden bg-slate-100">
+                                <img src="{{ $produk->gambar ? asset('storage/' . $produk->gambar) : asset('images/default.jpg') }}" alt="{{ $produk->nama }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                @if($produk->kategori)
+                                    <span class="absolute top-3 left-3 px-2.5 py-1 bg-white/90 backdrop-blur text-[10px] font-bold uppercase tracking-wider text-indigo-600 rounded-lg shadow-sm">
+                                        {{ $produk->kategori->nama }}
+                                    </span>
+                                @endif
+                            </div>
+                            <!-- Content -->
+                            <div class="p-5 flex flex-col flex-1">
+                                <h3 class="font-display font-bold text-slate-800 mb-1 group-hover:text-indigo-600 transition-colors line-clamp-2">
+                                    <a href="{{ route('pembeli.produk.show', $produk->id) }}">{{ $produk->nama }}</a>
+                                </h3>
+                                <p class="text-xs text-slate-500 mb-4 line-clamp-2">{{ $produk->deskripsi }}</p>
+                                
+                                <div class="mt-auto flex items-end justify-between pt-4 border-t border-slate-100">
+                                    <div>
+                                        <span class="block text-xs text-slate-400 mb-0.5">Harga</span>
+                                        <span class="text-lg font-bold text-amber-500">Rp {{ number_format($produk->harga, 0, ',', '.') }}</span>
+                                    </div>
+                                    <a href="{{ route('pembeli.produk.show', $produk->id) }}" class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                                        <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+                
+                <div class="mt-8 flex justify-center">
+                    {{ $produks->links() }}
+                </div>
+            @else
+                <div class="bg-slate-50 rounded-2xl p-8 text-center border border-slate-100">
+                    <i class="fas fa-box-open text-3xl text-slate-400 mb-3"></i>
+                    <p class="text-slate-500 font-medium">Belum ada produk tersedia saat ini.</p>
+                </div>
+            @endif
+        </section>
+    @endif
+
+</div>
 @endsection
