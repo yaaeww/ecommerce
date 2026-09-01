@@ -208,6 +208,35 @@ class AdminNotificationController extends Controller
             }
         } catch (\Throwable $e) {}
 
+        // 7. Pesan Kontak & Kemitraan Baru (Belum Dibaca)
+        try {
+            $unreadPesan = \App\Models\PesanKontak::where('status', 'belum_dibaca')
+                ->latest()
+                ->take(5)
+                ->get();
+
+            foreach ($unreadPesan as $pesan) {
+                $ts = $pesan->created_at ? $pesan->created_at->timestamp : time();
+                $notifications->push([
+                    'id' => 'pesan_' . $pesan->id,
+                    'type' => 'pesan_kontak',
+                    'category' => 'inquiry',
+                    'title' => 'Pesan Masuk: ' . $pesan->kategori_label,
+                    'description' => "Dari {$pesan->nama} ({$pesan->email}): \"{$pesan->subjek}\"",
+                    'time' => $pesan->created_at ? $pesan->created_at->diffForHumans() : 'Baru saja',
+                    'timestamp' => $ts,
+                    'is_unread' => $ts > $lastReadTimestamp,
+                    'url' => route('admin.pesan-kontak.index'),
+                    'icon' => 'fas fa-envelope-open-text',
+                    'badge_bg' => 'bg-brand-600',
+                    'badge_text' => 'text-brand-600',
+                    'bg_light' => 'bg-brand-50',
+                    'border' => 'border-brand-200',
+                    'is_critical' => in_array($pesan->kategori, ['partai_besar', 'kerjasama_umkm', 'kendala_transaksi']),
+                ]);
+            }
+        } catch (\Throwable $e) {}
+
         return $notifications->sortByDesc('timestamp')->values();
     }
 

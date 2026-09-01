@@ -108,6 +108,53 @@ class AdminLedgerController extends Controller
             ->take(10)
             ->get();
 
+        // 12. Chart Data: Tren Arus Kas 6 Bulan Terakhir
+        $monthlyLabels = [];
+        $monthlyInflows = [];
+        $monthlyFarmerShares = [];
+        $monthlyPlatformRevenues = [];
+        $monthlyEscrowHoldings = [];
+
+        for ($i = 5; $i >= 0; $i--) {
+            $month = Carbon::now()->subMonths($i);
+            $monthlyLabels[] = $month->translatedFormat('M Y');
+
+            $inflow = (float) Order::where('status', 'complete')
+                ->whereYear('created_at', $month->year)
+                ->whereMonth('created_at', $month->month)
+                ->sum('total_harga');
+
+            $settled = (float) Order::where('status', 'complete')
+                ->whereYear('created_at', $month->year)
+                ->whereMonth('created_at', $month->month)
+                ->where(function($q) {
+                    $q->where('status_pesanan', 'diterima')
+                      ->orWhere('is_escrow_released', true);
+                })
+                ->sum('total_harga');
+
+            $escrow = (float) Order::where('status', 'complete')
+                ->whereYear('created_at', $month->year)
+                ->whereMonth('created_at', $month->month)
+                ->where(function($q) {
+                    $q->whereIn('status_pesanan', ['dikemas', 'dikirim', 'belum_diterima'])
+                      ->orWhereNull('status_pesanan');
+                })
+                ->where('is_escrow_released', false)
+                ->sum('total_harga');
+
+            $monthlyInflows[] = $inflow;
+            $monthlyFarmerShares[] = $settled * ($tokoPersen / 100);
+            $monthlyPlatformRevenues[] = $settled * ($komisiPersen / 100);
+            $monthlyEscrowHoldings[] = $escrow;
+        }
+
+        // 13. Data Toko untuk Visual Bar Chart
+        $storeNames = $umkms->pluck('umkm.nama_toko')->toArray();
+        $storeGross = $umkms->pluck('gross_total')->toArray();
+        $storeEscrow = $umkms->pluck('gross_escrow')->toArray();
+        $storeReadyWithdraw = $umkms->pluck('saldo_siap_tarik')->toArray();
+
         return view('admin.ledger.index', compact(
             'komisiPersen',
             'tokoPersen',
@@ -122,7 +169,16 @@ class AdminLedgerController extends Controller
             'potensiKomisiEscrow',
             'totalRefundApproved',
             'umkms',
-            'recentOrders'
+            'recentOrders',
+            'monthlyLabels',
+            'monthlyInflows',
+            'monthlyFarmerShares',
+            'monthlyPlatformRevenues',
+            'monthlyEscrowHoldings',
+            'storeNames',
+            'storeGross',
+            'storeEscrow',
+            'storeReadyWithdraw'
         ));
     }
 }

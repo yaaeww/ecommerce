@@ -6,12 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Umkm;
 use App\Models\Produk;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class AdminPesananController extends Controller
 {
     /**
-     * Tampilkan seluruh transaksi pesanan lintas toko/UMKM secara transparan.
+     * Tampilkan seluruh transaksi pesanan lintas toko/UMKM secara transparan dengan filter rentang kalender dinamis.
      */
     public function index(Request $request)
     {
@@ -19,7 +20,52 @@ class AdminPesananController extends Controller
         $umkmId = $request->get('umkm_id');
         $search = $request->get('search');
 
+        // Date filter parameters
+        $period = $request->get('period', 'all');
+        $startDateInput = $request->get('start_date');
+        $endDateInput = $request->get('end_date');
+        
+        $startDate = null;
+        $endDate = null;
+        $activePeriodLabel = 'Semua Waktu';
+
+        if ($period === 'today') {
+            $startDate = Carbon::today()->startOfDay();
+            $endDate = Carbon::today()->endOfDay();
+            $activePeriodLabel = 'Hari Ini (' . $startDate->translatedFormat('d F Y') . ')';
+        } elseif ($period === '7days') {
+            $startDate = Carbon::now()->subDays(6)->startOfDay();
+            $endDate = Carbon::now()->endOfDay();
+            $activePeriodLabel = '7 Hari Terakhir';
+        } elseif ($period === '30days') {
+            $startDate = Carbon::now()->subDays(29)->startOfDay();
+            $endDate = Carbon::now()->endOfDay();
+            $activePeriodLabel = '30 Hari Terakhir';
+        } elseif ($period === 'this_month') {
+            $startDate = Carbon::now()->startOfMonth()->startOfDay();
+            $endDate = Carbon::now()->endOfMonth()->endOfDay();
+            $activePeriodLabel = 'Bulan Ini (' . $startDate->translatedFormat('F Y') . ')';
+        } elseif ($period === 'this_year') {
+            $startDate = Carbon::now()->startOfYear()->startOfDay();
+            $endDate = Carbon::now()->endOfYear()->endOfDay();
+            $activePeriodLabel = 'Tahun Ini (' . $startDate->translatedFormat('Y') . ')';
+        } elseif ($startDateInput) {
+            $period = 'custom';
+            $startDate = Carbon::parse($startDateInput)->startOfDay();
+            $endDate = $endDateInput ? Carbon::parse($endDateInput)->endOfDay() : Carbon::parse($startDateInput)->endOfDay();
+            if ($startDate->isSameDay($endDate)) {
+                $activePeriodLabel = $startDate->translatedFormat('d F Y');
+            } else {
+                $activePeriodLabel = $startDate->translatedFormat('d M Y') . ' s/d ' . $endDate->translatedFormat('d M Y');
+            }
+        }
+
         $query = Order::with(['user', 'produk.umkm.user', 'produks.umkm']);
+
+        // Filter Rentang Tanggal
+        if ($startDate && $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        }
 
         // Filter Status
         if ($status && $status !== 'semua') {
@@ -52,11 +98,21 @@ class AdminPesananController extends Controller
 
         $orders = $query->latest()->paginate(12)->withQueryString();
 
-        // Statistik Cepat
-        $totalOrders = Order::count();
-        $totalSuccess = Order::where('status', 'complete')->count();
-        $totalPending = Order::where('status', 'pending')->count();
-        $totalNominal = Order::where('status', 'complete')->sum('total_harga');
+        // Statistik Cepat (Scoped to active Date Filter & Store)
+        $statsBaseQuery = Order::query();
+        if ($startDate && $endDate) {
+            $statsBaseQuery->whereBetween('created_at', [$startDate, $endDate]);
+        }
+        if ($umkmId) {
+            $statsBaseQuery->whereHas('produk', function ($q) use ($umkmId) {
+                $q->where('umkm_id', $umkmId);
+            });
+        }
+
+        $totalOrders = (clone $statsBaseQuery)->count();
+        $totalSuccess = (clone $statsBaseQuery)->where('status', 'complete')->count();
+        $totalPending = (clone $statsBaseQuery)->where('status', 'pending')->count();
+        $totalNominal = (clone $statsBaseQuery)->where('status', 'complete')->sum('total_harga');
 
         $umkms = Umkm::orderBy('nama_toko')->get();
         $komisiPersen = (float) \App\Models\Setting::get('komisi_persen', 20);
@@ -73,7 +129,13 @@ class AdminPesananController extends Controller
             'totalNominal',
             'umkms',
             'komisiPersen',
-            'tokoPersen'
+            'tokoPersen',
+            'period',
+            'startDateInput',
+            'endDateInput',
+            'activePeriodLabel',
+            'startDate',
+            'endDate'
         ));
     }
 

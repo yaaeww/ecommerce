@@ -54,6 +54,89 @@
     </div>
 
     <!-- ========================================================================= -->
+    <!-- 📅 DYNAMIC CALENDAR & DATE RANGE FILTER BAR                               -->
+    <!-- ========================================================================= -->
+    <div class="card p-4 sm:p-5 bg-white border border-slate-200/80 rounded-3xl shadow-sm space-y-3.5">
+        <form id="sellerDateFilterForm" action="{{ route('penjual.dashboard') }}" method="GET" class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            
+            <!-- Hidden inputs for custom date selection -->
+            <input type="hidden" name="period" id="sellerFilterPeriod" value="{{ $period ?? 'all' }}">
+            <input type="hidden" name="start_date" id="sellerFilterStartDate" value="{{ $startDateInput ?? ($startDate ? $startDate->format('Y-m-d') : '') }}">
+            <input type="hidden" name="end_date" id="sellerFilterEndDate" value="{{ $endDateInput ?? ($endDate ? $endDate->format('Y-m-d') : '') }}">
+
+            <!-- Left: Calendar API Input & Presets -->
+            <div class="flex flex-col sm:flex-row sm:items-center gap-3 flex-1 flex-wrap">
+                
+                <!-- Dynamic Interactive Calendar Range Input -->
+                <div class="relative min-w-[260px] sm:w-72">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-emerald-600">
+                        <i class="fas fa-calendar-days text-sm"></i>
+                    </div>
+                    <input 
+                        type="text" 
+                        id="flatpickrSellerCalendar" 
+                        placeholder="Pilih Rentang Tanggal Kalender..." 
+                        class="w-full pl-10 pr-9 py-2.5 bg-slate-50 hover:bg-white focus:bg-white text-xs font-extrabold text-slate-800 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-hidden transition shadow-xs cursor-pointer"
+                        readonly
+                    >
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                        @if(($period ?? 'all') !== 'all')
+                            <a href="{{ route('penjual.dashboard') }}" title="Reset Filter" class="text-slate-400 hover:text-rose-500 transition text-xs">
+                                <i class="fas fa-circle-xmark"></i>
+                            </a>
+                        @else
+                            <i class="fas fa-chevron-down text-[10px] text-slate-400 pointer-events-none"></i>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Quick Filter Period Pills -->
+                <div class="flex items-center gap-1.5 flex-wrap">
+                    <button type="button" onclick="setSellerFilterPeriod('all')" class="px-3 py-2 rounded-xl text-xs font-extrabold transition cursor-pointer {{ ($period ?? 'all') === 'all' ? 'bg-slate-900 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                        Semua Waktu
+                    </button>
+                    <button type="button" onclick="setSellerFilterPeriod('today')" class="px-3 py-2 rounded-xl text-xs font-extrabold transition cursor-pointer {{ ($period ?? '') === 'today' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                        Hari Ini
+                    </button>
+                    <button type="button" onclick="setSellerFilterPeriod('7days')" class="px-3 py-2 rounded-xl text-xs font-extrabold transition cursor-pointer {{ ($period ?? '') === '7days' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                        7 Hari Terakhir
+                    </button>
+                    <button type="button" onclick="setSellerFilterPeriod('30days')" class="px-3 py-2 rounded-xl text-xs font-extrabold transition cursor-pointer {{ ($period ?? '') === '30days' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                        30 Hari Terakhir
+                    </button>
+                    <button type="button" onclick="setSellerFilterPeriod('this_month')" class="px-3 py-2 rounded-xl text-xs font-extrabold transition cursor-pointer {{ ($period ?? '') === 'this_month' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                        Bulan Ini
+                    </button>
+                    <button type="button" onclick="setSellerFilterPeriod('this_year')" class="px-3 py-2 rounded-xl text-xs font-extrabold transition cursor-pointer {{ ($period ?? '') === 'this_year' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                        Tahun Ini
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- Right: Active Period Badge & Reset Button -->
+            <div class="flex items-center justify-between sm:justify-end gap-2.5 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200/80 text-emerald-900 text-xs font-bold">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-600"></span>
+                    </span>
+                    <span class="text-[11px] text-slate-500 font-normal">Periode:</span>
+                    <strong class="font-extrabold text-emerald-800">{{ $activePeriodLabel }}</strong>
+                </div>
+
+                @if(($period ?? 'all') !== 'all')
+                    <a href="{{ route('penjual.dashboard') }}" class="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold border border-rose-200 transition flex items-center gap-1.5 shadow-2xs">
+                        <i class="fas fa-rotate-left text-[10px]"></i>
+                        <span>Reset</span>
+                    </a>
+                @endif
+            </div>
+
+        </form>
+    </div>
+
+    <!-- ========================================================================= -->
     <!-- 📊 TOP EXECUTIVE STAT CARDS (FINANSIAL & METRIK KUNCI)                   -->
     <!-- ========================================================================= -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -501,13 +584,166 @@
 </div>
 
 <!-- ========================================================================= -->
-<!-- 📊 CHART.JS CONFIGURATION SCRIPT                                          -->
+<!-- 📊 CHART.JS & FLATPICKR CALENDAR SCRIPT                                   -->
 <!-- ========================================================================= -->
+@push('styles')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<style>
+    /* Custom High-Contrast Styling for Flatpickr in Seller Dashboard */
+    .flatpickr-calendar {
+        background: #ffffff !important;
+        border-radius: 1.25rem !important;
+        border: 1px solid #e2e8f0 !important;
+        box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1) !important;
+        padding: 0.75rem !important;
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
+        width: 320px !important;
+        color: #0f172a !important;
+    }
+    .flatpickr-months {
+        margin-bottom: 0.5rem !important;
+    }
+    .flatpickr-months .flatpickr-month {
+        color: #0f172a !important;
+        fill: #0f172a !important;
+        height: 36px !important;
+    }
+    .flatpickr-current-month {
+        font-size: 0.95rem !important;
+        font-weight: 800 !important;
+        color: #0f172a !important;
+        padding-top: 4px !important;
+    }
+    .flatpickr-current-month .cur-month {
+        font-weight: 800 !important;
+        color: #0f172a !important;
+    }
+    .flatpickr-current-month input.cur-year {
+        font-weight: 800 !important;
+        color: #0f172a !important;
+    }
+    .flatpickr-weekdays {
+        margin-bottom: 0.5rem !important;
+    }
+    span.flatpickr-weekday {
+        color: #475569 !important;
+        font-weight: 800 !important;
+        font-size: 0.75rem !important;
+    }
+    .flatpickr-days {
+        width: 100% !important;
+    }
+    .dayContainer {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        justify-content: space-around !important;
+    }
+    .flatpickr-day {
+        color: #0f172a !important;
+        border-radius: 0.65rem !important;
+        font-weight: 700 !important;
+        font-size: 0.8rem !important;
+        height: 38px !important;
+        line-height: 38px !important;
+        max-width: 38px !important;
+        margin: 2px 0 !important;
+        border: 1px solid transparent !important;
+    }
+    .flatpickr-day:hover {
+        background: #f1f5f9 !important;
+        border-color: #cbd5e1 !important;
+        color: #0f172a !important;
+    }
+    .flatpickr-day.today {
+        border-color: #10b981 !important;
+        color: #047857 !important;
+        font-weight: 900 !important;
+        background: #ecfdf5 !important;
+    }
+    .flatpickr-day.selected, 
+    .flatpickr-day.startRange, 
+    .flatpickr-day.endRange {
+        background: #059669 !important;
+        color: #ffffff !important;
+        border-color: #059669 !important;
+        font-weight: 800 !important;
+    }
+    .flatpickr-day.inRange {
+        background: #d1fae5 !important;
+        border-color: #a7f3d0 !important;
+        color: #065f46 !important;
+        box-shadow: -5px 0 0 #d1fae5, 5px 0 0 #d1fae5 !important;
+    }
+    .flatpickr-day.prevMonthDay, 
+    .flatpickr-day.nextMonthDay {
+        color: #94a3b8 !important;
+        font-weight: 500 !important;
+    }
+    .flatpickr-prev-month svg, 
+    .flatpickr-next-month svg {
+        fill: #0f172a !important;
+    }
+</style>
+@endpush
+
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
 <script>
+    // Seller Preset Filter Handler
+    function setSellerFilterPeriod(periodName) {
+        document.getElementById('sellerFilterPeriod').value = periodName;
+        document.getElementById('sellerFilterStartDate').value = '';
+        document.getElementById('sellerFilterEndDate').value = '';
+        document.getElementById('sellerDateFilterForm').submit();
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         
+        // 0. Initialize Dynamic Calendar Range Picker (Flatpickr API)
+        const calendarEl = document.getElementById('flatpickrSellerCalendar');
+        const initialStart = "{{ $startDateInput ?? ($startDate ? $startDate->format('Y-m-d') : '') }}";
+        const initialEnd = "{{ $endDateInput ?? ($endDate ? $endDate->format('Y-m-d') : '') }}";
+        let defaultDates = [];
+        if (initialStart && initialEnd) {
+            defaultDates = [initialStart, initialEnd];
+        } else if (initialStart) {
+            defaultDates = [initialStart];
+        }
+
+        if (calendarEl && typeof flatpickr !== 'undefined') {
+            flatpickr(calendarEl, {
+                mode: "range",
+                locale: "id",
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "d M Y",
+                altInputClass: "w-full pl-10 pr-9 py-2.5 bg-slate-50 hover:bg-white focus:bg-white text-xs font-extrabold text-slate-800 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-hidden transition shadow-xs cursor-pointer",
+                defaultDate: defaultDates,
+                showMonths: 1,
+                animate: true,
+                onClose: function(selectedDates, dateStr, instance) {
+                    if (selectedDates.length === 2) {
+                        const startStr = instance.formatDate(selectedDates[0], "Y-m-d");
+                        const endStr = instance.formatDate(selectedDates[1], "Y-m-d");
+
+                        document.getElementById('sellerFilterPeriod').value = 'custom';
+                        document.getElementById('sellerFilterStartDate').value = startStr;
+                        document.getElementById('sellerFilterEndDate').value = endStr;
+                        document.getElementById('sellerDateFilterForm').submit();
+                    } else if (selectedDates.length === 1) {
+                        const singleStr = instance.formatDate(selectedDates[0], "Y-m-d");
+                        document.getElementById('sellerFilterPeriod').value = 'custom';
+                        document.getElementById('sellerFilterStartDate').value = singleStr;
+                        document.getElementById('sellerFilterEndDate').value = singleStr;
+                        document.getElementById('sellerDateFilterForm').submit();
+                    }
+                }
+            });
+        }
+
         // 1. Line / Area Chart: Tren Pendapatan & Volume Bulanan Penjual
         const ctxRev = document.getElementById('sellerRevenueChart');
         if (ctxRev) {

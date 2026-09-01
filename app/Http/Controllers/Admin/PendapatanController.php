@@ -16,9 +16,49 @@ class PendapatanController extends Controller
         $komisiPersen = (float) Setting::get('komisi_persen', 20);
         $tokoPersen = 100 - $komisiPersen;
 
-        // Default ke bulan dan tahun saat ini
-        $bulan = $request->get('bulan', date('m'));
-        $tahun = $request->get('tahun', date('Y'));
+        // Date filter parameters
+        $period = $request->get('period');
+        $startDateInput = $request->get('start_date');
+        $endDateInput = $request->get('end_date');
+        
+        $startDate = null;
+        $endDate = null;
+        $periodeInfo = '';
+
+        if ($period === 'today') {
+            $startDate = Carbon::today()->startOfDay();
+            $endDate = Carbon::today()->endOfDay();
+            $periodeInfo = 'Hari Ini (' . $startDate->translatedFormat('d F Y') . ')';
+        } elseif ($period === '7days') {
+            $startDate = Carbon::now()->subDays(6)->startOfDay();
+            $endDate = Carbon::now()->endOfDay();
+            $periodeInfo = '7 Hari Terakhir';
+        } elseif ($period === '30days') {
+            $startDate = Carbon::now()->subDays(29)->startOfDay();
+            $endDate = Carbon::now()->endOfDay();
+            $periodeInfo = '30 Hari Terakhir';
+        } elseif ($period === 'this_month') {
+            $startDate = Carbon::now()->startOfMonth()->startOfDay();
+            $endDate = Carbon::now()->endOfMonth()->endOfDay();
+            $periodeInfo = 'Bulan Ini (' . $startDate->translatedFormat('F Y') . ')';
+        } elseif ($period === 'this_year') {
+            $startDate = Carbon::now()->startOfYear()->startOfDay();
+            $endDate = Carbon::now()->endOfYear()->endOfDay();
+            $periodeInfo = 'Tahun Ini (' . $startDate->translatedFormat('Y') . ')';
+        } elseif ($startDateInput) {
+            $period = 'custom';
+            $startDate = Carbon::parse($startDateInput)->startOfDay();
+            $endDate = $endDateInput ? Carbon::parse($endDateInput)->endOfDay() : Carbon::parse($startDateInput)->endOfDay();
+            if ($startDate->isSameDay($endDate)) {
+                $periodeInfo = $startDate->translatedFormat('d F Y');
+            } else {
+                $periodeInfo = $startDate->translatedFormat('d M Y') . ' s/d ' . $endDate->translatedFormat('d M Y');
+            }
+        }
+
+        // Fallback to legacy month/year if period not given
+        $bulan = $request->get('bulan', $startDate ? null : date('m'));
+        $tahun = $request->get('tahun', $startDate ? null : date('Y'));
         $filterMinggu = $request->get('minggu', false);
 
         $query = DB::table('orders')
@@ -26,17 +66,23 @@ class PendapatanController extends Controller
             ->join('umkms', 'produks.umkm_id', '=', 'umkms.id')
             ->where('orders.status', 'complete');
 
-        // Filter berdasarkan bulan dan tahun
-        if ($bulan && $tahun) {
-            $query->whereYear('orders.created_at', $tahun)
-                ->whereMonth('orders.created_at', $bulan);
-        }
-
-        // Filter minggu ini jika dipilih
-        if ($filterMinggu) {
+        // Apply filters
+        if ($startDate && $endDate) {
+            $query->whereBetween('orders.created_at', [$startDate, $endDate]);
+        } elseif ($filterMinggu) {
             $startOfWeek = Carbon::now()->startOfWeek();
             $endOfWeek = Carbon::now()->endOfWeek();
             $query->whereBetween('orders.created_at', [$startOfWeek, $endOfWeek]);
+            $periodeInfo = "Minggu Ini (" . $startOfWeek->translatedFormat('d M') . " - " . $endOfWeek->translatedFormat('d M Y') . ")";
+        } elseif ($bulan && $tahun) {
+            $query->whereYear('orders.created_at', $tahun)
+                ->whereMonth('orders.created_at', $bulan);
+            $periodeInfo = $this->getPeriodeInfo($bulan, $tahun, false);
+        } elseif ($tahun) {
+            $query->whereYear('orders.created_at', $tahun);
+            $periodeInfo = "Tahun " . $tahun;
+        } else {
+            $periodeInfo = 'Semua Waktu';
         }
 
         // Total pendapatan kotor & komisi terhitung
@@ -50,16 +96,17 @@ class PendapatanController extends Controller
             ->join('umkms', 'produks.umkm_id', '=', 'umkms.id')
             ->where('orders.status', 'complete');
 
-        // Apply same filters to rekap query
-        if ($bulan && $tahun) {
-            $rekapQuery->whereYear('orders.created_at', $tahun)
-                ->whereMonth('orders.created_at', $bulan);
-        }
-
-        if ($filterMinggu) {
+        if ($startDate && $endDate) {
+            $rekapQuery->whereBetween('orders.created_at', [$startDate, $endDate]);
+        } elseif ($filterMinggu) {
             $startOfWeek = Carbon::now()->startOfWeek();
             $endOfWeek = Carbon::now()->endOfWeek();
             $rekapQuery->whereBetween('orders.created_at', [$startOfWeek, $endOfWeek]);
+        } elseif ($bulan && $tahun) {
+            $rekapQuery->whereYear('orders.created_at', $tahun)
+                ->whereMonth('orders.created_at', $bulan);
+        } elseif ($tahun) {
+            $rekapQuery->whereYear('orders.created_at', $tahun);
         }
 
         $rekapPerToko = $rekapQuery->select(
@@ -92,9 +139,6 @@ class PendapatanController extends Controller
             12 => 'Desember'
         ];
 
-        // Info periode yang ditampilkan
-        $periodeInfo = $this->getPeriodeInfo($bulan, $tahun, $filterMinggu);
-
         return view('admin.pendapatan.index', compact(
             'totalPendapatan',
             'pendapatanAdmin',
@@ -107,7 +151,12 @@ class PendapatanController extends Controller
             'filterMinggu',
             'tahunList',
             'bulanList',
-            'periodeInfo'
+            'periodeInfo',
+            'period',
+            'startDateInput',
+            'endDateInput',
+            'startDate',
+            'endDate'
         ));
     }
 

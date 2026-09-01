@@ -17,15 +17,65 @@ use Illuminate\Support\Facades\DB;
 class DashboardPenjualController extends Controller
 {
     /**
-     * Menampilkan halaman dashboard analitik penjual standar Startup SaaS.
+     * Menampilkan halaman dashboard analitik penjual standar Startup SaaS dengan filter kalender dinamis.
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
         $umkm = Umkm::where('user_id', $user->id)->first();
 
         $komisiPersen = (float) Setting::get('komisi_persen', 20);
         $tokoPersen = 100 - $komisiPersen;
+
+        // ==========================================
+        // 0. DATE FILTER ENGINE
+        // ==========================================
+        $period = $request->get('period', 'all');
+        $startDateInput = $request->get('start_date');
+        $endDateInput = $request->get('end_date');
+        
+        $startDate = null;
+        $endDate = null;
+        $activePeriodLabel = 'Semua Waktu (All-Time)';
+
+        if ($period === 'today') {
+            $startDate = Carbon::today()->startOfDay();
+            $endDate = Carbon::today()->endOfDay();
+            $activePeriodLabel = 'Hari Ini (' . $startDate->translatedFormat('d F Y') . ')';
+        } elseif ($period === 'yesterday') {
+            $startDate = Carbon::yesterday()->startOfDay();
+            $endDate = Carbon::yesterday()->endOfDay();
+            $activePeriodLabel = 'Kemarin (' . $startDate->translatedFormat('d F Y') . ')';
+        } elseif ($period === '7days') {
+            $startDate = Carbon::now()->subDays(6)->startOfDay();
+            $endDate = Carbon::now()->endOfDay();
+            $activePeriodLabel = '7 Hari Terakhir (' . $startDate->translatedFormat('d M') . ' - ' . $endDate->translatedFormat('d M Y') . ')';
+        } elseif ($period === '30days') {
+            $startDate = Carbon::now()->subDays(29)->startOfDay();
+            $endDate = Carbon::now()->endOfDay();
+            $activePeriodLabel = '30 Hari Terakhir (' . $startDate->translatedFormat('d M') . ' - ' . $endDate->translatedFormat('d M Y') . ')';
+        } elseif ($period === 'this_month') {
+            $startDate = Carbon::now()->startOfMonth()->startOfDay();
+            $endDate = Carbon::now()->endOfMonth()->endOfDay();
+            $activePeriodLabel = 'Bulan Ini (' . $startDate->translatedFormat('F Y') . ')';
+        } elseif ($period === 'last_month') {
+            $startDate = Carbon::now()->subMonth()->startOfMonth()->startOfDay();
+            $endDate = Carbon::now()->subMonth()->endOfMonth()->endOfDay();
+            $activePeriodLabel = 'Bulan Lalu (' . $startDate->translatedFormat('F Y') . ')';
+        } elseif ($period === 'this_year') {
+            $startDate = Carbon::now()->startOfYear()->startOfDay();
+            $endDate = Carbon::now()->endOfYear()->endOfDay();
+            $activePeriodLabel = 'Tahun Ini (' . $startDate->translatedFormat('Y') . ')';
+        } elseif ($startDateInput) {
+            $period = 'custom';
+            $startDate = Carbon::parse($startDateInput)->startOfDay();
+            $endDate = $endDateInput ? Carbon::parse($endDateInput)->endOfDay() : Carbon::parse($startDateInput)->endOfDay();
+            if ($startDate->isSameDay($endDate)) {
+                $activePeriodLabel = $startDate->translatedFormat('d F Y');
+            } else {
+                $activePeriodLabel = $startDate->translatedFormat('d M Y') . ' s/d ' . $endDate->translatedFormat('d M Y');
+            }
+        }
 
         // Default metrics jika belum memiliki toko
         $totalProduk = 0;
@@ -70,11 +120,16 @@ class DashboardPenjualController extends Controller
             $totalStok = (int) Produk::where('umkm_id', $umkm->id)->sum('stok');
             $totalKategori = Produk::where('umkm_id', $umkm->id)->distinct('kategori_produk_id')->count('kategori_produk_id');
 
-            // 2. Query Seluruh Order Selesai Toko
-            $completeOrders = Order::with(['user', 'produk'])
+            // 2. Query Seluruh Order Selesai Toko (Scoped to Date Range)
+            $completeOrdersQuery = Order::with(['user', 'produk'])
                 ->whereIn('produk_id', $produkIds)
-                ->where('status', 'complete')
-                ->get();
+                ->where('status', 'complete');
+
+            if ($startDate && $endDate) {
+                $completeOrdersQuery->whereBetween('created_at', [$startDate, $endDate]);
+            }
+
+            $completeOrders = $completeOrdersQuery->get();
 
             $totalOrderCompleteCount = $completeOrders->count();
             $totalOmzetKotor = (float) $completeOrders->sum('total_harga');
@@ -85,10 +140,13 @@ class DashboardPenjualController extends Controller
 
             $aov = $totalOrderCompleteCount > 0 ? round($totalOmzetKotor / $totalOrderCompleteCount) : 0;
 
-            // 3. Saldo & Pencairan Dana
+            // 3. Saldo & Pencairan Dana (All-time accumulated for wallet balance safety)
             $totalPenarikanApproved = (float) PenarikanSaldo::where('umkm_id', $umkm->id)->where('status', 'approved')->sum('jumlah');
             $totalPenarikanPending = (float) PenarikanSaldo::where('umkm_id', $umkm->id)->where('status', 'pending')->sum('jumlah');
-            $saldoTersedia = max(0, $omzetBersihToko - ($totalPenarikanApproved + $totalPenarikanPending));
+            
+            $allTimeCompleteOrders = Order::whereIn('produk_id', $produkIds)->where('status', 'complete')->sum('total_harga');
+            $allTimeOmzetBersih = $allTimeCompleteOrders * ($tokoPersen / 100);
+            $saldoTersedia = max(0, $allTimeOmzetBersih - ($totalPenarikanApproved + $totalPenarikanPending));
 
             // 4. Pembeli & Retensi
             $totalPembeliUnik = $completeOrders->pluck('user_id')->filter()->unique()->count();
@@ -114,7 +172,7 @@ class DashboardPenjualController extends Controller
             }
 
             // 6. Produk Terlaris
-            $produkTerlaris = DB::table('orders')
+            $produkTerlarisQuery = DB::table('orders')
                 ->join('produks', 'orders.produk_id', '=', 'produks.id')
                 ->select(
                     'produks.id',
@@ -126,35 +184,49 @@ class DashboardPenjualController extends Controller
                     DB::raw('SUM(orders.total_harga) as total_penjualan')
                 )
                 ->where('produks.umkm_id', $umkm->id)
-                ->where('orders.status', 'complete')
-                ->groupBy('produks.id', 'produks.nama', 'produks.harga', 'produks.gambar', 'produks.stok')
+                ->where('orders.status', 'complete');
+
+            if ($startDate && $endDate) {
+                $produkTerlarisQuery->whereBetween('orders.created_at', [$startDate, $endDate]);
+            }
+
+            $produkTerlaris = $produkTerlarisQuery->groupBy('produks.id', 'produks.nama', 'produks.harga', 'produks.gambar', 'produks.stok')
                 ->orderByDesc('total_unit')
                 ->limit(5)
                 ->get();
 
-            // 7. Tren Temporal 6 Bulan Terakhir
-            $months = collect([
-                now()->subMonths(5),
-                now()->subMonths(4),
-                now()->subMonths(3),
-                now()->subMonths(2),
-                now()->subMonths(1),
-                now()
-            ]);
+            // 7. Tren Temporal Berdasarkan Filter Tanggal
+            $diffDays = ($startDate && $endDate) ? $startDate->diffInDays($endDate) : 180;
 
-            foreach ($months as $idx => $m) {
-                $chartLabels[] = $m->translatedFormat('M Y');
-                $matching = $completeOrders->filter(function ($ord) use ($m) {
-                    return Carbon::parse($ord->created_at)->format('Y-m') === $m->format('Y-m');
-                });
+            if ($startDate && $endDate && $diffDays <= 31) {
+                // Daily interval for <= 31 days
+                $curr = $startDate->copy();
+                while ($curr <= $endDate) {
+                    $dStart = $curr->copy()->startOfDay();
+                    $dEnd = $curr->copy()->endOfDay();
+                    
+                    $chartLabels[] = $curr->translatedFormat('d M');
+                    $dailyGross = (float) Order::whereIn('produk_id', $produkIds)->where('status', 'complete')->whereBetween('created_at', [$dStart, $dEnd])->sum('total_harga');
+                    $chartRevenue[] = (int) round($dailyGross * ($tokoPersen / 100));
+                    $chartOrders[] = (int) Order::whereIn('produk_id', $produkIds)->where('status', 'complete')->whereBetween('created_at', [$dStart, $dEnd])->count();
+                    
+                    $curr->addDay();
+                }
+            } else {
+                // Monthly interval for > 31 days or All-Time
+                $monthsCount = 6;
+                for ($i = $monthsCount - 1; $i >= 0; $i--) {
+                    $m = Carbon::now()->subMonths($i);
+                    $chartLabels[] = $m->translatedFormat('M Y');
+                    
+                    $mStart = $m->copy()->startOfMonth()->startOfDay();
+                    $mEnd = $m->copy()->endOfMonth()->endOfDay();
 
-                if ($matching->isNotEmpty() || $totalOmzetKotor == 0) {
-                    $chartRevenue[] = (int) round($matching->sum('total_harga') * ($tokoPersen / 100));
-                    $chartOrders[] = $matching->count();
-                } else {
-                    $factor = (0.2 + ($idx * 0.16));
-                    $chartRevenue[] = (int) round($omzetBersihToko * $factor);
-                    $chartOrders[] = max(1, (int) round($totalOrderCompleteCount * $factor));
+                    $matchingGross = (float) Order::whereIn('produk_id', $produkIds)->where('status', 'complete')->whereBetween('created_at', [$mStart, $mEnd])->sum('total_harga');
+                    $matchingOrdersCnt = (int) Order::whereIn('produk_id', $produkIds)->where('status', 'complete')->whereBetween('created_at', [$mStart, $mEnd])->count();
+
+                    $chartRevenue[] = (int) round($matchingGross * ($tokoPersen / 100));
+                    $chartOrders[] = $matchingOrdersCnt;
                 }
             }
 
@@ -203,6 +275,10 @@ class DashboardPenjualController extends Controller
                       ->orWhere('status_moderasi', '!=', 'hidden');
                 });
 
+            if ($startDate && $endDate) {
+                $ulasansQuery->whereBetween('created_at', [$startDate, $endDate]);
+            }
+
             $totalUlasan = $ulasansQuery->count();
             $avgRating = $totalUlasan > 0 ? round($ulasansQuery->avg('bintang'), 2) : 5.0;
             $ulasan5Bintang = (clone $ulasansQuery)->where('bintang', 5)->count();
@@ -212,11 +288,11 @@ class DashboardPenjualController extends Controller
             $recentUlasans = (clone $ulasansQuery)->with(['user', 'produk'])->latest()->take(3)->get();
 
             // 10. 3 Pesanan Terbaru
-            $recentOrders = Order::with(['user', 'produk'])
-                ->whereIn('produk_id', $produkIds)
-                ->latest()
-                ->take(3)
-                ->get();
+            $recentOrdersQuery = Order::with(['user', 'produk'])->whereIn('produk_id', $produkIds);
+            if ($startDate && $endDate) {
+                $recentOrdersQuery->whereBetween('created_at', [$startDate, $endDate]);
+            }
+            $recentOrders = $recentOrdersQuery->latest()->take(3)->get();
         }
 
         return view('penjual.dashboard', compact(
@@ -250,7 +326,13 @@ class DashboardPenjualController extends Controller
             'wilayahSebaran',
             'chartLabels',
             'chartRevenue',
-            'chartOrders'
+            'chartOrders',
+            'period',
+            'startDateInput',
+            'endDateInput',
+            'activePeriodLabel',
+            'startDate',
+            'endDate'
         ));
     }
 }

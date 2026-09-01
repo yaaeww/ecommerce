@@ -37,20 +37,25 @@
             
             <!-- Kategori -->
             <div>
-                <label for="kategori_produk_id" class="block text-sm font-bold text-slate-700 mb-2">Kategori Produk <span class="text-rose-500">*</span></label>
-                <select name="kategori_produk_id" id="kategori_produk_id" class="w-full rounded-xl border-slate-200 bg-slate-50 text-sm focus:border-brand-500 focus:ring-brand-500 transition shadow-sm px-4 py-3" required>
-                    <option value="">Pilih Kategori</option>
-                    @foreach($kategoriProduks as $kategori)
-                        <option value="{{ $kategori->id }}" {{ old('kategori_produk_id') == $kategori->id ? 'selected' : '' }}>
-                            {{ $kategori->nama }}
-                        </option>
-                        @foreach ($kategori->children as $sub)
-                            <option value="{{ $sub->id }}" {{ old('kategori_produk_id') == $sub->id ? 'selected' : '' }}>
-                                — {{ $sub->nama }}
+                <label for="kategori_produk_id" class="block text-sm font-extrabold text-slate-700 mb-2">Kategori Produk <span class="text-rose-500">*</span></label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-emerald-600">
+                        <i class="fas fa-layer-group text-sm"></i>
+                    </div>
+                    <select name="kategori_produk_id" id="kategori_produk_id" class="w-full rounded-2xl border-slate-200 bg-slate-50 text-sm font-bold text-slate-800 focus:border-brand-500 focus:ring-brand-500 transition shadow-xs pl-11 pr-10 py-3 cursor-pointer" required>
+                        <option value="">-- Pilih Kategori Produk --</option>
+                        @foreach($kategoriProduks as $kategori)
+                            <option value="{{ $kategori->id }}" {{ old('kategori_produk_id') == $kategori->id ? 'selected' : '' }}>
+                                {{ $kategori->nama }}
                             </option>
+                            @foreach ($kategori->children as $sub)
+                                <option value="{{ $sub->id }}" {{ old('kategori_produk_id') == $sub->id ? 'selected' : '' }}>
+                                    — {{ $sub->nama }}
+                                </option>
+                            @endforeach
                         @endforeach
-                    @endforeach
-                </select>
+                    </select>
+                </div>
             </div>
 
             <!-- Nama -->

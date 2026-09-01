@@ -10,6 +10,7 @@ class KategoriProduk extends Model
     use HasFactory;
 
     protected $fillable = ['nama', 'slug', 'gambar', 'parent_id'];
+    protected $appends = ['gambar_url'];
 
     public function getGambarAttribute($value)
     {
@@ -19,6 +20,34 @@ class KategoriProduk extends Model
             return substr($clean, 8);
         }
         return $clean;
+    }
+
+    /**
+     * Accessor untuk mendapatkan URL lengkap gambar kategori.
+     */
+    public function getGambarUrlAttribute()
+    {
+        if (!$this->gambar) return null;
+        
+        $clean = ltrim($this->gambar, '/');
+
+        if (str_starts_with($this->gambar, 'http://') || str_starts_with($this->gambar, 'https://')) {
+            return $this->gambar;
+        }
+
+        if (file_exists(public_path('storage/' . $clean))) {
+            return asset('storage/' . $clean);
+        }
+
+        if (file_exists(public_path('storage/kategori/' . $clean))) {
+            return asset('storage/kategori/' . $clean);
+        }
+
+        if (file_exists(public_path('aset/' . $clean))) {
+            return asset('aset/' . $clean);
+        }
+
+        return asset('storage/' . $clean);
     }
 
     /**

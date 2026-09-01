@@ -14,6 +14,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+
+    <!-- Alpine.js CDN -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -82,8 +89,55 @@
         .card {
             background-color: #ffffff;
             border: 1px solid #e2e8f0;
-            border-radius: 1rem;
+            border-radius: 1.25rem;
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        /* 🌟 Universal Professional Custom Select Styling */
+        select, 
+        select.form-select,
+        .custom-select {
+            appearance: none !important;
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            background-color: #f8fafc !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2.5' stroke='%23475569'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E") !important;
+            background-repeat: no-repeat !important;
+            background-position: right 0.875rem center !important;
+            background-size: 1rem 1rem !important;
+            padding-right: 2.75rem !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 0.875rem !important;
+            color: #0f172a !important;
+            font-weight: 700 !important;
+            font-family: inherit !important;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04) !important;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            cursor: pointer !important;
+        }
+
+        select:hover, 
+        select.form-select:hover,
+        .custom-select:hover {
+            background-color: #ffffff !important;
+            border-color: #cbd5e1 !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05) !important;
+        }
+
+        select:focus, 
+        select.form-select:focus,
+        .custom-select:focus {
+            background-color: #ffffff !important;
+            border-color: #10b981 !important;
+            outline: none !important;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15), 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+        }
+
+        select option {
+            background-color: #ffffff !important;
+            color: #0f172a !important;
+            font-weight: 600 !important;
+            padding: 0.625rem 0.875rem !important;
         }
         .table {
             --bs-table-bg: transparent;
@@ -108,6 +162,96 @@
         }
         .table tbody tr:hover {
             background-color: #f8fafc;
+        }
+
+        /* 🖨️ Professional Print Stylesheet */
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 8mm 10mm;
+            }
+
+            html, body {
+                background: #ffffff !important;
+                color: #0f172a !important;
+                font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                font-size: 11pt !important;
+            }
+
+            /* Hide all navigation, sidebars, headers, footers, search, and action buttons */
+            aside,
+            #sidebar,
+            header,
+            footer,
+            nav,
+            .no-print,
+            .btn,
+            button,
+            form:not(.printable-form),
+            .pagination,
+            [class*="sidebar"],
+            .action-column,
+            th:last-child,
+            td:last-child {
+                display: none !important;
+            }
+
+            /* Reset screen layout wrappers */
+            .flex.h-screen,
+            .relative.flex.flex-col.flex-1 {
+                display: block !important;
+                height: auto !important;
+                overflow: visible !important;
+                position: static !important;
+            }
+
+            main {
+                padding: 0 !important;
+                margin: 0 !important;
+                max-width: 100% !important;
+                width: 100% !important;
+            }
+
+            .card {
+                border: 1px solid #cbd5e1 !important;
+                box-shadow: none !important;
+                border-radius: 0.5rem !important;
+                break-inside: avoid;
+            }
+
+            table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                font-size: 9pt !important;
+            }
+
+            table thead th {
+                background-color: #f1f5f9 !important;
+                color: #0f172a !important;
+                border-bottom: 2px solid #94a3b8 !important;
+                font-weight: 800 !important;
+                padding: 6px 8px !important;
+            }
+
+            table tbody td {
+                padding: 6px 8px !important;
+                border-bottom: 1px solid #e2e8f0 !important;
+            }
+
+            /* Single order modal print mode */
+            body.printing-modal-active > div > div > main > *:not(#orderDetailModal),
+            body.printing-modal-active > div > aside {
+                display: none !important;
+            }
+
+            body.printing-modal-active #orderDetailModal {
+                display: block !important;
+                position: static !important;
+                background: transparent !important;
+                padding: 0 !important;
+            }
         }
     </style>
 

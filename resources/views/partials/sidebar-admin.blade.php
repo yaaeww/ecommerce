@@ -86,6 +86,25 @@
                         <span>Pusat Komplain Retur</span>
                     </a>
 
+                    <!-- Pesan Masuk Kontak -->
+                    @php
+                        $unreadPesanKontakCount = \App\Models\PesanKontak::where('status', 'belum_dibaca')->count();
+                    @endphp
+                    <a 
+                        href="{{ route('admin.pesan-kontak.index') }}" 
+                        class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.pesan-kontak.*') ? 'bg-brand-50 text-brand-600 border border-brand-200/60 shadow-sm' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}"
+                    >
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-envelope-open-text w-4 text-sm {{ request()->routeIs('admin.pesan-kontak.*') ? 'text-brand-600' : 'text-slate-400' }}"></i>
+                            <span>Pesan Masuk (Kontak)</span>
+                        </div>
+                        @if($unreadPesanKontakCount > 0)
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-rose-500 text-white shadow-sm animate-pulse">
+                                {{ $unreadPesanKontakCount }}
+                            </span>
+                        @endif
+                    </a>
+
                     <!-- Pencairan Saldo Payout -->
                     <a 
                         href="{{ route('admin.penarikan.index') }}" 

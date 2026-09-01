@@ -248,26 +248,31 @@
                 @php
                     $countProduk = $kategori->produks->count() + $kategori->subkategoris->sum(fn($sub) => $sub->produks->count());
                 @endphp
-                <a href="{{ route('kategori') }}" class="group block bento-card p-5 hover:border-brand-green">
-                    <div class="aspect-square rounded-2xl bg-emerald-50/50 relative overflow-hidden mb-4 border border-slate-100 flex items-center justify-center">
-                        <div class="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center text-brand-green group-hover:scale-110 transition-transform">
-                            @if(Str::contains(strtolower($kategori->nama), 'makan'))
-                                <i class="fas fa-bowl-food text-2xl"></i>
-                            @elseif(Str::contains(strtolower($kategori->nama), 'minum'))
-                                <i class="fas fa-glass-water text-2xl"></i>
-                            @elseif(Str::contains(strtolower($kategori->nama), 'kerajin'))
-                                <i class="fas fa-shapes text-2xl"></i>
-                            @elseif(Str::contains(strtolower($kategori->nama), 'fashion'))
-                                <i class="fas fa-shirt text-2xl"></i>
-                            @elseif(Str::contains(strtolower($kategori->nama), 'seafood'))
-                                <i class="fas fa-fish text-2xl"></i>
-                            @elseif(Str::contains(strtolower($kategori->nama), 'oleh'))
-                                <i class="fas fa-gifts text-2xl"></i>
-                            @else
-                                <i class="fas fa-boxes-stacked text-2xl"></i>
-                            @endif
-                        </div>
-                        <span class="absolute top-3 right-3 bg-white/90 backdrop-blur px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 shadow-sm">
+                <a href="{{ route('kategori', ['kategori' => [$kategori->id]]) }}" class="group block bento-card p-5 hover:border-brand-green transition-all duration-300">
+                    <div class="aspect-square rounded-2xl bg-emerald-50/50 relative overflow-hidden mb-4 border border-slate-100 flex items-center justify-center group-hover:shadow-md transition">
+                        @if($kategori->gambar_url)
+                            <img 
+                                src="{{ $kategori->gambar_url }}" 
+                                alt="{{ $kategori->nama }}" 
+                                class="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
+                                onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center text-brand-green\'><i class=\'fas fa-boxes-stacked text-2xl\'></i></div>';"
+                            >
+                        @else
+                            <div class="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center text-brand-green group-hover:scale-110 transition-transform">
+                                @if(Str::contains(strtolower($kategori->nama), 'makan') || Str::contains(strtolower($kategori->nama), 'olahan'))
+                                    <i class="fas fa-bowl-food text-2xl"></i>
+                                @elseif(Str::contains(strtolower($kategori->nama), 'minum') || Str::contains(strtolower($kategori->nama), 'sirup'))
+                                    <i class="fas fa-glass-water text-2xl"></i>
+                                @elseif(Str::contains(strtolower($kategori->nama), 'bibit') || Str::contains(strtolower($kategori->nama), 'kebun'))
+                                    <i class="fas fa-seedling text-2xl"></i>
+                                @elseif(Str::contains(strtolower($kategori->nama), 'segar') || Str::contains(strtolower($kategori->nama), 'mangga'))
+                                    <i class="fas fa-apple-whole text-2xl"></i>
+                                @else
+                                    <i class="fas fa-boxes-stacked text-2xl"></i>
+                                @endif
+                            </div>
+                        @endif
+                        <span class="absolute top-3 right-3 bg-white/90 backdrop-blur px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-700 shadow-sm border border-slate-100">
                             {{ $countProduk }} Item
                         </span>
                     </div>
@@ -311,7 +316,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             @foreach($diskonProduks as $item)
                 <div class="bg-slate-800/90 rounded-2xl p-4 border border-slate-700 hover:border-emerald-500 transition-all flex flex-col justify-between group">
-                    <div class="relative rounded-xl overflow-hidden aspect-square mb-4 bg-slate-900">
+                    <a href="{{ route('pembeli.produk.show', $item->id) }}" class="block relative rounded-xl overflow-hidden aspect-square mb-4 bg-slate-900 cursor-pointer">
                         @if($item->gambar)
                             <img src="{{ asset('storage/' . $item->gambar) }}" alt="{{ $item->nama }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
                             <div class="hidden w-full h-full flex items-center justify-center text-slate-600">
@@ -322,13 +327,21 @@
                                 <i class="fas fa-box-open text-3xl"></i>
                             </div>
                         @endif
-                        <span class="absolute top-2.5 left-2.5 bg-red-600 text-white font-black text-xs px-2 py-0.5 rounded-md shadow-md">
-                            -{{ $item->diskon->persen_diskon }}%
-                        </span>
-                    </div>
+                        @if($item->diskon && isset($item->diskon->persen_diskon))
+                            <span class="absolute top-2.5 left-2.5 bg-red-600 text-white font-black text-xs px-2 py-0.5 rounded-md shadow-md">
+                                -{{ $item->diskon->persen_diskon }}%
+                            </span>
+                        @elseif($item->harga_coret && $item->harga_coret > $item->harga)
+                            <span class="absolute top-2.5 left-2.5 bg-red-600 text-white font-black text-xs px-2 py-0.5 rounded-md shadow-md">
+                                -{{ round((($item->harga_coret - $item->harga) / $item->harga_coret) * 100) }}%
+                            </span>
+                        @endif
+                    </a>
                     <div>
                         <span class="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider">{{ $item->umkm->nama_toko ?? 'Petani Mitra' }}</span>
-                        <h3 class="font-bold text-white text-base line-clamp-1 mb-2">{{ $item->nama }}</h3>
+                        <a href="{{ route('pembeli.produk.show', $item->id) }}" class="block">
+                            <h3 class="font-bold text-white text-base line-clamp-1 mb-2 hover:text-emerald-400 transition">{{ $item->nama }}</h3>
+                        </a>
                         <div class="flex items-baseline gap-2 mb-4">
                             <span class="text-lg font-extrabold text-amber-400">
                                 Rp{{ number_format($item->harga_setelah_diskon, 0, ',', '.') }}
@@ -337,7 +350,7 @@
                                 Rp{{ number_format($item->harga, 0, ',', '.') }}
                             </span>
                         </div>
-                        <a href="{{ route('pembeli.produk.show', $item->id) }}" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition">
+                        <a href="{{ route('pembeli.produk.show', $item->id) }}" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-sm">
                             <i class="fas fa-cart-plus"></i> Beli Sekarang
                         </a>
                     </div>
@@ -366,7 +379,7 @@
             @forelse($produks as $produk)
                 <div class="bento-card p-4 flex flex-col justify-between group">
                     <div>
-                        <div class="aspect-square rounded-2xl overflow-hidden bg-slate-100 relative mb-4 border border-slate-100">
+                        <a href="{{ route('pembeli.produk.show', $produk->id) }}" class="block aspect-square rounded-2xl overflow-hidden bg-slate-100 relative mb-4 border border-slate-100 cursor-pointer">
                             @if($produk->gambar)
                                 <img src="{{ asset('storage/' . $produk->gambar) }}" alt="{{ $produk->nama }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
                                 <div class="hidden w-full h-full flex items-center justify-center text-slate-300 bg-emerald-50/50">
@@ -398,14 +411,16 @@
                                 <i class="fas fa-star text-amber-400 text-xs"></i>
                                 <span>{{ $produk->rating > 0 ? number_format($produk->rating, 1) : '5.0' }}</span>
                             </div>
-                        </div>
+                        </a>
 
                         <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
                             {{ $produk->umkm->nama_toko ?? 'Kebun Mitra' }}
                         </span>
-                        <h3 class="font-bold text-slate-900 text-base group-hover:text-brand-green transition line-clamp-1 mb-1">
-                            {{ $produk->nama }}
-                        </h3>
+                        <a href="{{ route('pembeli.produk.show', $produk->id) }}" class="block">
+                            <h3 class="font-bold text-slate-900 text-base group-hover:text-brand-green transition line-clamp-1 mb-1">
+                                {{ $produk->nama }}
+                            </h3>
+                        </a>
                         <p class="text-xs text-slate-500 line-clamp-2 mb-3">
                             {{ $produk->deskripsi }}
                         </p>

@@ -159,26 +159,84 @@
                 @enderror
             </div>
 
-            <!-- Gambar Kategori -->
+            <!-- Gambar Kategori (Current Preview & Upload New) -->
             <div>
-                <label for="gambar" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
                     Ikon / Foto Kategori
                 </label>
-                @if ($kategori->gambar && file_exists(public_path('storage/kategori/' . $kategori->gambar)))
-                    <div class="mb-3 flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 w-fit">
-                        <img src="{{ asset('storage/kategori/' . $kategori->gambar) }}" class="w-12 h-12 object-cover rounded-lg" alt="Gambar Saat Ini">
-                        <span class="text-xs text-slate-500 font-medium">Gambar saat ini terpasang</span>
+
+                <!-- Current Image Banner if exists -->
+                @if ($kategori->gambar_url)
+                    <div id="currentImageCard" class="mb-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-14 h-14 rounded-xl bg-white border border-slate-200 shadow-2xs overflow-hidden shrink-0">
+                                <img src="{{ $kategori->gambar_url }}" class="w-full h-full object-cover" alt="Foto Kategori Saat Ini">
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                    Gambar Aktif
+                                </span>
+                                <p class="text-xs font-bold text-slate-800 mt-1 truncate max-w-[200px] sm:max-w-xs">
+                                    {{ basename($kategori->gambar) }}
+                                </p>
+                            </div>
+                        </div>
+                        <span class="text-[11px] text-slate-400 font-medium hidden sm:inline">Unggah file baru di bawah untuk mengganti</span>
                     </div>
                 @endif
-                <input 
-                    type="file" 
-                    name="gambar" 
-                    id="gambar" 
-                    accept="image/*"
-                    class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 transition cursor-pointer"
-                >
+
+                <div class="space-y-3">
+                    <!-- Dropzone Container -->
+                    <div 
+                        id="imageDropzone"
+                        onclick="document.getElementById('gambar').click()"
+                        class="border-2 border-dashed border-slate-200 hover:border-brand-500 bg-slate-50/60 hover:bg-brand-50/30 rounded-2xl p-6 text-center cursor-pointer transition-all duration-200 group"
+                    >
+                        <input 
+                            type="file" 
+                            name="gambar" 
+                            id="gambar" 
+                            accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml"
+                            onchange="previewCategoryPhoto(this)"
+                            class="hidden"
+                        >
+
+                        <!-- Empty State -->
+                        <div id="dropzoneEmptyState" class="space-y-2">
+                            <div class="w-12 h-12 rounded-2xl bg-white border border-slate-200 shadow-2xs text-brand-600 flex items-center justify-center mx-auto text-lg group-hover:scale-110 group-hover:bg-brand-600 group-hover:text-white transition duration-200">
+                                <i class="fas fa-cloud-arrow-up"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-slate-700 group-hover:text-brand-700">
+                                    {{ $kategori->gambar_url ? 'Klik atau seret file ke sini untuk mengganti foto' : 'Klik atau seret file gambar ke sini' }}
+                                </p>
+                                <p class="text-[11px] text-slate-400 mt-0.5">
+                                    Format PNG, JPG, WEBP, atau SVG (Maks. 2MB)
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Preview State -->
+                        <div id="dropzonePreviewState" class="hidden flex items-center justify-center gap-4">
+                            <div class="w-16 h-16 rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden flex-shrink-0">
+                                <img id="previewImgElement" src="#" alt="Preview" class="w-full h-full object-cover">
+                            </div>
+                            <div class="text-left min-w-0">
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-brand-50 text-brand-700 border border-brand-200">
+                                    Foto Baru Terpilih
+                                </span>
+                                <p class="text-xs font-bold text-slate-900 truncate mt-1" id="previewFileName">-</p>
+                                <p class="text-[10px] text-emerald-600 font-semibold mt-0.5" id="previewFileSize">-</p>
+                                <p class="text-[10px] text-brand-600 font-bold mt-1 group-hover:underline">
+                                    <i class="fas fa-arrows-rotate mr-1"></i> Klik untuk memilih file lain
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 @error('gambar')
-                    <p class="text-rose-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                    <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ $message }}</p>
                 @enderror
             </div>
 
@@ -204,6 +262,24 @@
 
 @push('scripts')
 <script>
+    // Live Category Image Preview
+    function previewCategoryPhoto(input) {
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                document.getElementById('previewImgElement').src = e.target.result;
+                document.getElementById('previewFileName').innerText = file.name;
+                document.getElementById('previewFileSize').innerText = `${(file.size / 1024).toFixed(1)} KB`;
+
+                document.getElementById('dropzoneEmptyState').classList.add('hidden');
+                document.getElementById('dropzonePreviewState').classList.remove('hidden');
+            };
+
+            reader.readAsDataURL(file);
+        }
+    }
     function toggleCustomDropdown() {
         const menu = document.getElementById('customDropdownMenu');
         const chevron = document.getElementById('dropdownChevronIcon');

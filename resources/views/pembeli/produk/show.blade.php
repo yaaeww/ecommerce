@@ -243,15 +243,15 @@
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <a href="{{ route('login') }}" class="w-full py-3.5 px-6 rounded-xl bg-white border-2 border-indigo-600 text-indigo-600 font-bold text-sm hover:bg-indigo-50 transition flex items-center justify-center gap-2 shadow-sm text-center">
+                                <button type="button" onclick="showLoginPrompt('menambahkan produk ke keranjang')" class="w-full py-3.5 px-6 rounded-xl bg-white border-2 border-brand-green text-brand-green font-bold text-sm hover:bg-emerald-50 transition flex items-center justify-center gap-2 shadow-sm text-center">
                                     <i class="fas fa-cart-plus"></i> Tambah ke Keranjang
-                                </a>
-                                <a href="{{ route('login') }}" class="w-full py-3.5 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm transition flex items-center justify-center gap-2 shadow-md shadow-indigo-600/20 text-center">
+                                </button>
+                                <button type="button" onclick="showLoginPrompt('melakukan pembelian produk ini')" class="w-full py-3.5 px-6 rounded-xl bg-brand-green hover:bg-brand-green-dark text-white font-bold text-sm transition flex items-center justify-center gap-2 shadow-md shadow-emerald-900/15 text-center">
                                     <i class="fas fa-bag-shopping"></i> Beli Sekarang
-                                </a>
+                                </button>
                             </div>
                             <p class="text-[11px] text-slate-400 text-center">
-                                <i class="fas fa-lock text-[10px] mr-1"></i> Anda akan diarahkan untuk login terlebih dahulu sebelum melanjutkan pembayaran.
+                                <i class="fas fa-shield-halved text-[10px] mr-1 text-brand-green"></i> Belanja aman, buah segar bergaransi langsung dari kebun mitra Indramayu.
                             </p>
                         @endauth
                     @endif
@@ -261,7 +261,7 @@
                 <!-- Seller Profile Card -->
                 <div class="p-5 bg-white rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-lg">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-50 text-brand-green flex items-center justify-center font-bold text-lg">
                             <i class="fas fa-store"></i>
                         </div>
                         <div>
@@ -271,9 +271,15 @@
                         </div>
                     </div>
                     @if(Auth::id() !== ($produk->umkm->user_id ?? null))
-                        <a href="{{ route('chat.index', ['umkm_id' => $produk->umkm_id]) }}" class="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-bold text-xs rounded-xl transition flex items-center gap-1.5">
-                            <i class="fas fa-comment-dots"></i> Chat Penjual
-                        </a>
+                        @auth
+                            <a href="{{ route('pembeli.chat.index', ['id' => $produk->umkm->user_id ?? $produk->umkm_id]) }}" class="px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-brand-green font-bold text-xs rounded-xl transition flex items-center gap-1.5">
+                                <i class="fas fa-comment-dots"></i> Chat Penjual
+                            </a>
+                        @else
+                            <button type="button" onclick="showLoginPrompt('mengirim pesan dan berkonsultasi dengan penjual')" class="px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-brand-green font-bold text-xs rounded-xl transition flex items-center gap-1.5">
+                                <i class="fas fa-comment-dots"></i> Chat Penjual
+                            </button>
+                        @endauth
                     @endif
                 </div>
 
@@ -365,7 +371,7 @@
                     @foreach($produkTerkait as $terkait)
                         <div class="bento-card p-4 bg-white border border-slate-200/80 flex flex-col justify-between group">
                             <div>
-                                <div class="aspect-square rounded-2xl overflow-hidden bg-slate-100 relative mb-4 border border-slate-100">
+                                <a href="{{ route('pembeli.produk.show', $terkait->id) }}" class="block aspect-square rounded-2xl overflow-hidden bg-slate-100 relative mb-4 border border-slate-100 cursor-pointer">
                                     @if($terkait->gambar)
                                         <img src="{{ asset('storage/' . $terkait->gambar) }}" alt="{{ $terkait->nama }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
                                         <div class="hidden w-full h-full flex items-center justify-center text-slate-300 bg-slate-50">
@@ -376,21 +382,23 @@
                                             <i class="fas fa-box-open text-3xl"></i>
                                         </div>
                                     @endif
-                                </div>
+                                </a>
 
                                 <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
                                     {{ $terkait->umkm->nama_toko ?? 'Petani Mitra' }}
                                 </span>
-                                <h3 class="font-bold text-slate-900 text-sm group-hover:text-indigo-600 transition line-clamp-1 mb-1">
-                                    {{ $terkait->nama }}
-                                </h3>
+                                <a href="{{ route('pembeli.produk.show', $terkait->id) }}" class="block">
+                                    <h3 class="font-bold text-slate-900 text-sm group-hover:text-brand-green transition line-clamp-1 mb-1">
+                                        {{ $terkait->nama }}
+                                    </h3>
+                                </a>
                             </div>
 
                             <div class="pt-3 border-t border-slate-100 mt-2">
-                                <p class="text-base font-extrabold text-indigo-600 mb-2">
+                                <p class="text-base font-extrabold text-brand-green mb-2">
                                     Rp{{ number_format($terkait->harga_setelah_diskon ?? $terkait->harga, 0, ',', '.') }}
                                 </p>
-                                <a href="{{ route('pembeli.produk.show', $terkait->id) }}" class="w-full py-2 bg-indigo-50 hover:bg-indigo-600 hover:text-white text-indigo-600 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition">
+                                <a href="{{ route('pembeli.produk.show', $terkait->id) }}" class="w-full py-2 bg-emerald-50 hover:bg-brand-green hover:text-white text-brand-green font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition">
                                     <i class="fas fa-eye"></i> Lihat Detail
                                 </a>
                             </div>

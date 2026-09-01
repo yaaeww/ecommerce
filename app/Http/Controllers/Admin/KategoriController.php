@@ -52,15 +52,15 @@ class KategoriController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => 'required|unique:kategori_produks,nama',
+            'nama' => 'required|string|max:255|unique:kategori_produks,nama',
             'parent_id' => 'nullable|exists:kategori_produks,id',
-            'gambar' => 'required|image|mimes:jpg,jpeg,png,svg|max:2048',
+            'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp,svg|max:2048',
         ], [
             'nama.required' => 'Kolom nama kategori tidak boleh kosong.',
             'nama.unique' => 'Nama kategori sudah digunakan.',
-            'gambar.required' => 'Gambar kategori wajib diunggah.',
             'gambar.image' => 'File harus berupa gambar.',
-            'gambar.mimes' => 'Format gambar tidak didukung.',
+            'gambar.mimes' => 'Format gambar harus berupa JPG, JPEG, PNG, WEBP, atau SVG.',
+            'gambar.max' => 'Ukuran gambar maksimal 2MB.',
             'parent_id.exists' => 'Kategori induk yang dipilih tidak valid.',
         ]);
 
@@ -74,12 +74,15 @@ class KategoriController extends Controller
                 ->withInput();
         }
 
-        $namaFile = basename($request->file('gambar')->store('kategori', 'public'));
+        $gambarPath = null;
+        if ($request->hasFile('gambar')) {
+            $gambarPath = $request->file('gambar')->store('kategori', 'public');
+        }
 
         KategoriProduk::create([
             'nama' => $request->nama,
             'slug' => $slug,
-            'gambar' => $namaFile,
+            'gambar' => $gambarPath,
             'parent_id' => $request->parent_id,
         ]);
 
@@ -106,11 +109,12 @@ class KategoriController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255',
             'parent_id' => 'nullable|exists:kategori_produks,id',
-            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:2048',
         ], [
             'nama.required' => 'Kolom nama kategori tidak boleh kosong.',
             'gambar.image' => 'File harus berupa gambar.',
-            'gambar.mimes' => 'Format gambar tidak didukung.',
+            'gambar.mimes' => 'Format gambar harus berupa JPG, JPEG, PNG, WEBP, atau SVG.',
+            'gambar.max' => 'Ukuran gambar maksimal 2MB.',
             'parent_id.exists' => 'Kategori induk yang dipilih tidak valid.',
         ]);
 
@@ -140,10 +144,15 @@ class KategoriController extends Controller
 
         // Update gambar jika ada file baru
         if ($request->hasFile('gambar')) {
-            if ($kategori->gambar && Storage::disk('public')->exists('kategori/' . $kategori->gambar)) {
-                Storage::disk('public')->delete('kategori/' . $kategori->gambar);
+            if ($kategori->gambar) {
+                $cleanOld = ltrim($kategori->gambar, '/');
+                if (Storage::disk('public')->exists($cleanOld)) {
+                    Storage::disk('public')->delete($cleanOld);
+                } elseif (Storage::disk('public')->exists('kategori/' . $cleanOld)) {
+                    Storage::disk('public')->delete('kategori/' . $cleanOld);
+                }
             }
-            $data['gambar'] = basename($request->file('gambar')->store('kategori', 'public'));
+            $data['gambar'] = $request->file('gambar')->store('kategori', 'public');
         }
 
         $kategori->update($data);

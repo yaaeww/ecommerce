@@ -45,21 +45,26 @@
                 >
             </div>
 
-            <div class="w-full sm:w-56">
-                <select name="kategori_id" onchange="this.form.submit()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-brand-500">
-                    <option value="">Semua Kategori</option>
-                    @foreach($kategoris as $kat)
-                        <option value="{{ $kat->id }}" {{ $kategoriId == $kat->id ? 'selected' : '' }}>{{ $kat->nama }}</option>
-                    @endforeach
-                </select>
+            <div class="w-full sm:w-64">
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-emerald-600">
+                        <i class="fas fa-layer-group text-xs"></i>
+                    </div>
+                    <select name="kategori_id" onchange="this.form.submit()" class="w-full pl-10 pr-9 py-2.5 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 rounded-2xl text-xs font-extrabold text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-hidden transition shadow-xs cursor-pointer">
+                        <option value="">Semua Kategori Produk</option>
+                        @foreach($kategoris as $kat)
+                            <option value="{{ $kat->id }}" {{ $kategoriId == $kat->id ? 'selected' : '' }}>{{ $kat->nama }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
 
             <div class="flex items-center gap-2 w-full sm:w-auto">
-                <button type="submit" class="flex-1 sm:flex-none px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition">
+                <button type="submit" class="flex-1 sm:flex-none px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs rounded-2xl transition shadow-sm cursor-pointer">
                     Filter
                 </button>
                 @if($search || $kategoriId)
-                    <a href="{{ route('admin.produk.index') }}" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition" title="Reset">
+                    <a href="{{ route('admin.produk.index') }}" class="p-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-2xl transition border border-rose-200" title="Reset">
                         <i class="fas fa-rotate-left text-xs"></i>
                     </a>
                 @endif

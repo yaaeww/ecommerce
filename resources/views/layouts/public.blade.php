@@ -60,6 +60,53 @@
             box-shadow: 0 20px 35px -15px rgba(0, 0, 0, 0.07);
             border-color: rgba(45, 106, 79, 0.3);
         }
+
+        /* 🌟 Universal Professional Custom Select Styling */
+        select, 
+        select.form-select,
+        .custom-select {
+            appearance: none !important;
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            background-color: #f8fafc !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2.5' stroke='%23475569'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E") !important;
+            background-repeat: no-repeat !important;
+            background-position: right 0.875rem center !important;
+            background-size: 1rem 1rem !important;
+            padding-right: 2.75rem !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 0.875rem !important;
+            color: #0f172a !important;
+            font-weight: 700 !important;
+            font-family: inherit !important;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04) !important;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            cursor: pointer !important;
+        }
+
+        select:hover, 
+        select.form-select:hover,
+        .custom-select:hover {
+            background-color: #ffffff !important;
+            border-color: #cbd5e1 !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05) !important;
+        }
+
+        select:focus, 
+        select.form-select:focus,
+        .custom-select:focus {
+            background-color: #ffffff !important;
+            border-color: #1B4D3E !important;
+            outline: none !important;
+            box-shadow: 0 0 0 3px rgba(27, 77, 62, 0.15), 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+        }
+
+        select option {
+            background-color: #ffffff !important;
+            color: #0f172a !important;
+            font-weight: 600 !important;
+            padding: 0.625rem 0.875rem !important;
+        }
     </style>
     @stack('styles')
 </head>
@@ -113,6 +160,7 @@
                 <a href="{{ route('landing') }}" class="{{ request()->routeIs('landing') ? 'text-indigo-600' : 'hover:text-indigo-600' }} transition">Beranda</a>
                 <a href="{{ route('kategori') }}" class="{{ request()->routeIs('kategori') ? 'text-indigo-600' : 'hover:text-indigo-600' }} transition">Kategori</a>
                 <a href="{{ route('tentang') }}" class="{{ request()->routeIs('tentang') ? 'text-indigo-600' : 'hover:text-indigo-600' }} transition">Tentang Kami</a>
+                <a href="{{ route('kontak') }}" class="{{ request()->routeIs('kontak') ? 'text-indigo-600' : 'hover:text-indigo-600' }} transition">Hubungi Kami</a>
             </nav>
 
             <!-- Desktop User Auth Actions -->
@@ -245,6 +293,7 @@
                         <li><a href="{{ route('landing') }}#produk" class="hover:text-emerald-400 transition">Katalog Terlaris</a></li>
                         <li><a href="{{ route('landing') }}#ekosistem" class="hover:text-emerald-400 transition">Standar Mutu</a></li>
                         <li><a href="{{ route('tentang') }}" class="hover:text-emerald-400 transition">Tentang Kami</a></li>
+                        <li><a href="{{ route('kontak') }}" class="hover:text-emerald-400 transition">Hubungi Kami</a></li>
                     </ul>
                 </div>
 
@@ -570,7 +619,78 @@
                 searchContent.innerHTML = html;
             }
         });
+
+        // 🌟 Global Guest Login Required Modal Functions
+        window.showLoginPrompt = function(actionDesc = 'melanjutkan pesanan') {
+            const modal = document.getElementById('guestLoginModal');
+            const desc = document.getElementById('guestLoginModalDesc');
+            if (desc && actionDesc) {
+                desc.innerHTML = 'Silakan masuk atau daftar akun terlebih dahulu untuk <span class="font-bold text-slate-800">' + actionDesc + '</span>.';
+            }
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                document.body.classList.add('overflow-hidden');
+            }
+        };
+
+        window.closeGuestLoginModal = function() {
+            const modal = document.getElementById('guestLoginModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                document.body.classList.remove('overflow-hidden');
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('guestLoginModal');
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) closeGuestLoginModal();
+                });
+            }
+        });
     </script>
+
+    <!-- Modal Login Required (Popup Alert Tamu) -->
+    <div id="guestLoginModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-all duration-300">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-100 transform transition-all text-center relative overflow-hidden">
+            <!-- Ambient glow -->
+            <div class="absolute -top-16 -right-16 w-36 h-36 bg-amber-400/20 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="absolute -bottom-16 -left-16 w-36 h-36 bg-emerald-500/15 rounded-full blur-2xl pointer-events-none"></div>
+            
+            <!-- Close Button -->
+            <button type="button" onclick="closeGuestLoginModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center transition" aria-label="Tutup">
+                <i class="fas fa-times text-sm"></i>
+            </button>
+
+            <!-- Icon -->
+            <div class="w-16 h-16 bg-gradient-to-tr from-emerald-700 via-brand-green to-emerald-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-800/20 text-2xl">
+                <i class="fas fa-lock"></i>
+            </div>
+
+            <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight font-display mb-2">
+                Yuk, Masuk ke Akun Anda!
+            </h3>
+            
+            <p id="guestLoginModalDesc" class="text-sm text-slate-600 leading-relaxed mb-6">
+                Silakan masuk atau daftar akun terlebih dahulu untuk melanjutkan belanja dan menikmati aneka pilihan buah mangga segar Indramayu.
+            </p>
+
+            <div class="space-y-2.5">
+                <a href="{{ route('login') }}" class="w-full py-3.5 px-5 rounded-xl bg-brand-green hover:bg-brand-green-dark text-white font-bold text-sm transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/15">
+                    <i class="fas fa-arrow-right-to-bracket"></i> Masuk Sekarang
+                </a>
+                <a href="{{ route('register') }}" class="w-full py-3 px-5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold text-sm transition flex items-center justify-center gap-2">
+                    <i class="fas fa-user-plus text-xs text-brand-green"></i> Belum Punya Akun? Daftar Gratis
+                </a>
+                <button type="button" onclick="closeGuestLoginModal()" class="text-xs font-semibold text-slate-400 hover:text-slate-600 pt-2 transition block mx-auto">
+                    Nanti Saja
+                </button>
+            </div>
+        </div>
+    </div>
 
     @stack('scripts')
 </body>

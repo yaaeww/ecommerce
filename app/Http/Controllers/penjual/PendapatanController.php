@@ -19,7 +19,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class PendapatanController extends Controller
 {
-    // Menampilkan rekap pendapatan per produk dengan filter waktu
+    // Menampilkan rekap pendapatan per produk dengan filter waktu kalender dinamis
     public function index(Request $request)
     {
         $user = Auth::user();
@@ -27,6 +27,9 @@ class PendapatanController extends Controller
         $pendapatanPerProduk = collect();
         $filter = $request->input('filter', 'bulan');
         $totalPendapatanBulanLalu = 0;
+
+        $startDateInput = $request->input('start_date');
+        $endDateInput = $request->input('end_date');
 
         if ($umkm) {
             $pendapatanPerProduk = $this->getPendapatanQuery($umkm, $request)->get();
@@ -42,50 +45,59 @@ class PendapatanController extends Controller
                 ->sum('orders.total_harga');
         }
 
+        // Format Period Text for Label
+        if ($startDateInput && $endDateInput) {
+            $periodText = Carbon::parse($startDateInput)->translatedFormat('d M Y') . ' - ' . Carbon::parse($endDateInput)->translatedFormat('d M Y');
+        } elseif ($startDateInput) {
+            $periodText = Carbon::parse($startDateInput)->translatedFormat('d F Y');
+        } else {
+            $periodLabels = [
+                'all' => 'Semua Waktu',
+                'today' => 'Hari Ini',
+                '7days' => '7 Hari Terakhir',
+                '30days' => '30 Hari Terakhir',
+                'minggu' => 'Minggu Ini',
+                'bulan' => 'Bulan Ini',
+                'tahun' => 'Tahun Ini'
+            ];
+            $periodText = $periodLabels[$filter] ?? 'Bulan Ini';
+        }
+
         return view('penjual.pendapatan-per-produk', compact(
             'pendapatanPerProduk',
             'filter',
-            'totalPendapatanBulanLalu'
+            'totalPendapatanBulanLalu',
+            'startDateInput',
+            'endDateInput',
+            'periodText'
         ));
     }
 
-    // Menampilkan detail pendapatan untuk satu produk
-    public function show($id)
-    {
-        $user = Auth::user();
-        $umkm = UMKM::where('user_id', $user->id)->first();
-
-        $produk = DB::table('produks')
-            ->where('id', $id)
-            ->where('umkm_id', $umkm->id)
-            ->first();
-
-        if (!$produk) {
-            abort(404);
-        }
-
-        $detail = DB::table('orders')
-            ->join('users', 'orders.user_id', '=', 'users.id')
-            ->where('orders.produk_id', $id)
-            ->where('orders.status', 'complete')
-            ->select('orders.id', 'orders.jumlah', 'orders.total_harga', 'orders.created_at', 'users.name as nama_pemesan')
-            ->orderBy('orders.created_at', 'desc')
-            ->get();
-
-        return view('penjual.pendapatan-detail', compact('produk', 'detail'));
-    }
-
-    // Ekspor ringkasan ke Excel
+    // Export Ringkasan Excel
     public function exportSummaryExcel(Request $request)
     {
         $user = Auth::user();
         $umkm = UMKM::where('user_id', $user->id)->firstOrFail();
 
         $pendapatanPerProduk = $this->getPendapatanQuery($umkm, $request)->get();
-        return Excel::download(new PendapatanSummaryExport($pendapatanPerProduk), 'pendapatan_summary.xlsx');
+
+        return Excel::download(new PendapatanSummaryExport($pendapatanPerProduk), 'rekap_pendapatan_produk_' . date('Ymd_His') . '.xlsx');
     }
 
-    // Ekspor detail ke Excel
+    // Export Ringkasan PDF
+    public function exportSummaryPdf(Request $request)
+    {
+        $user = Auth::user();
+        $umkm = UMKM::where('user_id', $user->id)->firstOrFail();
+
+        $pendapatanPerProduk = $this->getPendapatanQuery($umkm, $request)->get();
+        $filter = $request->input('filter', 'bulan');
+
+        $pdf = Pdf::loadView('penjual.exports.pendapatan-summary-pdf', compact('pendapatanPerProduk', 'umkm', 'filter'));
+        return $pdf->download('rekap_pendapatan_produk_' . date('Ymd_His') . '.pdf');
+    }
+
+    // Export Detail Transaksi Produk Excel
     public function exportDetailExcel($id)
     {
         $user = Auth::user();
@@ -101,22 +113,10 @@ class PendapatanController extends Controller
             ->orderBy('orders.created_at', 'desc')
             ->get();
 
-        return Excel::download(new PendapatanDetailExport($detail), 'pendapatan_detail_produk_' . $id . '.xlsx');
+        return Excel::download(new PendapatanDetailExport($produk, $detail), 'pendapatan_detail_produk_' . $produk->nama . '.xlsx');
     }
 
-    // Ekspor ringkasan ke PDF
-    public function exportSummaryPdf(Request $request)
-    {
-        $user = Auth::user();
-        $umkm = UMKM::where('user_id', $user->id)->firstOrFail();
-
-        $pendapatanPerProduk = $this->getPendapatanQuery($umkm, $request)->get();
-
-        $pdf = Pdf::loadView('penjual.exports.pendapatan-summary-pdf', compact('pendapatanPerProduk'));
-        return $pdf->download('pendapatan_summary.pdf');
-    }
-
-    // Ekspor detail ke PDF
+    // Export Detail Transaksi Produk PDF
     public function exportDetailPdf($id)
     {
         $user = Auth::user();
@@ -160,6 +160,17 @@ class PendapatanController extends Controller
                 Carbon::parse($startDate)->startOfDay(),
                 Carbon::parse($endDate)->endOfDay(),
             ]);
+        } elseif ($startDate) {
+            $query->whereBetween('orders.created_at', [
+                Carbon::parse($startDate)->startOfDay(),
+                Carbon::parse($startDate)->endOfDay(),
+            ]);
+        } elseif ($filter === 'today') {
+            $query->whereBetween('orders.created_at', [Carbon::today()->startOfDay(), Carbon::today()->endOfDay()]);
+        } elseif ($filter === '7days') {
+            $query->whereBetween('orders.created_at', [Carbon::now()->subDays(6)->startOfDay(), Carbon::now()->endOfDay()]);
+        } elseif ($filter === '30days') {
+            $query->whereBetween('orders.created_at', [Carbon::now()->subDays(29)->startOfDay(), Carbon::now()->endOfDay()]);
         } elseif ($filter === 'minggu') {
             $query->whereBetween('orders.created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
         } elseif ($filter === 'bulan') {
@@ -167,7 +178,7 @@ class PendapatanController extends Controller
                 ->whereYear('orders.created_at', Carbon::now()->year);
         } elseif ($filter === 'tahun') {
             $query->whereYear('orders.created_at', Carbon::now()->year);
-        }
+        } // 'all' requires no filter
 
         return $query->groupBy('produks.id', 'produks.nama', 'produks.stok');
     }

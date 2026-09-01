@@ -88,9 +88,9 @@
                             
                             // Image / Icon
                             echo '<td>';
-                            echo '<div class="w-11 h-11 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 overflow-hidden shrink-0">';
-                            if ($kategori->gambar && file_exists(public_path('storage/kategori/' . $kategori->gambar))) {
-                                echo '<img src="' . asset('storage/kategori/' . $kategori->gambar) . '" class="w-full h-full object-cover" alt="' . e($kategori->nama) . '">';
+                            echo '<div class="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200/80 flex items-center justify-center text-slate-400 overflow-hidden shrink-0 shadow-2xs group relative">';
+                            if ($kategori->gambar_url) {
+                                echo '<img src="' . e($kategori->gambar_url) . '" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="' . e($kategori->nama) . '" onerror="this.onerror=null; this.parentElement.innerHTML=\'<i class=\\\'fas fa-layer-group text-brand-600 text-sm\\\'></i>\';">';
                             } else {
                                 echo '<i class="fas fa-layer-group text-brand-600 text-sm"></i>';
                             }
@@ -153,9 +153,9 @@
                         @else
                             <tr class="hover:bg-slate-50/70 transition">
                                 <td>
-                                    <div class="w-11 h-11 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 overflow-hidden shrink-0">
-                                        @if ($kategori->gambar && file_exists(public_path('storage/kategori/' . $kategori->gambar)))
-                                            <img src="{{ asset('storage/kategori/' . $kategori->gambar) }}" class="w-full h-full object-cover" alt="{{ $kategori->nama }}">
+                                    <div class="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200/80 flex items-center justify-center text-slate-400 overflow-hidden shrink-0 shadow-2xs group relative">
+                                        @if ($kategori->gambar_url)
+                                            <img src="{{ $kategori->gambar_url }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="{{ $kategori->nama }}" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fas fa-layer-group text-brand-600 text-sm\'></i>';">
                                         @else
                                             <i class="fas fa-layer-group text-brand-600 text-sm"></i>
                                         @endif

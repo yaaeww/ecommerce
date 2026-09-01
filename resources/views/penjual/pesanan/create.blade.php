@@ -123,26 +123,36 @@
                                 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                                     <div class="space-y-1.5">
-                                        <label for="kurir_ekspedisi" class="text-xs font-bold text-slate-700">Kurir / Ekspedisi</label>
-                                        <select name="kurir_ekspedisi" id="kurir_ekspedisi" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:border-brand-500 focus:outline-none bg-white">
-                                            <option value="J&T Cargo Fresh Chain" {{ old('kurir_ekspedisi', $order->kurir_ekspedisi) === 'J&T Cargo Fresh Chain' ? 'selected' : '' }}>J&T Cargo Fresh Chain</option>
-                                            <option value="JNE Express" {{ old('kurir_ekspedisi', $order->kurir_ekspedisi) === 'JNE Express' ? 'selected' : '' }}>JNE Express</option>
-                                            <option value="SiCepat" {{ old('kurir_ekspedisi', $order->kurir_ekspedisi) === 'SiCepat' ? 'selected' : '' }}>SiCepat</option>
-                                            <option value="Anteraja" {{ old('kurir_ekspedisi', $order->kurir_ekspedisi) === 'Anteraja' ? 'selected' : '' }}>Anteraja</option>
-                                            <option value="Kurir Toko / Pengantaran Langsung" {{ old('kurir_ekspedisi', $order->kurir_ekspedisi) === 'Kurir Toko / Pengantaran Langsung' ? 'selected' : '' }}>Kurir Toko / Pengantaran Langsung</option>
-                                        </select>
+                                        <label for="kurir_ekspedisi" class="text-xs font-extrabold text-slate-700 block mb-1">Kurir / Ekspedisi</label>
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-emerald-600">
+                                                <i class="fas fa-truck-fast text-xs"></i>
+                                            </div>
+                                            <select name="kurir_ekspedisi" id="kurir_ekspedisi" class="w-full pl-10 pr-9 py-2.5 rounded-2xl border border-slate-200 text-xs font-extrabold text-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-hidden bg-slate-50 hover:bg-white focus:bg-white transition shadow-xs cursor-pointer">
+                                                <option value="J&T Cargo Fresh Chain" {{ old('kurir_ekspedisi', $order->kurir_ekspedisi) === 'J&T Cargo Fresh Chain' ? 'selected' : '' }}>J&T Cargo Fresh Chain</option>
+                                                <option value="JNE Express" {{ old('kurir_ekspedisi', $order->kurir_ekspedisi) === 'JNE Express' ? 'selected' : '' }}>JNE Express</option>
+                                                <option value="SiCepat" {{ old('kurir_ekspedisi', $order->kurir_ekspedisi) === 'SiCepat' ? 'selected' : '' }}>SiCepat</option>
+                                                <option value="Anteraja" {{ old('kurir_ekspedisi', $order->kurir_ekspedisi) === 'Anteraja' ? 'selected' : '' }}>Anteraja</option>
+                                                <option value="Kurir Toko / Pengantaran Langsung" {{ old('kurir_ekspedisi', $order->kurir_ekspedisi) === 'Kurir Toko / Pengantaran Langsung' ? 'selected' : '' }}>Kurir Toko / Pengantaran Langsung</option>
+                                            </select>
+                                        </div>
                                     </div>
 
                                     <div class="space-y-1.5">
-                                        <label for="no_resi" class="text-xs font-bold text-slate-700">Nomor Resi / Bukti Pengiriman</label>
-                                        <input 
-                                            type="text" 
-                                            name="no_resi" 
-                                            id="no_resi" 
-                                            value="{{ old('no_resi', $order->no_resi) }}" 
-                                            class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:border-brand-500 focus:outline-none"
-                                            placeholder="Contoh: JT8921829102"
-                                        >
+                                        <label for="no_resi" class="text-xs font-extrabold text-slate-700 block mb-1">Nomor Resi / Bukti Pengiriman</label>
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                                <i class="fas fa-barcode text-xs"></i>
+                                            </div>
+                                            <input 
+                                                type="text" 
+                                                name="no_resi" 
+                                                id="no_resi" 
+                                                value="{{ old('no_resi', $order->no_resi) }}" 
+                                                class="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-slate-200 text-xs font-extrabold text-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-hidden bg-slate-50 hover:bg-white focus:bg-white transition shadow-xs"
+                                                placeholder="Contoh: JT8921829102"
+                                            >
+                                        </div>
                                     </div>
                                 </div>
 

@@ -12,30 +12,36 @@
 
                 <!-- Product Image -->
                 <div class="relative aspect-square overflow-hidden rounded-t-2xl bg-slate-100">
-                    @if($produk->gambar)
-                        <img src="{{ asset('storage/' . $produk->gambar) }}" alt="{{ $produk->nama }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    @else
-                        <div class="w-full h-full flex items-center justify-center text-slate-300">
-                            <i class="fas fa-image text-4xl"></i>
-                        </div>
-                    @endif
+                    <a href="{{ route('pembeli.produk.show', $produk->id) }}" class="block w-full h-full cursor-pointer">
+                        @if($produk->gambar)
+                            <img src="{{ asset('storage/' . $produk->gambar) }}" alt="{{ $produk->nama }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        @else
+                            <div class="w-full h-full flex items-center justify-center text-slate-300">
+                                <i class="fas fa-image text-4xl"></i>
+                            </div>
+                        @endif
+                    </a>
                     
                     <!-- Quick Action Hover Overlay -->
-                    <div class="absolute inset-0 bg-slate-900/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4 gap-2">
-                        <a href="{{ route('pembeli.produk.show', $produk->id) }}" class="w-10 h-10 rounded-full bg-white text-slate-700 flex items-center justify-center shadow hover:bg-indigo-600 hover:text-white transition-colors" title="Lihat Detail">
+                    <div class="absolute inset-0 bg-slate-900/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4 gap-2 pointer-events-none">
+                        <a href="{{ route('pembeli.produk.show', $produk->id) }}" class="w-10 h-10 rounded-full bg-white text-slate-700 flex items-center justify-center shadow hover:bg-brand-green hover:text-white transition-colors pointer-events-auto" title="Lihat Detail">
                             <i class="far fa-eye"></i>
                         </a>
                         @auth
                             @if(Auth::user()->role === 'pembeli')
-                                <form action="{{ route('pembeli.keranjang.store') }}" method="POST" class="inline">
+                                <form action="{{ route('pembeli.keranjang.store') }}" method="POST" class="inline pointer-events-auto">
                                     @csrf
                                     <input type="hidden" name="produk_id" value="{{ $produk->id }}">
                                     <input type="hidden" name="quantity" value="1">
-                                    <button type="submit" class="w-10 h-10 rounded-full bg-white text-slate-700 flex items-center justify-center shadow hover:bg-indigo-600 hover:text-white transition-colors" title="Tambah ke Keranjang">
+                                    <button type="submit" class="w-10 h-10 rounded-full bg-white text-slate-700 flex items-center justify-center shadow hover:bg-brand-green hover:text-white transition-colors" title="Tambah ke Keranjang">
                                         <i class="fas fa-shopping-cart"></i>
                                     </button>
                                 </form>
                             @endif
+                        @else
+                            <button type="button" onclick="showLoginPrompt('menambahkan produk ke keranjang')" class="w-10 h-10 rounded-full bg-white text-slate-700 flex items-center justify-center shadow hover:bg-brand-green hover:text-white transition-colors pointer-events-auto" title="Tambah ke Keranjang">
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
                         @endauth
                     </div>
                 </div>

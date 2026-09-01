@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\KontakController;
 use App\Http\Controllers\ChatBotController;
 
 // 🔹 Chat per Role
@@ -26,6 +27,7 @@ use App\Http\Controllers\Admin\{
     AdminNotificationController,
     AdminLedgerController,
     AdminKomplainController,
+    AdminPesanKontakController,
     PenjualController,
     PembeliController,
     PendapatanController as AdminPendapatanController
@@ -71,6 +73,8 @@ use App\Http\Controllers\InvoiceController;
 Route::get('/', [LandingController::class, 'index'])->name('landing');
 Route::get('/kategori', [LandingController::class, 'kategori'])->name('kategori');
 Route::get('/tentang', [LandingController::class, 'tentang'])->name('tentang');
+Route::get('/kontak', [KontakController::class, 'index'])->name('kontak');
+Route::post('/kontak', [KontakController::class, 'store'])->name('kontak.store');
 Route::get('/api/search/live', [LandingController::class, 'liveSearch'])->name('api.search.live');
 Route::get('/produk/{id}', [ProdukPembeliController::class, 'show'])->name('pembeli.produk.show');
 /*
@@ -201,6 +205,14 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // 🔔 Real-time Platform Notifications (Navbar Center)
     Route::get('notifications/unread', [AdminNotificationController::class, 'getUnreadJson'])->name('notifications.unread');
     Route::post('notifications/mark-read', [AdminNotificationController::class, 'markAllAsRead'])->name('notifications.mark-read');
+
+    // 📬 Pusat Pesan Masuk & Layanan Kontak (Hubungi Kami)
+    Route::get('pesan-kontak', [AdminPesanKontakController::class, 'index'])->name('pesan-kontak.index');
+    Route::get('pesan-kontak/{id}', [AdminPesanKontakController::class, 'show'])->name('pesan-kontak.show');
+    Route::post('pesan-kontak/{id}/status', [AdminPesanKontakController::class, 'updateStatus'])->name('pesan-kontak.status');
+    Route::post('pesan-kontak/{id}/reply', [AdminPesanKontakController::class, 'reply'])->name('pesan-kontak.reply');
+    Route::delete('pesan-kontak/{id}', [AdminPesanKontakController::class, 'destroy'])->name('pesan-kontak.destroy');
+    Route::post('pesan-kontak/bulk-action', [AdminPesanKontakController::class, 'bulkAction'])->name('pesan-kontak.bulk-action');
 
     Route::resource('penjual', PenjualController::class)->only(['index', 'edit', 'update', 'destroy']);
     Route::resource('pembeli', PembeliController::class)->only(['index', 'edit', 'update', 'destroy']);

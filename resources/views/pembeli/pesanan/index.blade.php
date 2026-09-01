@@ -155,12 +155,17 @@
                 </div>
 
                 <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-                    <select id="orderSortSelect" onchange="sortOrderCards()" class="px-3.5 py-2.5 rounded-2xl bg-white border border-slate-200 text-xs font-semibold text-slate-700 shadow-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
-                        <option value="newest">Waktu Transaksi (Terbaru)</option>
-                        <option value="oldest">Waktu Transaksi (Terlama)</option>
-                        <option value="highest">Nominal Tertinggi</option>
-                        <option value="lowest">Nominal Terendah</option>
-                    </select>
+                    <div class="relative w-full sm:w-auto min-w-[210px]">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-emerald-700">
+                            <i class="fas fa-arrow-down-wide-short text-xs"></i>
+                        </div>
+                        <select id="orderSortSelect" onchange="sortOrderCards()" class="w-full pl-10 pr-9 py-2.5 rounded-2xl bg-white border border-slate-200 text-xs font-extrabold text-slate-800 shadow-xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition cursor-pointer">
+                            <option value="newest">Waktu Transaksi (Terbaru)</option>
+                            <option value="oldest">Waktu Transaksi (Terlama)</option>
+                            <option value="highest">Nominal Tertinggi</option>
+                            <option value="lowest">Nominal Terendah</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>

@@ -34,6 +34,89 @@
     </div>
 
     <!-- ========================================================================= -->
+    <!-- 📅 DYNAMIC CALENDAR & DATE RANGE FILTER BAR                               -->
+    <!-- ========================================================================= -->
+    <div class="card p-4 sm:p-5 bg-white border border-slate-200/80 rounded-3xl shadow-sm space-y-3.5">
+        <form id="dashboardDateFilterForm" action="{{ route('admin.dashboard') }}" method="GET" class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            
+            <!-- Hidden inputs for custom date selection -->
+            <input type="hidden" name="period" id="filterPeriod" value="{{ $period ?? 'all' }}">
+            <input type="hidden" name="start_date" id="filterStartDate" value="{{ $startDateInput ?? ($startDate ? $startDate->format('Y-m-d') : '') }}">
+            <input type="hidden" name="end_date" id="filterEndDate" value="{{ $endDateInput ?? ($endDate ? $endDate->format('Y-m-d') : '') }}">
+
+            <!-- Left: Calendar API Input & Presets -->
+            <div class="flex flex-col sm:flex-row sm:items-center gap-3 flex-1 flex-wrap">
+                
+                <!-- Dynamic Interactive Calendar Range Input -->
+                <div class="relative min-w-[260px] sm:w-72">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-brand-600">
+                        <i class="fas fa-calendar-days text-sm"></i>
+                    </div>
+                    <input 
+                        type="text" 
+                        id="flatpickrCalendar" 
+                        placeholder="Pilih Rentang Tanggal Kalender..." 
+                        class="w-full pl-10 pr-9 py-2.5 bg-slate-50 hover:bg-white focus:bg-white text-xs font-extrabold text-slate-800 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:outline-hidden transition shadow-xs cursor-pointer"
+                        readonly
+                    >
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                        @if(($period ?? 'all') !== 'all')
+                            <a href="{{ route('admin.dashboard') }}" title="Reset Filter" class="text-slate-400 hover:text-rose-500 transition text-xs">
+                                <i class="fas fa-circle-xmark"></i>
+                            </a>
+                        @else
+                            <i class="fas fa-chevron-down text-[10px] text-slate-400 pointer-events-none"></i>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Quick Filter Period Pills -->
+                <div class="flex items-center gap-1.5 flex-wrap">
+                    <button type="button" onclick="setFilterPeriod('all')" class="px-3 py-2 rounded-xl text-xs font-extrabold transition cursor-pointer {{ ($period ?? 'all') === 'all' ? 'bg-slate-900 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                        Semua Waktu
+                    </button>
+                    <button type="button" onclick="setFilterPeriod('today')" class="px-3 py-2 rounded-xl text-xs font-extrabold transition cursor-pointer {{ ($period ?? '') === 'today' ? 'bg-brand-600 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                        Hari Ini
+                    </button>
+                    <button type="button" onclick="setFilterPeriod('7days')" class="px-3 py-2 rounded-xl text-xs font-extrabold transition cursor-pointer {{ ($period ?? '') === '7days' ? 'bg-brand-600 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                        7 Hari Terakhir
+                    </button>
+                    <button type="button" onclick="setFilterPeriod('30days')" class="px-3 py-2 rounded-xl text-xs font-extrabold transition cursor-pointer {{ ($period ?? '') === '30days' ? 'bg-brand-600 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                        30 Hari Terakhir
+                    </button>
+                    <button type="button" onclick="setFilterPeriod('this_month')" class="px-3 py-2 rounded-xl text-xs font-extrabold transition cursor-pointer {{ ($period ?? '') === 'this_month' ? 'bg-brand-600 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                        Bulan Ini
+                    </button>
+                    <button type="button" onclick="setFilterPeriod('this_year')" class="px-3 py-2 rounded-xl text-xs font-extrabold transition cursor-pointer {{ ($period ?? '') === 'this_year' ? 'bg-brand-600 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                        Tahun Ini
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- Right: Active Period Badge & Reset Button -->
+            <div class="flex items-center justify-between sm:justify-end gap-2.5 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-brand-50 border border-brand-200/80 text-brand-900 text-xs font-bold">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-600"></span>
+                    </span>
+                    <span class="text-[11px] text-slate-500 font-normal">Periode:</span>
+                    <strong class="font-extrabold text-brand-800">{{ $activePeriodLabel }}</strong>
+                </div>
+
+                @if(($period ?? 'all') !== 'all')
+                    <a href="{{ route('admin.dashboard') }}" class="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold border border-rose-200 transition flex items-center gap-1.5 shadow-2xs">
+                        <i class="fas fa-rotate-left text-[10px]"></i>
+                        <span>Reset</span>
+                    </a>
+                @endif
+            </div>
+
+        </form>
+    </div>
+
+    <!-- ========================================================================= -->
     <!-- 📊 MASTER KPI EXECUTIVE CARDS                                             -->
     <!-- ========================================================================= -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -688,10 +771,142 @@
 @endsection
 
 @push('scripts')
+<!-- Flatpickr CSS & JS for Dynamic Calendar Filtering -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<style>
+    .flatpickr-calendar {
+        font-family: 'Plus Jakarta Sans', -apple-system, sans-serif !important;
+        background: #ffffff !important;
+        border-radius: 1.25rem !important;
+        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(15, 23, 42, 0.08) !important;
+        border: 1px solid #cbd5e1 !important;
+        padding: 0.75rem !important;
+        z-index: 99999 !important;
+        color: #0f172a !important;
+        width: 320px !important;
+    }
+    .flatpickr-months {
+        margin-bottom: 0.5rem !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+    .flatpickr-months .flatpickr-month {
+        color: #0f172a !important;
+        fill: #0f172a !important;
+        font-weight: 800 !important;
+        height: 38px !important;
+    }
+    .flatpickr-current-month {
+        font-size: 1rem !important;
+        font-weight: 800 !important;
+        color: #0f172a !important;
+        padding: 0 !important;
+    }
+    .flatpickr-current-month .cur-month {
+        font-weight: 800 !important;
+        color: #0f172a !important;
+    }
+    .flatpickr-current-month input.cur-year {
+        font-weight: 800 !important;
+        color: #0f172a !important;
+    }
+    .flatpickr-months .flatpickr-prev-month, 
+    .flatpickr-months .flatpickr-next-month {
+        color: #0f172a !important;
+        fill: #0f172a !important;
+        padding: 0.5rem !important;
+        top: 8px !important;
+    }
+    .flatpickr-months .flatpickr-prev-month:hover svg, 
+    .flatpickr-months .flatpickr-next-month:hover svg {
+        fill: #059669 !important;
+    }
+    .flatpickr-weekdays {
+        margin-bottom: 0.25rem !important;
+    }
+    span.flatpickr-weekday {
+        color: #475569 !important;
+        font-weight: 800 !important;
+        font-size: 0.75rem !important;
+    }
+    .flatpickr-days {
+        width: 100% !important;
+    }
+    .dayContainer {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        justify-content: space-around !important;
+    }
+    .flatpickr-day {
+        color: #0f172a !important;
+        font-weight: 700 !important;
+        font-size: 0.85rem !important;
+        border-radius: 0.65rem !important;
+        border: 1px solid transparent !important;
+        margin: 1.5px !important;
+        height: 36px !important;
+        line-height: 34px !important;
+        max-width: 38px !important;
+        cursor: pointer !important;
+    }
+    .flatpickr-day:hover {
+        background: #f1f5f9 !important;
+        border-color: #cbd5e1 !important;
+        color: #0f172a !important;
+    }
+    .flatpickr-day.prevMonthDay, 
+    .flatpickr-day.nextMonthDay {
+        color: #64748b !important;
+        font-weight: 600 !important;
+    }
+    .flatpickr-day.prevMonthDay:hover, 
+    .flatpickr-day.nextMonthDay:hover {
+        background: #f1f5f9 !important;
+        color: #0f172a !important;
+    }
+    .flatpickr-day.today {
+        border-color: #10b981 !important;
+        color: #059669 !important;
+        font-weight: 900 !important;
+    }
+    .flatpickr-day.selected, 
+    .flatpickr-day.startRange, 
+    .flatpickr-day.endRange {
+        background: #059669 !important;
+        border-color: #059669 !important;
+        color: #ffffff !important;
+        font-weight: 900 !important;
+    }
+    .flatpickr-day.inRange {
+        background: #d1fae5 !important;
+        border-color: #a7f3d0 !important;
+        color: #065f46 !important;
+        font-weight: 800 !important;
+    }
+    .flatpickr-day.flatpickr-disabled,
+    .flatpickr-day.flatpickr-disabled:hover {
+        color: #94a3b8 !important;
+        cursor: default !important;
+    }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
+
 <!-- Chart.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
+// Function for Quick Filter Pills
+function setFilterPeriod(period) {
+    document.getElementById('filterPeriod').value = period;
+    if (period !== 'custom') {
+        document.getElementById('filterStartDate').value = '';
+        document.getElementById('filterEndDate').value = '';
+    }
+    document.getElementById('dashboardDateFilterForm').submit();
+}
+
 function openOrderModal(orderId) {
     const modal = document.getElementById('orderDetailModal');
     const body = document.getElementById('modalBody');
@@ -832,109 +1047,154 @@ function closeOrderModal() {
 document.addEventListener('DOMContentLoaded', function() {
     
     // -----------------------------------------------------------
+    // 0. Dynamic Calendar (Flatpickr API) Initialization
+    // -----------------------------------------------------------
+    const calendarEl = document.getElementById('flatpickrCalendar');
+    if (calendarEl && typeof flatpickr !== 'undefined') {
+        const initialStart = "{{ $startDateInput ?? ($startDate ? $startDate->format('Y-m-d') : '') }}";
+        const initialEnd = "{{ $endDateInput ?? ($endDate ? $endDate->format('Y-m-d') : '') }}";
+        const defaultDates = (initialStart && initialEnd) ? [initialStart, initialEnd] : (initialStart ? [initialStart] : []);
+
+        flatpickr(calendarEl, {
+            mode: "range",
+            locale: "id",
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "d M Y",
+            altInputClass: "w-full pl-10 pr-9 py-2.5 bg-slate-50 hover:bg-white focus:bg-white text-xs font-extrabold text-slate-800 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:outline-hidden transition shadow-xs cursor-pointer",
+            defaultDate: defaultDates,
+            showMonths: 1,
+            animate: true,
+            onClose: function(selectedDates, dateStr, instance) {
+                if (selectedDates.length === 2) {
+                    const startStr = instance.formatDate(selectedDates[0], "Y-m-d");
+                    const endStr = instance.formatDate(selectedDates[1], "Y-m-d");
+
+                    document.getElementById('filterPeriod').value = 'custom';
+                    document.getElementById('filterStartDate').value = startStr;
+                    document.getElementById('filterEndDate').value = endStr;
+                    document.getElementById('dashboardDateFilterForm').submit();
+                } else if (selectedDates.length === 1) {
+                    const singleStr = instance.formatDate(selectedDates[0], "Y-m-d");
+                    document.getElementById('filterPeriod').value = 'custom';
+                    document.getElementById('filterStartDate').value = singleStr;
+                    document.getElementById('filterEndDate').value = singleStr;
+                    document.getElementById('dashboardDateFilterForm').submit();
+                }
+            }
+        });
+    }
+
+    // -----------------------------------------------------------
     // 1. Line/Area Chart: Revenue Trend
     // -----------------------------------------------------------
-    const ctxRevenue = document.getElementById('revenueTrendChart').getContext('2d');
+    const ctxRevenue = document.getElementById('revenueTrendChart')?.getContext('2d');
     
-    const gradientRevenue = ctxRevenue.createLinearGradient(0, 0, 0, 300);
-    gradientRevenue.addColorStop(0, 'rgba(79, 70, 229, 0.35)');
-    gradientRevenue.addColorStop(1, 'rgba(79, 70, 229, 0.00)');
+    if (ctxRevenue) {
+        const gradientRevenue = ctxRevenue.createLinearGradient(0, 0, 0, 300);
+        gradientRevenue.addColorStop(0, 'rgba(79, 70, 229, 0.35)');
+        gradientRevenue.addColorStop(1, 'rgba(79, 70, 229, 0.00)');
 
-    new Chart(ctxRevenue, {
-        type: 'line',
-        data: {
-            labels: @json($chartLabels),
-            datasets: [{
-                label: 'Gross Omzet (Rp)',
-                data: @json($chartRevenue),
-                borderColor: '#4f46e5',
-                borderWidth: 3,
-                backgroundColor: gradientRevenue,
-                fill: true,
-                tension: 0.4,
-                pointBackgroundColor: '#ffffff',
-                pointBorderColor: '#4f46e5',
-                pointBorderWidth: 2.5,
-                pointRadius: 5,
-                pointHoverRadius: 7,
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    backgroundColor: '#0f172a',
-                    titleFont: { size: 12, weight: 'bold' },
-                    bodyFont: { size: 12 },
-                    padding: 12,
-                    cornerRadius: 12,
-                    callbacks: {
-                        label: function(context) {
-                            return ' Omzet: Rp ' + new Intl.NumberFormat('id-ID').format(context.parsed.y);
+        new Chart(ctxRevenue, {
+            type: 'line',
+            data: {
+                labels: @json($chartLabels),
+                datasets: [{
+                    label: 'Gross Omzet (Rp)',
+                    data: @json($chartRevenue),
+                    borderColor: '#4f46e5',
+                    borderWidth: 3,
+                    backgroundColor: gradientRevenue,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#4f46e5',
+                    pointBorderWidth: 2.5,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#0f172a',
+                        titleFont: { size: 12, weight: 'bold' },
+                        bodyFont: { size: 12 },
+                        padding: 12,
+                        cornerRadius: 12,
+                        callbacks: {
+                            label: function(context) {
+                                return ' Omzet: Rp ' + new Intl.NumberFormat('id-ID').format(context.parsed.y);
+                            }
                         }
                     }
-                }
-            },
-            scales: {
-                x: {
-                    grid: { display: false },
-                    ticks: { color: '#64748b', font: { size: 11, weight: '600' } }
                 },
-                y: {
-                    grid: { color: '#f1f5f9' },
-                    ticks: {
-                        color: '#64748b',
-                        font: { size: 10 },
-                        callback: function(val) {
-                            return 'Rp ' + (val / 1000000).toFixed(1) + 'M';
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#64748b', font: { size: 11, weight: '600' } }
+                    },
+                    y: {
+                        grid: { color: '#f1f5f9' },
+                        ticks: {
+                            color: '#64748b',
+                            font: { size: 10 },
+                            callback: function(val) {
+                                if (val >= 1000000) return 'Rp ' + (val / 1000000).toFixed(1) + 'M';
+                                if (val >= 1000) return 'Rp ' + (val / 1000).toFixed(0) + 'K';
+                                return 'Rp ' + val;
+                            }
                         }
                     }
                 }
             }
-        }
-    });
+        });
+    }
 
     // -----------------------------------------------------------
     // 2. Doughnut Chart: Category Market Share
     // -----------------------------------------------------------
-    const ctxCategory = document.getElementById('categoryShareChart').getContext('2d');
+    const ctxCategory = document.getElementById('categoryShareChart')?.getContext('2d');
     
-    const categoryLabels = @json($kategoriStats->pluck('nama'));
-    const categoryOmzets = @json($kategoriStats->pluck('omzet'));
+    if (ctxCategory) {
+        const categoryLabels = @json($kategoriStats->pluck('nama'));
+        const categoryOmzets = @json($kategoriStats->pluck('omzet'));
 
-    new Chart(ctxCategory, {
-        type: 'doughnut',
-        data: {
-            labels: categoryLabels,
-            datasets: [{
-                data: categoryOmzets,
-                backgroundColor: ['#f59e0b', '#ea580c', '#10b981'],
-                borderWidth: 3,
-                borderColor: '#ffffff',
-                hoverOffset: 6
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '72%',
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    backgroundColor: '#0f172a',
-                    padding: 10,
-                    cornerRadius: 10,
-                    callbacks: {
-                        label: function(context) {
-                            return ' ' + context.label + ': Rp ' + new Intl.NumberFormat('id-ID').format(context.raw);
+        new Chart(ctxCategory, {
+            type: 'doughnut',
+            data: {
+                labels: categoryLabels,
+                datasets: [{
+                    data: categoryOmzets,
+                    backgroundColor: ['#f59e0b', '#ea580c', '#10b981'],
+                    borderWidth: 3,
+                    borderColor: '#ffffff',
+                    hoverOffset: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '72%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#0f172a',
+                        padding: 10,
+                        cornerRadius: 10,
+                        callbacks: {
+                            label: function(context) {
+                                return ' ' + context.label + ': Rp ' + new Intl.NumberFormat('id-ID').format(context.raw);
+                            }
                         }
                     }
                 }
             }
-        }
-    });
+        });
+    }
 
 });
 </script>

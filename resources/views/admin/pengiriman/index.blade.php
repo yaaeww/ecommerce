@@ -70,48 +70,70 @@
     </div>
 
     <!-- Filter Card -->
-    <div class="card p-5 bg-white border border-slate-200/80 shadow-sm rounded-2xl">
-        <form method="GET" action="{{ route('admin.pengiriman.index') }}" class="grid grid-cols-1 sm:grid-cols-4 gap-3 items-end">
+    <div class="card p-5 bg-white border border-slate-200/80 shadow-sm rounded-3xl">
+        <form method="GET" action="{{ route('admin.pengiriman.index') }}" class="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
             
             <div>
-                <label class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">Status SLA Fulfillment</label>
-                <select name="sla_status" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-brand-500">
-                    <option value="semua" {{ $statusFulfillment === 'semua' ? 'selected' : '' }}>Semua Status</option>
-                    <option value="overdue" {{ $statusFulfillment === 'overdue' ? 'selected' : '' }}>🔴 Overdue (>24 Jam Belum Dikirim)</option>
-                    <option value="dikemas" {{ $statusFulfillment === 'dikemas' ? 'selected' : '' }}>🟡 Sedang Dikemas (On-Track)</option>
-                    <option value="dikirim" {{ $statusFulfillment === 'dikirim' ? 'selected' : '' }}>🔵 Sedang Dikirim (Kurir)</option>
-                    <option value="diterima" {{ $statusFulfillment === 'diterima' ? 'selected' : '' }}>🟢 Diterima Pembeli</option>
-                </select>
+                <label class="block text-[11px] font-extrabold text-slate-700 uppercase tracking-wider mb-2">Status SLA Fulfillment</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-emerald-600">
+                        <i class="fas fa-boxes-packing text-xs"></i>
+                    </div>
+                    <select name="sla_status" class="w-full pl-10 pr-9 py-2.5 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 rounded-2xl text-xs font-extrabold text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-hidden transition shadow-xs cursor-pointer">
+                        <option value="semua" {{ $statusFulfillment === 'semua' ? 'selected' : '' }}>Semua Status SLA</option>
+                        <option value="overdue" {{ $statusFulfillment === 'overdue' ? 'selected' : '' }}>🔴 Overdue (>24 Jam Belum Dikirim)</option>
+                        <option value="dikemas" {{ $statusFulfillment === 'dikemas' ? 'selected' : '' }}>🟡 Sedang Dikemas (On-Track)</option>
+                        <option value="dikirim" {{ $statusFulfillment === 'dikirim' ? 'selected' : '' }}>🔵 Sedang Dikirim (Kurir)</option>
+                        <option value="diterima" {{ $statusFulfillment === 'diterima' ? 'selected' : '' }}>🟢 Diterima Pembeli</option>
+                    </select>
+                </div>
             </div>
 
             <div>
-                <label class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">Toko / Kebun Mitra</label>
-                <select name="umkm_id" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-brand-500">
-                    <option value="">Semua Toko Mitra</option>
-                    @foreach($umkms as $umkm)
-                        <option value="{{ $umkm->id }}" {{ $umkmId == $umkm->id ? 'selected' : '' }}>{{ $umkm->nama_toko }}</option>
-                    @endforeach
-                </select>
+                <label class="block text-[11px] font-extrabold text-slate-700 uppercase tracking-wider mb-2">Toko / Kebun Mitra</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-emerald-600">
+                        <i class="fas fa-store text-xs"></i>
+                    </div>
+                    <select name="umkm_id" class="w-full pl-10 pr-9 py-2.5 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 rounded-2xl text-xs font-extrabold text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-hidden transition shadow-xs cursor-pointer">
+                        <option value="">Semua Toko Mitra</option>
+                        @foreach($umkms as $umkm)
+                            <option value="{{ $umkm->id }}" {{ $umkmId == $umkm->id ? 'selected' : '' }}>{{ $umkm->nama_toko }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
 
             <div>
-                <label class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">Pencarian</label>
-                <input 
-                    type="text" 
-                    name="search" 
-                    value="{{ $search }}" 
-                    placeholder="No order, resi, pembeli..." 
-                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-brand-500"
-                >
+                <label class="block text-[11px] font-extrabold text-slate-700 uppercase tracking-wider mb-2">Pencarian Pesanan</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                        <i class="fas fa-magnifying-glass text-xs"></i>
+                    </div>
+                    <input 
+                        type="text" 
+                        name="search" 
+                        value="{{ $search }}" 
+                        placeholder="No order, resi, pembeli..." 
+                        class="w-full pl-10 pr-4 py-2.5 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 rounded-2xl text-xs font-extrabold text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-hidden transition shadow-xs"
+                    >
+                </div>
             </div>
 
             <div class="flex items-center gap-2">
-                <button type="submit" class="flex-1 py-2 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition shadow-sm">
-                    Terapkan Filter
+                <button type="submit" class="flex-1 py-2.5 px-4 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs rounded-2xl transition shadow-sm flex items-center justify-center gap-2 cursor-pointer">
+                    <i class="fas fa-filter text-xs"></i>
+                    <span>Terapkan</span>
                 </button>
-                <a href="{{ route('admin.pengiriman.index') }}" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs rounded-xl transition" title="Reset">
-                    <i class="fas fa-rotate-left"></i>
-                </a>
+                @if(request('sla_status') || request('umkm_id') || request('search'))
+                    <a href="{{ route('admin.pengiriman.index') }}" class="p-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs rounded-2xl transition border border-rose-200" title="Reset Filter">
+                        <i class="fas fa-rotate-left"></i>
+                    </a>
+                @else
+                    <a href="{{ route('admin.pengiriman.index') }}" class="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs rounded-2xl transition" title="Refresh">
+                        <i class="fas fa-rotate-left"></i>
+                    </a>
+                @endif
             </div>
 
         </form>

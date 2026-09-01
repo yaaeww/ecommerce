@@ -39,27 +39,37 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Kategori Utama -->
                 <div>
-                    <label for="kategori_utama" class="block text-sm font-bold text-slate-700 mb-2">Kategori Utama</label>
-                    <select id="kategori_utama" class="w-full rounded-xl border-slate-200 bg-slate-50 text-sm focus:border-brand-500 focus:ring-brand-500 transition shadow-sm px-4 py-3">
-                        <option value="">-- Pilih Kategori Utama --</option>
-                        @foreach($kategoriUtamas as $kategori)
-                            <option value="{{ $kategori->id }}" {{ $produk->kategori->parent_id == $kategori->id ? 'selected' : '' }}>
-                                {{ $kategori->nama }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <label for="kategori_utama" class="block text-sm font-extrabold text-slate-700 mb-2">Kategori Utama</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-emerald-600">
+                            <i class="fas fa-layer-group text-sm"></i>
+                        </div>
+                        <select id="kategori_utama" class="w-full rounded-2xl border-slate-200 bg-slate-50 text-sm font-bold text-slate-800 focus:border-brand-500 focus:ring-brand-500 transition shadow-xs pl-11 pr-10 py-3 cursor-pointer">
+                            <option value="">-- Pilih Kategori Utama --</option>
+                            @foreach($kategoriUtamas as $kategori)
+                                <option value="{{ $kategori->id }}" {{ $produk->kategori->parent_id == $kategori->id ? 'selected' : '' }}>
+                                    {{ $kategori->nama }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
                 <!-- Subkategori -->
                 <div>
-                    <label for="subkategori" class="block text-sm font-bold text-slate-700 mb-2">Subkategori <span class="text-rose-500">*</span></label>
-                    <select name="kategori_produk_id" id="subkategori" class="w-full rounded-xl border-slate-200 bg-slate-50 text-sm focus:border-brand-500 focus:ring-brand-500 transition shadow-sm px-4 py-3" required>
-                        <option value="">-- Pilih Subkategori --</option>
-                        @foreach($subkategoris as $sub)
-                            <option value="{{ $sub->id }}" {{ $produk->kategori_produk_id == $sub->id ? 'selected' : '' }}>
-                                {{ $sub->nama }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <label for="subkategori" class="block text-sm font-extrabold text-slate-700 mb-2">Subkategori <span class="text-rose-500">*</span></label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-emerald-600">
+                            <i class="fas fa-tags text-sm"></i>
+                        </div>
+                        <select name="kategori_produk_id" id="subkategori" class="w-full rounded-2xl border-slate-200 bg-slate-50 text-sm font-bold text-slate-800 focus:border-brand-500 focus:ring-brand-500 transition shadow-xs pl-11 pr-10 py-3 cursor-pointer" required>
+                            <option value="">-- Pilih Subkategori --</option>
+                            @foreach($subkategoris as $sub)
+                                <option value="{{ $sub->id }}" {{ $produk->kategori_produk_id == $sub->id ? 'selected' : '' }}>
+                                    {{ $sub->nama }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
             </div>
 
