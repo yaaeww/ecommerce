@@ -52,43 +52,46 @@
         </div>
     @endif
 
-    <!-- 4 Saldo Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+    <!-- 5 Saldo Cards (Distributed Escrow Overview) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
-        <!-- Saldo Siap Ditarik -->
-        <div class="card p-5 bg-linear-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/20 rounded-3xl">
-            <span class="text-[11px] font-bold uppercase tracking-wider block opacity-90 mb-1">Saldo Siap Ditarik</span>
+        <!-- Saldo Siap Ditarik (Settled) -->
+        <div class="card p-5 bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/20 rounded-3xl">
+            <span class="text-[11px] font-bold uppercase tracking-wider block opacity-90 mb-1">Saldo Siap Ditarik (Settled)</span>
             <p class="text-2xl sm:text-3xl font-extrabold font-display">
                 Rp{{ number_format($saldoTersedia, 0, ',', '.') }}
             </p>
-            <span class="text-[10px] opacity-80 mt-1 block">Min. penarikan Rp 50.000</span>
+            <span class="text-[10px] opacity-80 mt-1 block">Pesanan selesai • Min. tarik Rp 50.000</span>
         </div>
 
-        <!-- Total Hak Bersih -->
-        <div class="card p-5 bg-white border border-slate-200/80 shadow-sm rounded-3xl">
-            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Akumulasi Hak Toko ({{ $tokoPersen }}%)</span>
+        <!-- Saldo Tertahan di Escrow (In-Transit) -->
+        <div class="card p-5 bg-white border border-amber-200/80 shadow-sm rounded-3xl border-l-4 border-l-amber-500">
+            <div class="flex items-center justify-between">
+                <span class="text-[11px] font-bold text-amber-600 uppercase tracking-wider block mb-1">Saldo Tertahan (Escrow)</span>
+                <i class="fas fa-lock text-amber-400 text-xs"></i>
+            </div>
             <p class="text-2xl font-extrabold text-slate-900 font-display">
-                Rp{{ number_format($totalHakBersih, 0, ',', '.') }}
+                Rp{{ number_format($hakBersihEscrow ?? 0, 0, ',', '.') }}
             </p>
-            <span class="text-[10px] text-slate-400 mt-1 block">Dari omzet kotor Rp{{ number_format($totalPenjualan, 0, ',', '.') }}</span>
+            <span class="text-[10px] text-slate-400 mt-1 block">Pesanan sedang dipacking/dikirim kurir</span>
         </div>
 
-        <!-- Sedang Diproses -->
-        <div class="card p-5 bg-white border border-slate-200/80 shadow-sm rounded-3xl border-l-4 border-l-amber-500">
-            <span class="text-[11px] font-bold text-amber-600 uppercase tracking-wider block mb-1">Sedang Diproses Admin</span>
-            <p class="text-2xl font-extrabold text-amber-600 font-display">
+        <!-- Sedang Diproses Admin -->
+        <div class="card p-5 bg-white border border-slate-200/80 shadow-sm rounded-3xl border-l-4 border-l-indigo-500">
+            <span class="text-[11px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">Sedang Antre Transfer</span>
+            <p class="text-2xl font-extrabold text-slate-900 font-display">
                 Rp{{ number_format($totalDitarikPending, 0, ',', '.') }}
             </p>
-            <span class="text-[10px] text-slate-400 mt-1 block">Menunggu transfer bank</span>
+            <span class="text-[10px] text-slate-400 mt-1 block">Menunggu verifikasi admin</span>
         </div>
 
         <!-- Berhasil Dicairkan -->
         <div class="card p-5 bg-white border border-slate-200/80 shadow-sm rounded-3xl border-l-4 border-l-brand-600">
-            <span class="text-[11px] font-bold text-brand-600 uppercase tracking-wider block mb-1">Sudah Pernah Dicairkan</span>
+            <span class="text-[11px] font-bold text-brand-600 uppercase tracking-wider block mb-1">Total Sudah Dicairkan</span>
             <p class="text-2xl font-extrabold text-brand-600 font-display">
                 Rp{{ number_format($totalDitarikApproved, 0, ',', '.') }}
             </p>
-            <span class="text-[10px] text-slate-400 mt-1 block">Masuk ke rekening Anda</span>
+            <span class="text-[10px] text-slate-400 mt-1 block">Telah masuk ke rekening bank</span>
         </div>
 
     </div>

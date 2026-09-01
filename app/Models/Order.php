@@ -24,13 +24,29 @@ class Order extends Model
         'foto_bukti_pengiriman',
         'tanggal_dikirim',
         'catatan_pengiriman',
+        'batal_alasan',
+        'batal_at',
+        'dikemas_at',
+        'dikirim_at',
+        'diterima_at',
+        'is_escrow_released',
     ];
 
     protected $casts = [
         'tanggal_dikirim' => 'datetime',
-        'total_harga' => 'float',
+        'batal_at' => 'datetime',
+        'dikemas_at' => 'datetime',
+        'dikirim_at' => 'datetime',
+        'diterima_at' => 'datetime',
+        'is_escrow_released' => 'boolean',
+        'total_harga' => 'integer',
         'jumlah' => 'integer',
     ];
+
+    public function komplain()
+    {
+        return $this->hasOne(Komplain::class, 'order_id');
+    }
 
     public function getNoResiAttribute()
     {
@@ -66,11 +82,14 @@ class Order extends Model
             'produks_id'     // foreign key produk di pivot
         );
     }
+
     public function produk()
     {
-        
         return $this->belongsTo(Produk::class, 'produk_id');
+    }
 
-        
+    public function ulasan()
+    {
+        return $this->hasOne(Ulasan::class, 'orders_id');
     }
 }

@@ -18,9 +18,10 @@ class UserChatController extends Controller
     /**
      * 🏠 Halaman utama chat (AI & Penjual)
      */
-    public function index($id = null)
+    public function index(Request $request, $id = null)
     {
         $authId = Auth::id();
+        $id = $id ?? $request->query('seller_id') ?? $request->query('user_id');
 
         // 🔹 Ambil semua penjual (yang punya UMKM)
         $penjualIds = Umkm::pluck('user_id')->toArray();

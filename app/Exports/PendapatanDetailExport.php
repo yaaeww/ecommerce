@@ -15,7 +15,7 @@ class PendapatanDetailExport implements FromView
 
     public function view(): View
     {
-        return view('penjual.exports.pendapatan-detail  ', [
+        return view('penjual.exports.pendapatan-detail', [
             'detail' => $this->detail,
         ]);
     }

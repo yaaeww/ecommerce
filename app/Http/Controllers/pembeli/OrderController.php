@@ -9,6 +9,7 @@ use App\Models\Produk;
 use App\Models\Order;
 use App\Models\Keranjang;
 use App\Models\User;
+use App\Models\Alamat;
 use Midtrans\Config;
 use Midtrans\Snap;
 use Illuminate\Support\Facades\Log;
@@ -53,10 +54,12 @@ class OrderController extends Controller
     public function showForm($produkId = null, $quantity = null)
     {
         $userId = Auth::id();
+        $alamats = Alamat::where('user_id', $userId)->get();
+        $alamatUtama = $alamats->firstWhere('is_utama', true) ?? $alamats->first();
 
         if ($produkId) {
             // Checkout single product (Beli Langsung)
-            $produk = Produk::with('diskon')->findOrFail($produkId);
+            $produk = Produk::with(['diskon', 'umkm'])->findOrFail($produkId);
             $quantity = $quantity ?? 1;
             
             $keranjang = Keranjang::where('produk_id', $produkId)
@@ -83,7 +86,7 @@ class OrderController extends Controller
             $is_cart = false;
         } else {
             // Checkout entire cart
-            $keranjangs = Keranjang::with('produk.diskon')->where('user_id', $userId)->get();
+            $keranjangs = Keranjang::with(['produk.diskon', 'produk.umkm'])->where('user_id', $userId)->get();
             if ($keranjangs->isEmpty()) {
                 return redirect()->route('pembeli.keranjang.index')->with('error', 'Keranjang kosong.');
             }
@@ -109,12 +112,12 @@ class OrderController extends Controller
             $is_cart = true;
         }
 
-        return view('pembeli.order', compact('items', 'total_harga', 'is_cart', 'produkId', 'quantity'));
+        return view('pembeli.order', compact('items', 'total_harga', 'is_cart', 'produkId', 'quantity', 'alamats', 'alamatUtama'));
     }
 
     public function konfirmasiPembelian($produk_id, $quantity)
     {
-        $produk = Produk::with('diskon')->findOrFail($produk_id);
+        $produk = Produk::with(['diskon', 'umkm'])->findOrFail($produk_id);
 
         if ($quantity > $produk->stok) {
             return redirect()->back()->with('error', 'Stok produk "' . $produk->nama . '" tidak mencukupi (Tersisa: ' . $produk->stok . ').');
@@ -122,8 +125,11 @@ class OrderController extends Controller
 
         $harga_diskon = $this->hitungHargaSetelahDiskon($produk);
         $total_harga = $harga_diskon * $quantity;
+        $userId = Auth::id();
+        $alamats = Alamat::where('user_id', $userId)->get();
+        $alamatUtama = $alamats->firstWhere('is_utama', true) ?? $alamats->first();
 
-        return view('pembeli.order', compact('produk', 'quantity', 'harga_diskon', 'total_harga'));
+        return view('pembeli.order', compact('produk', 'quantity', 'harga_diskon', 'total_harga', 'alamats', 'alamatUtama'));
     }
 
     // Proses checkout (untuk web - satu produk)
@@ -134,8 +140,8 @@ class OrderController extends Controller
                 'is_cart' => 'required|boolean',
                 'produk_id' => 'nullable|exists:produks,id',
                 'jumlah' => 'nullable|integer|min:1',
-                'name' => 'required|string',
-                'phone' => 'required|string',
+                'name' => 'required|string|max:255',
+                'phone' => 'required|string|max:30',
                 'alamat' => 'required|string',
             ]);
 
@@ -518,16 +524,33 @@ class OrderController extends Controller
 
                     if ($statusLama !== $statusBaru) {
                         $order->status = $statusBaru;
-                        $order->save();
+                        
+                        // 🚀 SINKRONISASI STATUS PESANAN (Fix Logical Fallacy #1)
+                        if ($statusBaru === 'complete') {
+                            $order->status_pesanan = 'dikemas';
+                            $order->dikemas_at = now();
 
-                        // Kurangi stok HANYA saat status bertransisi dari non-complete menjadi complete
-                        if ($statusBaru === 'complete' && $statusLama !== 'complete') {
-                            $produk = Produk::where('id', $order->produk_id)->lockForUpdate()->first();
-                            if ($produk) {
-                                $produk->stok = max(0, $produk->stok - $order->jumlah);
-                                $produk->save();
+                            // Kurangi stok HANYA saat status bertransisi dari non-complete menjadi complete
+                            if ($statusLama !== 'complete') {
+                                $produk = Produk::where('id', $order->produk_id)->lockForUpdate()->first();
+                                if ($produk) {
+                                    $produk->stok = max(0, $produk->stok - $order->jumlah);
+                                    $produk->save();
+                                }
                             }
+                        } elseif (in_array($statusBaru, ['cancel', 'expire', 'deny'])) {
+                            if ($statusLama === 'complete') {
+                                // Kembalikan stok jika sebelumnya sudah complete lalu dibatalkan
+                                $produk = Produk::where('id', $order->produk_id)->lockForUpdate()->first();
+                                if ($produk) {
+                                    $produk->stok += $order->jumlah;
+                                    $produk->save();
+                                }
+                            }
+                            $order->batal_at = now();
                         }
+
+                        $order->save();
                     }
                 }
 
@@ -562,9 +585,9 @@ class OrderController extends Controller
             'capture' => 'complete',
             'settlement' => 'complete',
             'pending' => 'pending',
-            'deny' => 'failed',
-            'expire' => 'expired',
-            'cancel' => 'canceled',
+            'deny' => 'cancel',
+            'expire' => 'cancel',
+            'cancel' => 'cancel',
         ];
 
         return $statusMap[$midtransStatus] ?? 'pending';
@@ -637,7 +660,8 @@ class OrderController extends Controller
             ->firstOrFail();
 
         if ($order->status === 'pending') {
-            $order->status = 'canceled';
+            $order->status = 'cancel';
+            $order->batal_at = now();
             $order->save();
             return redirect()->back()->with('success', 'Pesanan berhasil dibatalkan.');
         }

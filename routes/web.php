@@ -24,6 +24,8 @@ use App\Http\Controllers\Admin\{
     AdminPenarikanController,
     AdminActivityLogController,
     AdminNotificationController,
+    AdminLedgerController,
+    AdminKomplainController,
     PenjualController,
     PembeliController,
     PendapatanController as AdminPendapatanController
@@ -48,6 +50,8 @@ use App\Http\Controllers\Pembeli\{
     DashboardPembeliController,
     ProdukPembeliController,
     PembeliProfileController,
+    PembeliAlamatController,
+    KomplainPembeliController,
     KeranjangController,
     OrderController,
     CheckoutController,
@@ -183,6 +187,14 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // 🛒 Analisis Keranjang Terbengkalai
     Route::get('keranjang-analytics', [AdminKeranjangController::class, 'index'])->name('keranjang.index');
 
+    // 📊 Buku Besar & Monitoring Saldo Escrow Platform
+    Route::get('ledger', [AdminLedgerController::class, 'index'])->name('ledger.index');
+
+    // 🛡️ Pusat Mediasi Komplain & Garansi Buah Segar
+    Route::get('komplain', [AdminKomplainController::class, 'index'])->name('komplain.index');
+    Route::get('komplain/{id}', [AdminKomplainController::class, 'show'])->name('komplain.show');
+    Route::post('komplain/{id}/process', [AdminKomplainController::class, 'process'])->name('komplain.process');
+
     // 🛡️ Audit Trail & Log Aktivitas Sistem
     Route::get('activity-log', [AdminActivityLogController::class, 'index'])->name('activity-log.index');
 
@@ -269,6 +281,7 @@ Route::middleware(['auth', 'role:pembeli'])->prefix('pembeli')->name('pembeli.')
     Route::post('/order/cancel/{order_id}', [OrderController::class, 'cancelExpiredOrder'])->name('order.cancelExpired');
 
     Route::get('/invoice/{id}', [InvoiceController::class, 'show'])->name('invoice.show');
+    Route::get('/invoice/{id}/pdf', [InvoiceController::class, 'generatePdf'])->name('invoice.pdf');
 
     Route::controller(CheckoutController::class)->prefix('checkout')->name('checkout.')->group(function () {
         Route::get('/', 'index')->name('form');
@@ -276,10 +289,27 @@ Route::middleware(['auth', 'role:pembeli'])->prefix('pembeli')->name('pembeli.')
         Route::post('/midtrans', 'getMidtransToken')->name('midtrans');
     });
 
+    // 📦 Pesanan Pembeli & Pembatalan
     Route::get('/pesanan', [PesananController::class, 'index'])->name('pesanan.index');
+    Route::get('/pesanan/dikemas', [PesananController::class, 'statusDikemas'])->name('pesanan.status.dikemas');
+    Route::get('/pesanan/dikirim', [PesananController::class, 'dikirim'])->name('pesanan.dikirim');
+    Route::post('/pesanan/{id}/cancel', [PesananController::class, 'cancelOrder'])->name('pesanan.cancel');
     Route::patch('/pesanan/{id}/status', [PesananController::class, 'updateStatus'])->name('pesanan.updateStatus');
     Route::delete('/pesanan/bulk-delete', [PesananController::class, 'bulkDelete'])->name('pesanan.bulkDelete');
     Route::delete('/pesanan/{id}', [PesananController::class, 'destroy'])->name('pesanan.destroy');
+
+    // 📖 Buku Alamat Pengiriman Tersimpan
+    Route::get('/alamat', [PembeliAlamatController::class, 'index'])->name('alamat.index');
+    Route::post('/alamat', [PembeliAlamatController::class, 'store'])->name('alamat.store');
+    Route::put('/alamat/{id}', [PembeliAlamatController::class, 'update'])->name('alamat.update');
+    Route::post('/alamat/{id}/set-utama', [PembeliAlamatController::class, 'setUtama'])->name('alamat.set-utama');
+    Route::delete('/alamat/{id}', [PembeliAlamatController::class, 'destroy'])->name('alamat.destroy');
+
+    // 🛡️ Garansi Buah Segar & Komplain Pembeli
+    Route::get('/komplain', [KomplainPembeliController::class, 'index'])->name('komplain.index');
+    Route::get('/komplain/ajukan/{order}', [KomplainPembeliController::class, 'create'])->name('komplain.create');
+    Route::post('/komplain/store/{order}', [KomplainPembeliController::class, 'store'])->name('komplain.store');
+    Route::get('/komplain/{id}', [KomplainPembeliController::class, 'show'])->name('komplain.show');
 
     Route::controller(PembeliProfileController::class)->prefix('profile')->name('profile.')->group(function () {
         Route::get('/', 'show')->name('show');

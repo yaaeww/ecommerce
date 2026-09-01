@@ -14,56 +14,118 @@ class DashboardPembeliController extends Controller
 {
     public function index(Request $request)
     {
-        $search = $request->input('search');
-        $kategoriId = $request->input('kategori');
-
-        $kategoriAktif = null;
-        $subkategoris = collect();
-        $kategoris = KategoriProduk::whereNull('parent_id')->orderBy('nama')->get();
-        $produksQuery = Produk::query();
-
-        // Jika ada filter kategori
-        if ($kategoriId && is_numeric($kategoriId)) {
-            $kategoriAktif = KategoriProduk::with('children')->find($kategoriId);
-
-            if ($kategoriAktif) {
-                $subkategoris = $kategoriAktif->children;
-
-                $kategoriIds = $this->getAllKategoriIds($kategoriAktif);
-
-                $produksQuery->whereIn('kategori_produk_id', $kategoriIds);
-
-                if ($search) {
-                    $produksQuery->where('nama', 'like', '%' . $search . '%');
-                }
-
-                $produks = $produksQuery->with('kategori')->latest()->paginate(12);
-            } else {
-                $produks = Produk::whereRaw('0 = 1')->paginate(12);
-            }
-        } else {
-            if ($search) {
-                $produksQuery->where('nama', 'like', '%' . $search . '%');
-            }
-
-            $produks = $produksQuery->with('kategori')->latest()->paginate(12);
-        }
-
-        // ✅✅✅ FIXED: Produk Terlaris dengan SUBQUERY ✅✅✅
-        $produkTerlaris = Produk::select('produks.*')
-            ->addSelect([
-                'total_jumlah_pesanan' => Order::selectRaw('COALESCE(SUM(jumlah), 0)')
-                    ->whereColumn('produk_id', 'produks.id')
-                    ->where('status', 'complete')
-            ])
-            ->havingRaw('total_jumlah_pesanan >= ?', [10])
-            ->orderByDesc('total_jumlah_pesanan')
-            ->limit(8)
+        // 1. Ambil kategori beserta subkategori dan hitungan produk
+        $kategoris = KategoriProduk::with(['subkategoris.produks', 'produks'])
+            ->whereNull('parent_id')
+            ->orderBy('nama')
             ->get();
 
+        // 2. Query Produk
+        $query = Produk::with(['diskon', 'umkm', 'kategori']);
+
+        // Filter Kategori (Mendukung array checkbox atau single ID)
+        if ($request->filled('kategori')) {
+            $kategoriInputs = is_array($request->kategori) ? $request->kategori : [$request->kategori];
+            
+            // Ambil juga ID subkategori jika parent dipilih
+            $allSelectedIds = [];
+            foreach ($kategoriInputs as $kId) {
+                if (is_numeric($kId)) {
+                    $allSelectedIds[] = (int) $kId;
+                    $kat = KategoriProduk::with('children')->find($kId);
+                    if ($kat && $kat->children->isNotEmpty()) {
+                        $allSelectedIds = array_merge($allSelectedIds, $this->getAllKategoriIds($kat));
+                    }
+                }
+            }
+            $allSelectedIds = array_unique($allSelectedIds);
+
+            if (!empty($allSelectedIds)) {
+                $query->whereIn('kategori_produk_id', $allSelectedIds);
+            }
+        }
+
+        // Filter Pencarian
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('nama', 'like', '%' . $search . '%')
+                  ->orWhere('deskripsi', 'like', '%' . $search . '%');
+            });
+        }
+
+        // Filter Rentang Harga
+        if ($request->filled('min_harga')) {
+            $query->where('harga', '>=', $request->min_harga);
+        }
+        if ($request->filled('max_harga')) {
+            $query->where('harga', '<=', $request->max_harga);
+        }
+
+        // Pengurutan (Sort)
+        if ($request->filled('sort')) {
+            if ($request->sort == 'termurah') {
+                $query->orderBy('harga', 'asc');
+            } elseif ($request->sort == 'termahal') {
+                $query->orderBy('harga', 'desc');
+            } elseif ($request->sort == 'terbaru') {
+                $query->latest();
+            }
+        } else {
+            $query->latest();
+        }
+
+        $produks = $query->paginate(12)->withQueryString();
+
+        // Jika Request AJAX (untuk Live Filter / Search)
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('partials.product_grid', compact('produks'))->render(),
+                'total' => $produks->total(),
+                'from' => $produks->firstItem() ?? 0,
+                'to' => $produks->lastItem() ?? 0,
+            ]);
+        }
+
+        // 3. Penawaran Spesial Panen (Diskon Unggulan)
+        $diskonProduks = Produk::with(['diskon', 'umkm'])
+            ->whereHas('diskon', function ($q) {
+                $q->where('persen_diskon', '>', 0)
+                  ->where('tanggal_mulai', '<=', now())
+                  ->where('tanggal_berakhir', '>=', now());
+            })
+            ->take(4)
+            ->get();
+
+        // 4. Ringkasan Status Pesanan Pembeli (Quick Order Hub)
+        $orderStats = [
+            'dikemas' => 0,
+            'dikirim' => 0,
+            'diterima' => 0,
+        ];
         $notifikasiDikirim = collect();
+
         if (Auth::check()) {
-            $notifikasiDikirim = Order::where('user_id', Auth::id())
+            $userId = Auth::id();
+            $orderStats['dikemas'] = Order::where('user_id', $userId)
+                ->where('status', 'complete')
+                ->where(function($q) {
+                    $q->where('status_pesanan', 'dikemas')->orWhereNull('status_pesanan');
+                })
+                ->count();
+
+            $orderStats['dikirim'] = Order::where('user_id', $userId)
+                ->where('status', 'complete')
+                ->where('status_pesanan', 'dikirim')
+                ->count();
+
+            $orderStats['diterima'] = Order::where('user_id', $userId)
+                ->where('status', 'complete')
+                ->where('status_pesanan', 'diterima')
+                ->count();
+
+            $notifikasiDikirim = Order::where('user_id', $userId)
+                ->where('status', 'complete')
                 ->where('status_pesanan', 'dikirim')
                 ->latest()
                 ->get();
@@ -72,10 +134,8 @@ class DashboardPembeliController extends Controller
         return view('pembeli.dashboard', compact(
             'produks',
             'kategoris',
-            'kategoriAktif',
-            'subkategoris',
-            'search',
-            'produkTerlaris',
+            'diskonProduks',
+            'orderStats',
             'notifikasiDikirim'
         ));
     }

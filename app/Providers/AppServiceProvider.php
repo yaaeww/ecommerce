@@ -47,6 +47,7 @@ class AppServiceProvider extends ServiceProvider
             if (Auth::check()) {
                 if (Auth::user()->role === 'pembeli') {
                     $notifikasiDikirim = Order::where('user_id', Auth::id())
+                        ->where('status', 'complete')
                         ->where('status_pesanan', 'dikirim')
                         ->latest()
                         ->get();
@@ -76,7 +77,7 @@ class AppServiceProvider extends ServiceProvider
                     ->where('status', 'complete')
                     ->where(function ($q) {
                         $q->whereNull('status_pesanan')
-                          ->orWhere('status_pesanan', 'menunggu_diproses');
+                          ->orWhere('status_pesanan', 'belum_diterima');
                     })
                     ->latest()
                     ->get();

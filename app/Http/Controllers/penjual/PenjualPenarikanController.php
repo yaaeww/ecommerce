@@ -28,17 +28,37 @@ class PenjualPenarikanController extends Controller
         $komisiPersen = (float) Setting::get('komisi_persen', 20);
         $tokoPersen = 100 - $komisiPersen;
 
-        // 1. Hitung total omzet kotor pesanan selesai
-        $totalPenjualan = DB::table('orders')
+        // 1. Hitung total omzet kotor pesanan selesai (Diterima / Selesai)
+        $omzetDiterima = DB::table('orders')
             ->join('produks', 'orders.produk_id', '=', 'produks.id')
             ->where('produks.umkm_id', $umkm->id)
             ->where('orders.status', 'complete')
+            ->where(function($q) {
+                $q->where('orders.status_pesanan', 'diterima')
+                  ->orWhere('orders.is_escrow_released', true);
+            })
             ->sum('orders.total_harga');
 
-        // 2. Hak bersih toko
+        // 2. Hitung total omzet pesanan dalam proses (Escrow / Sedang Dikemas & Dikirim)
+        $omzetEscrow = DB::table('orders')
+            ->join('produks', 'orders.produk_id', '=', 'produks.id')
+            ->where('produks.umkm_id', $umkm->id)
+            ->where('orders.status', 'complete')
+            ->where(function($q) {
+                $q->whereIn('orders.status_pesanan', ['dikemas', 'dikirim', 'belum_diterima'])
+                  ->orWhereNull('orders.status_pesanan');
+            })
+            ->where('orders.is_escrow_released', false)
+            ->sum('orders.total_harga');
+
+        $totalPenjualan = $omzetDiterima + $omzetEscrow;
+
+        // 3. Hak bersih toko
+        $hakBersihDiterima = $omzetDiterima * ($tokoPersen / 100);
+        $hakBersihEscrow = $omzetEscrow * ($tokoPersen / 100);
         $totalHakBersih = $totalPenjualan * ($tokoPersen / 100);
 
-        // 3. Total dana yang sudah ditarik / sedang diproses
+        // 4. Total dana yang sudah ditarik / sedang diproses
         $totalDitarikApproved = PenarikanSaldo::where('umkm_id', $umkm->id)
             ->where('status', 'approved')
             ->sum('jumlah');
@@ -47,8 +67,8 @@ class PenjualPenarikanController extends Controller
             ->where('status', 'pending')
             ->sum('jumlah');
 
-        // Saldo yang saat ini tersedia untuk ditarik
-        $saldoTersedia = max(0, $totalHakBersih - $totalDitarikApproved - $totalDitarikPending);
+        // Saldo yang saat ini tersedia untuk ditarik (Hanya dari pesanan yang sudah diterima)
+        $saldoTersedia = max(0, $hakBersihDiterima - $totalDitarikApproved - $totalDitarikPending);
 
         $riwayatPenarikan = PenarikanSaldo::where('umkm_id', $umkm->id)
             ->latest()
@@ -58,6 +78,10 @@ class PenjualPenarikanController extends Controller
             'umkm',
             'totalPenjualan',
             'totalHakBersih',
+            'omzetDiterima',
+            'omzetEscrow',
+            'hakBersihDiterima',
+            'hakBersihEscrow',
             'totalDitarikApproved',
             'totalDitarikPending',
             'saldoTersedia',
@@ -73,51 +97,67 @@ class PenjualPenarikanController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
-        $umkm = Umkm::where('user_id', $user->id)->firstOrFail();
-
-        $komisiPersen = (float) Setting::get('komisi_persen', 20);
-        $tokoPersen = 100 - $komisiPersen;
-
-        $totalPenjualan = DB::table('orders')
-            ->join('produks', 'orders.produk_id', '=', 'produks.id')
-            ->where('produks.umkm_id', $umkm->id)
-            ->where('orders.status', 'complete')
-            ->sum('orders.total_harga');
-
-        $totalHakBersih = $totalPenjualan * ($tokoPersen / 100);
-
-        $totalDitarikApproved = PenarikanSaldo::where('umkm_id', $umkm->id)->where('status', 'approved')->sum('jumlah');
-        $totalDitarikPending = PenarikanSaldo::where('umkm_id', $umkm->id)->where('status', 'pending')->sum('jumlah');
-
-        $saldoTersedia = max(0, $totalHakBersih - $totalDitarikApproved - $totalDitarikPending);
 
         $request->validate([
-            'jumlah' => "required|numeric|min:50000|max:{$saldoTersedia}",
+            'jumlah' => "required|numeric|min:50000",
             'nama_bank' => 'required|string|max:50',
             'nomor_rekening' => 'required|string|max:50',
             'atas_nama' => 'required|string|max:100',
         ], [
             'jumlah.min' => 'Minimal penarikan saldo adalah Rp 50.000.',
-            'jumlah.max' => 'Jumlah penarikan tidak boleh melebihi saldo tersedia (Rp ' . number_format($saldoTersedia, 0, ',', '.') . ').',
             'nama_bank.required' => 'Nama bank wajib diisi.',
             'nomor_rekening.required' => 'Nomor rekening wajib diisi.',
             'atas_nama.required' => 'Nama pemilik rekening wajib diisi.',
         ]);
 
-        $penarikan = PenarikanSaldo::create([
-            'umkm_id' => $umkm->id,
-            'jumlah' => $request->jumlah,
-            'nama_bank' => strtoupper($request->nama_bank),
-            'nomor_rekening' => $request->nomor_rekening,
-            'atas_nama' => $request->atas_nama,
-            'status' => 'pending',
-        ]);
+        $penarikan = DB::transaction(function () use ($request, $user) {
+            $umkm = Umkm::where('user_id', $user->id)->lockForUpdate()->firstOrFail();
 
-        ActivityLog::record(
-            'REQUEST_PAYOUT',
-            "Toko {$umkm->nama_toko} mengajukan penarikan saldo sebesar Rp " . number_format($request->jumlah, 0, ',', '.') . " ke {$request->nama_bank} - {$request->nomor_rekening}",
-            $penarikan
-        );
+            $komisiPersen = (float) Setting::get('komisi_persen', 20);
+            $tokoPersen = 100 - $komisiPersen;
+
+            // Hitung saldo yang benar-benar settled / diterima pembeli
+            $omzetDiterima = DB::table('orders')
+                ->join('produks', 'orders.produk_id', '=', 'produks.id')
+                ->where('produks.umkm_id', $umkm->id)
+                ->where('orders.status', 'complete')
+                ->where(function($q) {
+                    $q->where('orders.status_pesanan', 'diterima')
+                      ->orWhere('orders.is_escrow_released', true);
+                })
+                ->sum('orders.total_harga');
+
+            $hakBersihDiterima = $omzetDiterima * ($tokoPersen / 100);
+
+            // Lock query penarikan saldo untuk mencegah race condition (double spending)
+            $totalDitarikApproved = PenarikanSaldo::where('umkm_id', $umkm->id)->where('status', 'approved')->lockForUpdate()->sum('jumlah');
+            $totalDitarikPending = PenarikanSaldo::where('umkm_id', $umkm->id)->where('status', 'pending')->lockForUpdate()->sum('jumlah');
+
+            $saldoTersedia = max(0, $hakBersihDiterima - $totalDitarikApproved - $totalDitarikPending);
+
+            if ($request->jumlah > $saldoTersedia) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'jumlah' => 'Jumlah penarikan melebihi saldo siap tarik yang tersedia (Rp ' . number_format($saldoTersedia, 0, ',', '.') . ').'
+                ]);
+            }
+
+            $record = PenarikanSaldo::create([
+                'umkm_id' => $umkm->id,
+                'jumlah' => $request->jumlah,
+                'nama_bank' => strtoupper($request->nama_bank),
+                'nomor_rekening' => $request->nomor_rekening,
+                'atas_nama' => $request->atas_nama,
+                'status' => 'pending',
+            ]);
+
+            ActivityLog::record(
+                'REQUEST_PAYOUT',
+                "Toko {$umkm->nama_toko} mengajukan penarikan saldo sebesar Rp " . number_format($request->jumlah, 0, ',', '.') . " ke {$request->nama_bank} - {$request->nomor_rekening}",
+                $record
+            );
+
+            return $record;
+        });
 
         return redirect()->route('penjual.penarikan.index')->with('success', 'Permohonan penarikan saldo berhasil dikirim! Admin akan memverifikasi dan mentransfer dana dalam 1x24 jam.');
     }

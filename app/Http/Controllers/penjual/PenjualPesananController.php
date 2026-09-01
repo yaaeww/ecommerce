@@ -74,6 +74,16 @@ class PenjualPesananController extends Controller
             'status_pesanan' => $request->status_pesanan,
         ];
 
+        if ($request->status_pesanan === 'dikemas' && !$order->dikemas_at) {
+            $updateData['dikemas_at'] = now();
+        } elseif ($request->status_pesanan === 'dikirim') {
+            $updateData['dikirim_at'] = now();
+            $updateData['tanggal_dikirim'] = now();
+        } elseif ($request->status_pesanan === 'diterima') {
+            $updateData['diterima_at'] = now();
+            $updateData['is_escrow_released'] = true;
+        }
+
         if ($request->filled('no_resi')) {
             $updateData['resi_pengiriman'] = $request->no_resi;
         }

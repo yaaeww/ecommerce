@@ -68,6 +68,24 @@
                         <span>Pendapatan Platform</span>
                     </a>
 
+                    <!-- Buku Besar & Escrow Platform -->
+                    <a 
+                        href="{{ route('admin.ledger.index') }}" 
+                        class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.ledger.*') ? 'bg-brand-50 text-brand-600 border border-brand-200/60 shadow-sm' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}"
+                    >
+                        <i class="fas fa-book-journal-whills w-4 text-sm {{ request()->routeIs('admin.ledger.*') ? 'text-brand-600' : 'text-slate-400' }}"></i>
+                        <span>Buku Besar & Escrow</span>
+                    </a>
+
+                    <!-- Pusat Mediasi Komplain -->
+                    <a 
+                        href="{{ route('admin.komplain.index') }}" 
+                        class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.komplain.*') ? 'bg-brand-50 text-brand-600 border border-brand-200/60 shadow-sm' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}"
+                    >
+                        <i class="fas fa-shield-heart w-4 text-sm {{ request()->routeIs('admin.komplain.*') ? 'text-brand-600' : 'text-slate-400' }}"></i>
+                        <span>Pusat Komplain Retur</span>
+                    </a>
+
                     <!-- Pencairan Saldo Payout -->
                     <a 
                         href="{{ route('admin.penarikan.index') }}" 

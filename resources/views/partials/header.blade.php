@@ -258,8 +258,31 @@
                             <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-brand-600 transition">
                                 <i class="fas fa-chart-pie text-slate-400 w-4"></i> Dashboard
                             </a>
+                            <a href="{{ route('admin.ledger.index') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-brand-600 transition">
+                                <i class="fas fa-book-journal-whills text-slate-400 w-4"></i> Buku Besar Escrow
+                            </a>
+                            <a href="{{ route('admin.komplain.index') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-brand-600 transition">
+                                <i class="fas fa-shield-heart text-slate-400 w-4"></i> Mediasi Komplain
+                            </a>
                             <a href="{{ route('admin.activity-log.index') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-brand-600 transition">
                                 <i class="fas fa-shield-halved text-slate-400 w-4"></i> Log Aktivitas
+                            </a>
+                        @elseif(Auth::user()->role === 'penjual')
+                            <a href="{{ route('penjual.dashboard') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-brand-600 transition">
+                                <i class="fas fa-store text-slate-400 w-4"></i> Panel Toko
+                            </a>
+                            <a href="{{ route('penjual.penarikan.index') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-brand-600 transition">
+                                <i class="fas fa-wallet text-slate-400 w-4"></i> Pencairan Saldo
+                            </a>
+                        @else
+                            <a href="{{ route('pembeli.pesanan.index') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-brand-600 transition">
+                                <i class="fas fa-bag-shopping text-slate-400 w-4"></i> Pesanan Saya
+                            </a>
+                            <a href="{{ route('pembeli.alamat.index') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-brand-600 transition">
+                                <i class="fas fa-address-book text-slate-400 w-4"></i> Buku Alamat
+                            </a>
+                            <a href="{{ route('pembeli.komplain.index') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-brand-600 transition">
+                                <i class="fas fa-shield-halved text-slate-400 w-4"></i> Garansi & Komplain
                             </a>
                         @endif
                     </div>

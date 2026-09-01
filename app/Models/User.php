@@ -64,6 +64,16 @@ class User extends Authenticatable
         return $this->hasMany(\App\Models\Chat::class);
     }
 
+    public function alamats()
+    {
+        return $this->hasMany(Alamat::class);
+    }
+
+    public function komplains()
+    {
+        return $this->hasMany(Komplain::class);
+    }
+
 
 
 

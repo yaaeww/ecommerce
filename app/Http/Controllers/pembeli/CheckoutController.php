@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\Produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Midtrans\Config;
 use Midtrans\Snap;
 use Midtrans\Notification;
@@ -146,30 +147,53 @@ class CheckoutController extends Controller
         $transaction = $notif->transaction_status;
         $order_id = $notif->order_id;
 
-        $orders = Order::where('order_id_midtrans', $order_id)->get();
+        $orders = Order::where('order_id_midtrans', $order_id)->lockForUpdate()->get();
 
         if ($orders->isEmpty()) {
             return response()->json(['message' => 'Order tidak ditemukan'], 404);
         }
 
-        foreach ($orders as $order) {
-            if (in_array($transaction, ['capture', 'settlement']) && $order->status !== 'complete') {
-                $produk = Produk::find($order->produk_id);
-    
-                if ($produk && $produk->stok >= $order->jumlah) {
-                    $produk->decrement('stok', $order->jumlah);
-                    $order->update([
-                        'status' => 'complete',
-                        'stok_dikurangi' => 1,
-                    ]);
-                } else {
-                    // Jika stok tidak mencukupi, set status cancel / failed
-                    $order->update(['status' => 'cancel']);
+        DB::transaction(function () use ($orders, $transaction) {
+            foreach ($orders as $order) {
+                if (in_array($transaction, ['capture', 'settlement']) && $order->status !== 'complete') {
+                    $produk = Produk::where('id', $order->produk_id)->lockForUpdate()->first();
+
+                    if ($produk && $produk->stok >= $order->jumlah) {
+                        $produk->decrement('stok', $order->jumlah);
+                        $order->update([
+                            'status' => 'complete',
+                            'status_pesanan' => 'dikemas',
+                            'dikemas_at' => now(),
+                            'stok_dikurangi' => 1,
+                        ]);
+                    } else {
+                        // Stok tidak mencukupi → cancel dan restore jika pernah dikurangi
+                        $order->update([
+                            'status' => 'cancel',
+                            'batal_at' => now(),
+                        ]);
+                    }
+                } elseif (in_array($transaction, ['cancel', 'expire', 'deny', 'failed'])) {
+                    // Restore stok hanya jika order pernah complete (stok pernah dikurangi)
+                    if ($order->status === 'complete' && $order->stok_dikurangi) {
+                        $produk = Produk::where('id', $order->produk_id)->lockForUpdate()->first();
+                        if ($produk) {
+                            $produk->increment('stok', $order->jumlah);
+                        }
+                        $order->update([
+                            'status' => 'cancel',
+                            'batal_at' => now(),
+                            'stok_dikurangi' => 0,
+                        ]);
+                    } else {
+                        $order->update([
+                            'status' => 'cancel',
+                            'batal_at' => now(),
+                        ]);
+                    }
                 }
-            } elseif (in_array($transaction, ['cancel', 'expire', 'deny'])) {
-                $order->update(['status' => 'cancel']);
             }
-        }
+        });
 
         return response()->json(['message' => 'Notifikasi diproses']);
     }
