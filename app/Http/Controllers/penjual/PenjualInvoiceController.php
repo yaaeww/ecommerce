@@ -42,4 +42,18 @@ class PenjualInvoiceController extends Controller
 
         return $pdf->download('invoice_'.$order->id.'.pdf');
     }
+
+    public function shippingLabel($id)
+    {
+        $user = Auth::user();
+
+        $order = Order::with(['produk.umkm.user', 'user'])
+            ->where('id', $id)
+            ->whereHas('produk.umkm', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->firstOrFail();
+
+        return view('penjual.pesanan.shipping-label', compact('order'));
+    }
 }

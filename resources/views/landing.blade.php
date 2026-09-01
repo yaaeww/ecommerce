@@ -71,7 +71,7 @@
                 <div class="relative mx-auto max-w-md lg:max-w-none">
                     <!-- Main Card -->
                     <div class="rounded-3xl overflow-hidden shadow-2xl border border-slate-100 bg-white relative group">
-                        <img src="{{ asset('aset/belanjain.jpg') }}" alt="Juragan Pelem Packaging" class="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-500">
+                        <img src="{{ asset('aset/mangga_hero_premium.jpg') }}" alt="Mangga Gedong Gincu & Harum Manis Indramayu Segar" class="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-500">
                         
                         <!-- Floating Badge 1 (Top Left) -->
                         <div class="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-xl shadow-lg border border-slate-100 flex items-center gap-2">
@@ -378,9 +378,19 @@
                                 </div>
                             @endif
 
-                            @if($produk->diskon && now()->between($produk->diskon->tanggal_mulai, $produk->diskon->tanggal_berakhir))
-                                <span class="absolute top-3 left-3 bg-red-500 text-white text-xs font-black px-2 py-0.5 rounded-md shadow">
+                            @if($produk->harga_coret && $produk->harga_coret > $produk->harga)
+                                <span class="absolute top-3 left-3 bg-rose-600 text-white text-[11px] font-black px-2.5 py-1 rounded-lg shadow-sm">
+                                    <i class="fas fa-fire mr-0.5"></i>-{{ $produk->diskon_persen }}%
+                                </span>
+                            @elseif($produk->diskon && now()->between($produk->diskon->tanggal_mulai, $produk->diskon->tanggal_berakhir))
+                                <span class="absolute top-3 left-3 bg-rose-600 text-white text-[11px] font-black px-2.5 py-1 rounded-lg shadow-sm">
                                     -{{ $produk->diskon->persen_diskon }}%
+                                </span>
+                            @endif
+
+                            @if($produk->umkm && $produk->umkm->is_libur)
+                                <span class="absolute top-3 right-3 bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-xs">
+                                    <i class="fas fa-umbrella-beach mr-0.5"></i>Toko Libur
                                 </span>
                             @endif
 
@@ -404,10 +414,19 @@
                     <div class="pt-3 border-t border-slate-100">
                         <div class="flex items-center justify-between mb-3">
                             <div>
-                                <p class="text-xs text-slate-400 font-medium">Harga</p>
-                                <p class="text-base font-extrabold text-brand-green">
-                                    Rp{{ number_format($produk->harga, 0, ',', '.') }}
-                                </p>
+                                @if($produk->harga_coret && $produk->harga_coret > $produk->harga)
+                                    <p class="text-[11px] text-slate-400 font-medium line-through">
+                                        Rp{{ number_format($produk->harga_coret, 0, ',', '.') }}
+                                    </p>
+                                    <p class="text-base font-extrabold text-rose-600 font-display">
+                                        Rp{{ number_format($produk->harga, 0, ',', '.') }}
+                                    </p>
+                                @else
+                                    <p class="text-xs text-slate-400 font-medium">Harga</p>
+                                    <p class="text-base font-extrabold text-brand-green">
+                                        Rp{{ number_format($produk->harga, 0, ',', '.') }}
+                                    </p>
+                                @endif
                             </div>
                             <span class="text-xs font-semibold px-2.5 py-1 bg-slate-100 rounded-lg text-slate-600">
                                 Stok: {{ $produk->stok }}

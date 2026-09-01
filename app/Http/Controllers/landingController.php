@@ -42,8 +42,15 @@ class LandingController extends Controller
         // Mitra UMKM
         $umkms = Umkm::with('user')->latest()->take(6)->get();
 
-        // Ulasan / Testimoni
-        $ulasans = Ulasan::with(['user', 'produk'])->latest()->take(4)->get();
+        // Ulasan / Testimoni (Kecualikan yang disembunyikan / hidden oleh Superadmin)
+        $ulasans = Ulasan::with(['user', 'produk'])
+            ->where(function($q) {
+                $q->whereNull('status_moderasi')
+                  ->orWhere('status_moderasi', '!=', 'hidden');
+            })
+            ->latest()
+            ->take(4)
+            ->get();
 
         // Statistik ringkas
         $stats = [

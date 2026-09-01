@@ -15,14 +15,39 @@ class Produk extends Model
     protected $fillable = [
         'nama',
         'harga',
+        'harga_coret',
+        'berat_gram',
         'deskripsi',
         'gambar',
         'user_id',
         'stok',
+        'is_active',
         'rating',
         'umkm_id',
         'kategori_produk_id',
     ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+        'harga' => 'float',
+        'harga_coret' => 'float',
+        'berat_gram' => 'integer',
+        'stok' => 'integer',
+        'rating' => 'float',
+    ];
+
+    public function getDiskonPersenAttribute()
+    {
+        if ($this->harga_coret && $this->harga_coret > $this->harga) {
+            return round((($this->harga_coret - $this->harga) / $this->harga_coret) * 100);
+        }
+        return 0;
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
 
     // =======================
     // RELASI

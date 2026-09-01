@@ -60,8 +60,12 @@ class ProdukController extends Controller
                 'kategori', 
                 'umkm',
                 'ulasans' => function($query) {
-                    $query->with('user')
-                          ->orderBy('created_at', 'desc');
+                    $query->where(function($q) {
+                        $q->whereNull('status_moderasi')
+                          ->orWhere('status_moderasi', '!=', 'hidden');
+                    })
+                    ->with('user')
+                    ->orderBy('created_at', 'desc');
                 }
             ])->find($id);
 

@@ -90,12 +90,15 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 text-center">
-                                    <div class="flex flex-col items-center justify-center gap-2">
-                                        <a href="{{ route('penjual.invoice.show', $order->id) }}" class="inline-flex items-center justify-center gap-1.5 w-24 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-lg transition">
-                                            <i class="fas fa-eye"></i> Detail
+                                    <div class="flex flex-col items-center justify-center gap-1.5">
+                                        <a href="{{ route('penjual.pesanan.create', $order->id) }}" class="inline-flex items-center justify-center gap-1.5 w-28 px-2.5 py-1.5 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs rounded-lg transition shadow-2xs">
+                                            <i class="fas fa-truck-fast text-[10px]"></i> Proses / Resi
                                         </a>
-                                        <a href="{{ route('penjual.pesanan.create', $order->id) }}" class="inline-flex items-center justify-center gap-1.5 w-24 px-3 py-1.5 bg-brand-50 hover:bg-brand-100 text-brand-700 font-bold text-xs rounded-lg transition">
-                                            <i class="fas fa-edit"></i> Update
+                                        <a href="{{ route('penjual.pesanan.shipping-label', $order->id) }}" target="_blank" class="inline-flex items-center justify-center gap-1.5 w-28 px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-[11px] rounded-lg transition border border-emerald-200" title="Cetak Label Resi Thermal A6">
+                                            <i class="fas fa-barcode text-[10px]"></i> Label A6
+                                        </a>
+                                        <a href="{{ route('penjual.invoice.show', $order->id) }}" class="inline-flex items-center justify-center gap-1.5 w-28 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold text-[11px] rounded-lg transition">
+                                            <i class="fas fa-file-invoice text-[10px]"></i> Faktur
                                         </a>
                                     </div>
                                 </td>

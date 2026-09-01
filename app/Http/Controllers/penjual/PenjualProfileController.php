@@ -22,7 +22,8 @@ class PenjualProfileController extends Controller
     public function edit()
     {
         $user = Auth::user();
-        return view('profile.edit-penjual', compact('user'));
+        $umkm = Umkm::where('user_id', $user->id)->first();
+        return view('profile.edit-penjual', compact('user', 'umkm'));
     }
 
     public function update(Request $request)
@@ -31,13 +32,27 @@ class PenjualProfileController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
+            'nama_toko' => 'nullable|string|max:255',
+            'no_telp' => 'nullable|string|max:20',
+            'alamat' => 'nullable|string|max:500',
+            'deskripsi' => 'nullable|string|max:1000',
         ]);
 
         $user->update([
             'name' => $request->name,
         ]);
 
-        return redirect()->route('penjual.profile.show')->with('success', 'Profil berhasil diperbarui.');
+        $umkm = Umkm::where('user_id', $user->id)->first();
+        if ($umkm) {
+            $umkm->update([
+                'nama_toko' => $request->nama_toko ?: $umkm->nama_toko,
+                'no_telp' => $request->no_telp,
+                'alamat' => $request->alamat,
+                'deskripsi' => $request->deskripsi,
+            ]);
+        }
+
+        return redirect()->route('penjual.profile.show')->with('success', 'Profil toko dan penanggung jawab berhasil diperbarui.');
     }
 
     public function updateAvatar(Request $request)

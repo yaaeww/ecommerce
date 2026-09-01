@@ -75,16 +75,76 @@
                 <textarea name="deskripsi" id="deskripsi" rows="5" class="w-full rounded-xl border-slate-200 bg-slate-50 text-sm focus:border-brand-500 focus:ring-brand-500 transition shadow-sm px-4 py-3" placeholder="Jelaskan detail produk Anda di sini...">{{ old('deskripsi', $produk->deskripsi) }}</textarea>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <!-- Harga -->
                 <div>
-                    <label for="harga" class="block text-sm font-bold text-slate-700 mb-2">Harga (Rp) <span class="text-rose-500">*</span></label>
-                    <input type="number" name="harga" id="harga" min="0" class="w-full rounded-xl border-slate-200 bg-slate-50 text-sm focus:border-brand-500 focus:ring-brand-500 transition shadow-sm px-4 py-3" value="{{ old('harga', $produk->harga) }}" placeholder="0" required>
+                    <label for="harga" class="block text-sm font-bold text-slate-700 mb-2">Harga Jual Normal (Rp) <span class="text-rose-500">*</span></label>
+                    <input type="number" name="harga" id="harga" min="0" oninput="updateBagiHasil(); updateDiskonPreview();" class="w-full rounded-xl border-slate-200 bg-slate-50 text-sm focus:border-brand-500 focus:ring-brand-500 transition shadow-sm px-4 py-3 font-semibold" value="{{ old('harga', $produk->harga) }}" placeholder="0" required>
                 </div>
-                <!-- Stok -->
+
+                <!-- 🏷️ Harga Coret (Diskon Promo) -->
                 <div>
-                    <label for="stok" class="block text-sm font-bold text-slate-700 mb-2">Stok <span class="text-rose-500">*</span></label>
-                    <input type="number" name="stok" id="stok" min="0" class="w-full rounded-xl border-slate-200 bg-slate-50 text-sm focus:border-brand-500 focus:ring-brand-500 transition shadow-sm px-4 py-3" value="{{ old('stok', $produk->stok) }}" placeholder="0" required>
+                    <label for="harga_coret" class="block text-sm font-bold text-slate-700 mb-2 flex items-center justify-between">
+                        <span>Harga Coret (Sebelum Diskon)</span>
+                        <span class="text-[10px] text-slate-400 font-normal">Opsional</span>
+                    </label>
+                    <input type="number" name="harga_coret" id="harga_coret" min="0" oninput="updateDiskonPreview()" class="w-full rounded-xl border-slate-200 bg-slate-50 text-sm focus:border-brand-500 focus:ring-brand-500 transition shadow-sm px-4 py-3 font-semibold" value="{{ old('harga_coret', $produk->harga_coret) }}" placeholder="Contoh: 55000">
+                    <span id="diskonPreviewBadge" class="hidden inline-block mt-1 text-[10px] font-extrabold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200"></span>
+                </div>
+
+                <!-- Berat Komoditas -->
+                <div>
+                    <label for="berat_gram" class="block text-sm font-bold text-slate-700 mb-2">Berat Bersih (Gram) <span class="text-rose-500">*</span></label>
+                    <input type="number" name="berat_gram" id="berat_gram" min="100" class="w-full rounded-xl border-slate-200 bg-slate-50 text-sm focus:border-brand-500 focus:ring-brand-500 transition shadow-sm px-4 py-3 font-semibold" value="{{ old('berat_gram', $produk->berat_gram ?? 1000) }}" placeholder="1000 (1 Kg)" required>
+                </div>
+            </div>
+
+            <!-- Stok -->
+            <div>
+                <label for="stok" class="block text-sm font-bold text-slate-700 mb-2">Stok <span class="text-rose-500">*</span></label>
+                <input type="number" name="stok" id="stok" min="0" class="w-full rounded-xl border-slate-200 bg-slate-50 text-sm focus:border-brand-500 focus:ring-brand-500 transition shadow-sm px-4 py-3" value="{{ old('stok', $produk->stok) }}" placeholder="0" required>
+            </div>
+
+            <!-- 💰 Real-time Visualisasi Estimasi Pendapatan & Potongan Platform -->
+            <div class="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2 py-0.5 rounded bg-brand-50 text-brand-700 text-[10px] font-extrabold uppercase border border-brand-200">
+                            Transparansi Bagi Hasil
+                        </span>
+                        <span class="text-xs font-bold text-slate-700">Estimasi Pendapatan Bersih Per Produk</span>
+                    </div>
+                    <span class="text-[11px] font-semibold text-slate-500">
+                        Potongan Platform Marketplace: <strong class="text-brand-600">{{ $komisiPersen }}%</strong>
+                    </span>
+                </div>
+
+                <!-- Visual Proportion Bar -->
+                <div class="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden flex">
+                    <div id="barPenjual" class="bg-emerald-500 h-full transition-all duration-200" style="width: {{ $tokoPersen }}%"></div>
+                    <div id="barPlatform" class="bg-indigo-500 h-full transition-all duration-200" style="width: {{ $komisiPersen }}%"></div>
+                </div>
+
+                <!-- Breakdown Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                    <div class="p-3.5 rounded-xl bg-white border border-emerald-200/80 shadow-xs flex items-center justify-between">
+                        <div>
+                            <span class="text-[11px] font-bold text-emerald-700 block">Pendapatan Bersih Anda ({{ $tokoPersen }}%):</span>
+                            <span class="text-[10px] text-slate-400">Masuk ke saldo dompet toko</span>
+                        </div>
+                        <strong class="text-sm sm:text-base font-extrabold text-emerald-700 font-display" id="estimasiBersih">
+                            Rp 0
+                        </strong>
+                    </div>
+                    <div class="p-3.5 rounded-xl bg-white border border-indigo-200/80 shadow-xs flex items-center justify-between">
+                        <div>
+                            <span class="text-[11px] font-bold text-indigo-700 block">Biaya Layanan Platform ({{ $komisiPersen }}%):</span>
+                            <span class="text-[10px] text-slate-400">Operasional marketplace</span>
+                        </div>
+                        <strong class="text-sm sm:text-base font-extrabold text-indigo-700 font-display" id="estimasiKomisi">
+                            Rp 0
+                        </strong>
+                    </div>
                 </div>
             </div>
 
@@ -194,8 +254,37 @@
         }
     });
 
-    // Dynamic dropdown for subkategori
+    const komisiPersen = {{ $komisiPersen }};
+    const tokoPersen = {{ $tokoPersen }};
+
+    function updateBagiHasil() {
+        const harga = parseFloat(document.getElementById('harga').value) || 0;
+        const bersih = harga * (tokoPersen / 100);
+        const komisi = harga * (komisiPersen / 100);
+
+        document.getElementById('estimasiBersih').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(Math.round(bersih));
+        document.getElementById('estimasiKomisi').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(Math.round(komisi));
+    }
+
+    function updateDiskonPreview() {
+        const harga = parseFloat(document.getElementById('harga').value) || 0;
+        const hargaCoret = parseFloat(document.getElementById('harga_coret').value) || 0;
+        const badge = document.getElementById('diskonPreviewBadge');
+
+        if (hargaCoret > harga && harga > 0) {
+            const diskonPersen = Math.round(((hargaCoret - harga) / hargaCoret) * 100);
+            badge.innerText = `🔥 Hemat ${diskonPersen}% (Diskon Rp ${(hargaCoret - harga).toLocaleString('id-ID')})`;
+            badge.classList.remove('hidden');
+        } else {
+            badge.classList.add('hidden');
+        }
+    }
+
+    // Dynamic dropdown for subkategori & initial price calculation
     document.addEventListener('DOMContentLoaded', function () {
+        updateBagiHasil();
+        updateDiskonPreview();
+
         const kategoriUtamaSelect = document.getElementById('kategori_utama');
         const subkategoriSelect = document.getElementById('subkategori');
 

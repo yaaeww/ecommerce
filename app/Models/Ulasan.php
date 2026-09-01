@@ -14,6 +14,15 @@ class Ulasan extends Model
         'orders_id',
         'bintang',
         'ulasan',
+        'status_moderasi',
+        'catatan_moderasi',
+        'balasan_penjual',
+        'balasan_penjual_at',
+    ];
+
+    protected $casts = [
+        'balasan_penjual_at' => 'datetime',
+        'bintang' => 'integer',
     ];
 
     public function produk()

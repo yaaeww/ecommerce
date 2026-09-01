@@ -1,354 +1,148 @@
 @extends('layouts.app')
 
-@section('title')
-    <i class="fas fa-edit me-2"></i> Edit Profil Toko
-@endsection
+@section('page_title', 'Edit Profil Toko')
 
 @section('content')
-    <style>
-        .edit-profile-container {
-            background: linear-gradient(135deg, rgba(10, 22, 40, 0.8) 0%, rgba(26, 58, 95, 0.9) 100%);
-            border: 2px solid rgba(255, 215, 0, 0.3);
-            border-radius: 15px;
-            padding: 30px;
-            backdrop-filter: blur(10px);
-            margin-bottom: 30px;
-        }
-
-        .text-theme {
-            color: #e0e0e0 !important;
-        }
-
-        .text-gold {
-            color: var(--gold) !important;
-        }
-
-        .form-control {
-            background: rgba(26, 58, 95, 0.6);
-            border: 2px solid rgba(255, 215, 0, 0.2);
-            border-radius: 8px;
-            color: #e0e0e0;
-            padding: 12px 15px;
-            transition: all 0.3s ease;
-        }
-
-        .form-control:focus {
-            background: rgba(26, 58, 95, 0.8);
-            border-color: var(--gold);
-            color: #e0e0e0;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-            outline: none;
-        }
-
-        .form-control::placeholder {
-            color: #a0a0a0;
-        }
-
-        .form-label {
-            font-weight: 600;
-            color: var(--gold);
-            margin-bottom: 8px;
-            font-size: 1rem;
-        }
-
-        .alert-danger {
-            background: linear-gradient(135deg, rgba(220, 53, 69, 0.2) 0%, rgba(232, 62, 140, 0.3) 100%);
-            border: 2px solid rgba(220, 53, 69, 0.5);
-            border-radius: 12px;
-            backdrop-filter: blur(10px);
-            color: #e0e0e0;
-            margin-bottom: 25px;
-        }
-
-        .alert-danger ul {
-            margin-bottom: 0;
-        }
-
-        .alert-danger li {
-            list-style-type: none;
-            position: relative;
-            padding-left: 20px;
-        }
-
-        .alert-danger li::before {
-            content: "⚠";
-            position: absolute;
-            left: 0;
-            color: #ff6b6b;
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #28a745, #20c997);
-            border: none;
-            color: white;
-            font-weight: 700;
-            padding: 12px 30px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-        }
-
-        .btn-success:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.5);
-            background: linear-gradient(135deg, #20c997, #28a745);
-            color: white;
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, #6c757d, #868e96);
-            border: none;
-            color: white;
-            font-weight: 700;
-            padding: 12px 30px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
-        }
-
-        .btn-secondary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.5);
-            background: linear-gradient(135deg, #868e96, #6c757d);
-            color: white;
-        }
-
-        .section-title {
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 30px;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-align: center;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        .avatar-preview {
-            max-width: 150px;
-            max-height: 150px;
-            border: 2px solid rgba(255, 215, 0, 0.3);
-            border-radius: 8px;
-            padding: 5px;
-            background: rgba(26, 58, 95, 0.6);
-            margin-top: 10px;
-        }
-
-        .current-avatar {
-            border: 2px solid var(--gold);
-            border-radius: 8px;
-            padding: 5px;
-            background: rgba(26, 58, 95, 0.6);
-            max-width: 150px;
-            margin-top: 10px;
-        }
-
-        .file-input-label {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            color: var(--dark-blue);
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-block;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-
-        .file-input-label:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
-        }
-
-        .button-container {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255, 215, 0, 0.2);
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        /* Mobile responsiveness */
-        @media (max-width: 768px) {
-            .edit-profile-container {
-                padding: 20px 15px;
-            }
-
-            .button-container {
-                flex-direction: column;
-            }
-
-            .btn-success,
-            .btn-secondary {
-                width: 100%;
-                text-align: center;
-            }
-
-            .section-title {
-                font-size: 1.8rem;
-            }
-        }
-
-        .form-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .form-header h5 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--gold);
-            margin-bottom: 10px;
-        }
-
-        .form-header p {
-            color: #c0c0c0;
-            margin-bottom: 0;
-        }
-    </style>
-
-    <div class="container">
-        <h2 class="section-title"><i class="fas fa-edit me-3"></i>Edit Profil Toko</h2>
-
-        <div class="edit-profile-container">
-            <div class="form-header">
-                <h5><i class="fas fa-store me-2"></i>Perbarui Informasi Toko Anda</h5>
-                <p>Lengkapi data toko untuk pengalaman berjualan yang lebih baik</p>
+<div class="max-w-4xl mx-auto space-y-6 pb-12">
+    
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold mb-1">
+                <i class="fas fa-edit text-[10px]"></i> Pengaturan Akun
             </div>
-
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <h5 class="text-gold mb-3"><i class="fas fa-exclamation-triangle me-2"></i>Terjadi Kesalahan</h5>
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
-            <form action="{{ route('penjual.profile.update') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                @method('PATCH')
-
-                <div class="row">
-                    <!-- Informasi Akun -->
-                    <div class="col-lg-6">
-                        <div class="form-group">
-                            <label for="name" class="form-label">
-                                <i class="fas fa-store me-2"></i>Nama Toko
-                            </label>
-                            <input type="text" name="name" id="name" class="form-control"
-                                value="{{ old('name', $user->name) }}" placeholder="Masukkan nama toko Anda" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="email" class="form-label">
-                                <i class="fas fa-envelope me-2"></i>Email
-                            </label>
-                            <input type="email" name="email" id="email" class="form-control"
-                                value="{{ old('email', $user->email) }}" placeholder="email@example.com" required>
-                        </div>
-                    </div>
-
-                    <!-- Informasi Kontak -->
-                    <div class="col-lg-6">
-                        <div class="form-group">
-                            <label for="no_telp" class="form-label">
-                                <i class="fas fa-phone me-2"></i>No. Telepon
-                            </label>
-                            <input type="text" name="no_telp" id="no_telp" class="form-control"
-                                value="{{ old('no_telp', $umkm->no_telp ?? '') }}" placeholder="Contoh: 081234567890">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="alamat" class="form-label">
-                                <i class="fas fa-map-marker-alt me-2"></i>Alamat Toko
-                            </label>
-                            <textarea name="alamat" id="alamat" class="form-control" rows="3"
-                                placeholder="Masukkan alamat lengkap toko Anda">{{ old('alamat', $umkm->alamat ?? '') }}</textarea>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Avatar -->
-                <div class="form-group">
-                    <label class="form-label d-block">
-                        <i class="fas fa-image me-2"></i>Foto Profil
-                    </label>
-
-                    @if($user->avatar)
-                        <div class="mb-3">
-                            <p class="text-gold mb-2"><i class="fas fa-image me-2"></i>Foto Saat Ini:</p>
-                            <img src="{{ asset('storage/avatar/' . $user->avatar) }}" alt="Avatar" class="current-avatar">
-                            <p class="text-muted mt-2">Kosongkan jika tidak ingin mengubah foto</p>
-                        </div>
-                    @endif
-
-                    <label for="avatar" class="file-input-label">
-                        <i class="fas fa-upload me-2"></i>Pilih Foto Baru
-                    </label>
-                    <input type="file" name="avatar" id="avatar" class="d-none" accept="image/*"
-                        onchange="previewImage(event)">
-                    <div class="mt-2 text-center">
-                        <img id="preview" src="#" alt="Preview Foto Baru" class="avatar-preview" style="display: none;">
-                    </div>
-                    <small class="text-muted d-block mt-2">Format: JPG, PNG, JPEG | Maksimal: 2MB</small>
-                </div>
-
-                <div class="button-container">
-                    <button type="submit" class="btn btn-success">
-                        <i class="fas fa-save me-2"></i>Simpan Perubahan
-                    </button>
-                    <a href="{{ route('penjual.profile.show') }}" class="btn btn-secondary">
-                        <i class="fas fa-arrow-left me-2"></i>Kembali
-                    </a>
-                </div>
-            </form>
+            <h2 class="text-2xl font-extrabold text-slate-900 font-display">Edit Profil Toko & Penjual</h2>
+            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Perbarui informasi toko, nomor kontak, dan alamat operasional pengiriman kebun.</p>
         </div>
+        <a href="{{ route('penjual.profile.show') }}" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition flex items-center gap-2">
+            <i class="fas fa-arrow-left text-xs"></i>
+            <span>Kembali</span>
+        </a>
     </div>
 
-    <script>
-        function previewImage(event) {
-            const reader = new FileReader();
-            reader.onload = function () {
-                const output = document.getElementById('preview');
-                output.src = reader.result;
-                output.style.display = 'block';
-            };
-            reader.readAsDataURL(event.target.files[0]);
-        }
+    @if (isset($errors) && $errors->any())
+        <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs shadow-xs">
+            <div class="flex items-center gap-2 font-bold mb-1">
+                <i class="fas fa-exclamation-triangle text-rose-500"></i>
+                <span>Terdapat kesalahan pengisian data:</span>
+            </div>
+            <ul class="list-disc list-inside space-y-0.5 text-rose-700 ml-4">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-        // Tambahkan konfirmasi sebelum meninggalkan halaman jika ada perubahan
-        document.addEventListener('DOMContentLoaded', function () {
-            const form = document.querySelector('form');
-            let formChanged = false;
+    <!-- Form Card -->
+    <div class="card p-6 sm:p-8 bg-white border border-slate-200/80 shadow-xs rounded-3xl">
+        <form action="{{ route('penjual.profile.update') }}" method="POST" class="space-y-6">
+            @csrf
+            @method('PATCH')
 
-            // Deteksi perubahan pada form
-            const inputs = form.querySelectorAll('input, textarea, select');
-            inputs.forEach(input => {
-                input.addEventListener('input', function () {
-                    formChanged = true;
-                });
-            });
+            <!-- Section 1: Informasi Toko -->
+            <div class="pb-6 border-b border-slate-100">
+                <h3 class="text-sm font-extrabold text-slate-900 font-display flex items-center gap-2 mb-4">
+                    <i class="fas fa-store text-emerald-600"></i>
+                    <span>Informasi Toko & Usaha</span>
+                </h3>
 
-            // Reset flag ketika form disubmit
-            form.addEventListener('submit', function () {
-                formChanged = false;
-            });
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div class="space-y-1.5">
+                        <label for="nama_toko" class="text-xs font-bold text-slate-700">Nama Toko / Kebun <span class="text-rose-500">*</span></label>
+                        <input 
+                            type="text" 
+                            name="nama_toko" 
+                            id="nama_toko" 
+                            value="{{ old('nama_toko', $umkm->nama_toko ?? $user->name) }}" 
+                            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition"
+                            placeholder="Contoh: Kebun Mangga Gedong Gincu Asli"
+                            required
+                        >
+                    </div>
 
-            // Konfirmasi sebelum meninggalkan halaman
-            window.addEventListener('beforeunload', function (e) {
-                if (formChanged) {
-                    e.preventDefault();
-                    e.returnValue = '';
-                }
-            });
-        });
-    </script>
+                    <div class="space-y-1.5">
+                        <label for="no_telp" class="text-xs font-bold text-slate-700">Nomor WhatsApp / Telepon <span class="text-rose-500">*</span></label>
+                        <input 
+                            type="text" 
+                            name="no_telp" 
+                            id="no_telp" 
+                            value="{{ old('no_telp', $umkm->no_telp ?? '') }}" 
+                            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition"
+                            placeholder="Contoh: 081234567890"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="mt-5 space-y-1.5">
+                    <label for="alamat" class="text-xs font-bold text-slate-700">Alamat Lengkap Kebun / Gudang Pengiriman <span class="text-rose-500">*</span></label>
+                    <textarea 
+                        name="alamat" 
+                        id="alamat" 
+                        rows="3" 
+                        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition"
+                        placeholder="Contoh: Desa Krasak, Blok Gandok, Kec. Jatibarang, Kab. Indramayu"
+                        required
+                    >{{ old('alamat', $umkm->alamat ?? '') }}</textarea>
+                </div>
+
+                <div class="mt-5 space-y-1.5">
+                    <label for="deskripsi" class="text-xs font-bold text-slate-700">Deskripsi & Profil Usaha</label>
+                    <textarea 
+                        name="deskripsi" 
+                        id="deskripsi" 
+                        rows="3" 
+                        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition"
+                        placeholder="Ceritakan sejarah kebun Anda, varietas mangga unggulan, atau jaminan mutu petik matang pohon..."
+                    >{{ old('deskripsi', $umkm->deskripsi ?? '') }}</textarea>
+                </div>
+            </div>
+
+            <!-- Section 2: Penanggung Jawab Akun -->
+            <div>
+                <h3 class="text-sm font-extrabold text-slate-900 font-display flex items-center gap-2 mb-4">
+                    <i class="fas fa-user-circle text-emerald-600"></i>
+                    <span>Informasi Akun Penanggung Jawab</span>
+                </h3>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div class="space-y-1.5">
+                        <label for="name" class="text-xs font-bold text-slate-700">Nama Lengkap Penjual <span class="text-rose-500">*</span></label>
+                        <input 
+                            type="text" 
+                            name="name" 
+                            id="name" 
+                            value="{{ old('name', $user->name) }}" 
+                            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition"
+                            required
+                        >
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-bold text-slate-400">Email Akun (Terkunci)</label>
+                        <input 
+                            type="email" 
+                            value="{{ $user->email }}" 
+                            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-400 bg-slate-50 cursor-not-allowed" 
+                            disabled
+                        >
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="pt-6 border-t border-slate-100 flex items-center justify-end gap-3">
+                <a href="{{ route('penjual.profile.show') }}" class="px-5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition">
+                    Batal
+                </a>
+                <button type="submit" class="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition shadow-xs flex items-center gap-2">
+                    <i class="fas fa-save text-xs"></i>
+                    <span>Simpan Perubahan</span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+</div>
 @endsection

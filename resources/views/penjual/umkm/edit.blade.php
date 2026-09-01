@@ -59,6 +59,33 @@
                             @enderror
                         </div>
                     </div>
+
+                    <!-- 🏖️ Mode Libur Toko (Feature 3) -->
+                    <div class="p-5 rounded-2xl bg-amber-50/70 border border-amber-200/80 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="text-sm font-bold text-amber-950 flex items-center gap-2">
+                                    <i class="fas fa-umbrella-beach text-amber-600"></i> Mode Libur & Tutup Sementara
+                                </h4>
+                                <p class="text-xs text-amber-800 mt-0.5">Aktifkan saat kebun sedang libur panen atau toko sedang tidak melayani pesanan.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" name="is_libur" value="1" class="sr-only peer" {{ old('is_libur', $umkm->is_libur) ? 'checked' : '' }}>
+                                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-600"></div>
+                            </label>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                            <div>
+                                <label for="libur_sampai" class="block text-xs font-bold text-amber-900 mb-1.5">Rencana Buka Kembali</label>
+                                <input type="date" id="libur_sampai" name="libur_sampai" class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-amber-200 text-xs text-slate-800 focus:border-amber-500 focus:outline-none" value="{{ old('libur_sampai', $umkm->libur_sampai) }}">
+                            </div>
+                            <div>
+                                <label for="libur_pesan" class="block text-xs font-bold text-amber-900 mb-1.5">Pesan Pengumuman untuk Pembeli</label>
+                                <input type="text" id="libur_pesan" name="libur_pesan" placeholder="Contoh: Sedang persiapan panen raya berikutnya" class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-amber-200 text-xs text-slate-800 focus:border-amber-500 focus:outline-none" value="{{ old('libur_pesan', $umkm->libur_pesan) }}">
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Right: Logo Upload -->

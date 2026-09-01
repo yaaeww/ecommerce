@@ -5,21 +5,55 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Umkm;
 use App\Models\Produk;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use App\Notifications\PeringatanUmkmNotification;
 
 class AdminUmkmController extends Controller
 {
     /**
-     * Menampilkan semua daftar UMKM (approved, pending, rejected).
+     * Menampilkan semua daftar UMKM (approved, pending, rejected) dengan pencarian dan pagination.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $approvedUmkms = Umkm::where('status', 'approved')->latest()->get();
-        $pendingUmkms = Umkm::where('status', 'pending')->latest()->get();
-        $rejectedUmkms = Umkm::where('status', 'rejected')->latest()->get();
+        $status = $request->get('status', 'all');
+        $search = $request->get('search');
 
-        return view('admin.umkm.index', compact('approvedUmkms', 'pendingUmkms', 'rejectedUmkms'));
+        $query = Umkm::with(['user', 'produks']);
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_toko', 'like', "%{$search}%")
+                  ->orWhere('alamat', 'like', "%{$search}%")
+                  ->orWhere('no_telp', 'like', "%{$search}%")
+                  ->orWhereHas('user', function ($u) use ($search) {
+                      $u->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        if ($status && $status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        $umkms = $query->latest()->paginate(10)->withQueryString();
+
+        // Hitung count per status
+        $approvedCount = Umkm::where('status', 'approved')->count();
+        $pendingCount = Umkm::where('status', 'pending')->count();
+        $rejectedCount = Umkm::where('status', 'rejected')->count();
+        $totalUmkms = $approvedCount + $pendingCount + $rejectedCount;
+
+        return view('admin.umkm.index', compact(
+            'umkms',
+            'status',
+            'search',
+            'approvedCount',
+            'pendingCount',
+            'rejectedCount',
+            'totalUmkms'
+        ));
     }
 
     /**
@@ -27,10 +61,16 @@ class AdminUmkmController extends Controller
      */
     public function approve($id)
     {
-        $umkm = Umkm::findOrFail($id);
+        $umkm = Umkm::with('user')->findOrFail($id);
         $umkm->update(['status' => 'approved']);
 
-        return redirect()->route('admin.umkm.index')->with('success', 'UMKM berhasil disetujui.');
+        ActivityLog::record(
+            'APPROVE_UMKM',
+            "Superadmin menyetujui pendaftaran toko UMKM '{$umkm->nama_toko}' (Pemilik: {$umkm->user->name}).",
+            $umkm
+        );
+
+        return redirect()->back()->with('success', "Toko UMKM '{$umkm->nama_toko}' berhasil disetujui & aktif.");
     }
 
     /**
@@ -38,10 +78,16 @@ class AdminUmkmController extends Controller
      */
     public function reject($id)
     {
-        $umkm = Umkm::findOrFail($id);
+        $umkm = Umkm::with('user')->findOrFail($id);
         $umkm->update(['status' => 'rejected']);
 
-        return redirect()->route('admin.umkm.index')->with('error', 'UMKM telah ditolak.');
+        ActivityLog::record(
+            'REJECT_UMKM',
+            "Superadmin menolak/menonaktifkan toko UMKM '{$umkm->nama_toko}'.",
+            $umkm
+        );
+
+        return redirect()->back()->with('success', "Toko UMKM '{$umkm->nama_toko}' telah dinonaktifkan/ditolak.");
     }
 
     /**
@@ -50,7 +96,6 @@ class AdminUmkmController extends Controller
     public function show($id)
     {
         $umkm = Umkm::with(['user', 'produks'])->findOrFail($id);
-
         return view('admin.umkm.show', compact('umkm'));
     }
 
@@ -60,8 +105,7 @@ class AdminUmkmController extends Controller
     public function products($id)
     {
         $umkm = Umkm::findOrFail($id);
-        $products = Produk::where('umkm_id', $id)->latest()->get();
-
+        $products = Produk::where('umkm_id', $id)->latest()->paginate(12);
         return view('admin.umkm.products', compact('umkm', 'products'));
     }
 
@@ -78,9 +122,13 @@ class AdminUmkmController extends Controller
 
         // Hapus semua produk yang dimiliki UMKM
         Produk::where('umkm_id', $id)->delete();
-
-        // Hapus UMKM
         $umkm->delete();
+
+        ActivityLog::record(
+            'DELETE_UMKM',
+            "Superadmin menghapus permanen toko '{$umkm->nama_toko}'.",
+            $umkm
+        );
 
         return redirect()->route('admin.umkm.index')->with('success', 'UMKM berhasil dihapus.');
     }
@@ -92,9 +140,8 @@ class AdminUmkmController extends Controller
     {
         $produk = Produk::findOrFail($id);
 
-        // Hapus gambar dari storage jika ada
-        if ($produk->gambar && \Storage::disk('public')->exists('produks/' . $produk->gambar)) {
-            \Storage::disk('public')->delete('produks/' . $produk->gambar);
+        if ($produk->gambar && \Storage::disk('public')->exists($produk->gambar)) {
+            \Storage::disk('public')->delete($produk->gambar);
         }
 
         $produk->delete();
@@ -121,7 +168,6 @@ class AdminUmkmController extends Controller
         $subject = "Peringatan untuk UMKM: {$umkm->nama_toko}";
         $message = $request->input('message');
 
-        // Kirim notifikasi
         $user->notify(new PeringatanUmkmNotification($subject, $message));
 
         return back()->with('success', 'Notifikasi berhasil dikirim ke pemilik UMKM.');

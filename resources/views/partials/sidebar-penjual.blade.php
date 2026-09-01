@@ -93,6 +93,15 @@
                         <i class="fas fa-wallet w-4 text-sm {{ request()->routeIs('penjual.pendapatan.*') ? 'text-brand-600' : 'text-slate-400' }}"></i>
                         <span>Pendapatan</span>
                     </a>
+
+                    <!-- Tarik Saldo (Payout) -->
+                    <a 
+                        href="{{ route('penjual.penarikan.index') }}" 
+                        class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition {{ request()->routeIs('penjual.penarikan.*') ? 'bg-brand-50 text-brand-600 border border-brand-200/60 shadow-sm' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}"
+                    >
+                        <i class="fas fa-money-bill-transfer w-4 text-sm {{ request()->routeIs('penjual.penarikan.*') ? 'text-brand-600' : 'text-slate-400' }}"></i>
+                        <span>Tarik Saldo</span>
+                    </a>
                 </div>
             </div>
 
@@ -132,23 +141,6 @@
                     </a>
                 </div>
             </div>
-
-            @if(isset($notifPesananComplete) && $notifPesananComplete->count() > 0)
-            <!-- Mini Notification List (optional) -->
-            <div>
-                <p class="px-3 text-[11px] font-bold uppercase tracking-wider text-emerald-500 mb-2">
-                    Pesanan Baru
-                </p>
-                <div class="space-y-1">
-                    @foreach($notifPesananComplete->take(3) as $order)
-                    <a href="{{ route('penjual.pesanan.index') }}" class="block px-3 py-2 rounded-lg hover:bg-slate-50 transition">
-                        <p class="text-[11px] font-medium text-slate-700 truncate"><span class="font-bold text-slate-900">{{ $order->name }}</span> ({{ $order->jumlah }}x)</p>
-                        <p class="text-[9px] text-slate-400">{{ $order->created_at->diffForHumans() }}</p>
-                    </a>
-                    @endforeach
-                </div>
-            </div>
-            @endif
 
         </nav>
     </div>

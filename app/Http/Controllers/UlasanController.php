@@ -29,6 +29,20 @@ class UlasanController extends Controller
         try {
             $user = $request->user();
 
+            // Validasi kepemilikan dan status pesanan harus 'diterima' & lunas
+            $order = \App\Models\Order::where('id', $request->orders_id)
+                ->where('user_id', $user->id)
+                ->where('status_pesanan', 'diterima')
+                ->where('status', 'complete')
+                ->first();
+
+            if (!$order) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ulasan hanya dapat diberikan jika pesanan telah lunas dan sampai/diterima oleh pembeli.'
+                ], 403);
+            }
+
             // Check if user already reviewed this product
             $existingReview = Ulasan::where('users_id', $user->id)
                 ->where('produks_id', $request->produk_id)

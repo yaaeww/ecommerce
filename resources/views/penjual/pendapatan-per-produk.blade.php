@@ -21,37 +21,70 @@
         </div>
     </div>
 
-    <!-- Filter Section -->
+    <!-- Filter Section (Feature 6: Quick & Custom Date Range Filter) -->
     <div class="card bg-white border border-slate-200/80 shadow-sm rounded-2xl p-4 sm:p-6">
-        <form method="GET" class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div class="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
-                <label for="filter" class="text-sm font-bold text-slate-700 whitespace-nowrap">
-                    <i class="fas fa-filter text-slate-400 mr-2"></i>Filter Waktu:
+        <form method="GET" class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div class="flex flex-wrap items-center gap-3">
+                <label for="filter" class="text-xs font-bold text-slate-700 whitespace-nowrap">
+                    <i class="fas fa-filter text-slate-400 mr-1.5"></i>Periode:
                 </label>
-                <div class="relative w-full sm:w-48">
-                    <select name="filter" id="filter" class="w-full pl-4 pr-10 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-medium text-slate-700 focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition appearance-none cursor-pointer" onchange="this.form.submit()">
+                
+                <div class="relative w-36">
+                    <select name="filter" id="filter" class="w-full pl-3 pr-8 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 focus:bg-white focus:border-brand-500 focus:outline-none transition appearance-none cursor-pointer" onchange="this.form.submit()">
                         <option value="minggu" {{ request('filter') == 'minggu' ? 'selected' : '' }}>Minggu Ini</option>
-                        <option value="bulan" {{ request('filter', 'bulan') == 'bulan' ? 'selected' : '' }}>Bulan Ini</option>
+                        <option value="bulan" {{ request('filter', 'bulan') == 'bulan' && !request('start_date') ? 'selected' : '' }}>Bulan Ini</option>
                         <option value="tahun" {{ request('filter') == 'tahun' ? 'selected' : '' }}>Tahun Ini</option>
+                        <option value="custom" {{ request('start_date') && request('end_date') ? 'selected' : '' }}>Kustom Tanggal</option>
                     </select>
-                    <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                        <i class="fas fa-chevron-down text-xs"></i>
+                    <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                        <i class="fas fa-chevron-down text-[10px]"></i>
                     </div>
+                </div>
+
+                <!-- Custom Date Range -->
+                <div class="flex items-center gap-2">
+                    <input 
+                        type="date" 
+                        name="start_date" 
+                        value="{{ request('start_date') }}" 
+                        class="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 focus:bg-white focus:border-brand-500 focus:outline-none font-medium"
+                        placeholder="Dari Tanggal"
+                    >
+                    <span class="text-xs text-slate-400 font-bold">s/d</span>
+                    <input 
+                        type="date" 
+                        name="end_date" 
+                        value="{{ request('end_date') }}" 
+                        class="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 focus:bg-white focus:border-brand-500 focus:outline-none font-medium"
+                        placeholder="Sampai Tanggal"
+                    >
+                    <button type="submit" class="px-3 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-xl transition shadow-xs">
+                        Terapkan
+                    </button>
+                    @if(request('start_date') || request('filter'))
+                        <a href="{{ route('penjual.pendapatan.index') }}" class="px-2.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs rounded-xl transition" title="Reset Filter">
+                            <i class="fas fa-rotate-left"></i>
+                        </a>
+                    @endif
                 </div>
             </div>
             
-            <div class="flex items-center gap-2 text-sm">
+            <div class="flex items-center gap-2 text-xs">
                 @php
-                    $periodText = [
-                        'minggu' => 'Minggu Ini',
-                        'bulan' => 'Bulan Ini', 
-                        'tahun' => 'Tahun Ini'
-                    ][request('filter', 'bulan')];
+                    if (request('start_date') && request('end_date')) {
+                        $periodText = \Carbon\Carbon::parse(request('start_date'))->format('d M Y') . ' - ' . \Carbon\Carbon::parse(request('end_date'))->format('d M Y');
+                    } else {
+                        $periodText = [
+                            'minggu' => 'Minggu Ini',
+                            'bulan' => 'Bulan Ini', 
+                            'tahun' => 'Tahun Ini'
+                        ][request('filter', 'bulan')];
+                    }
                 @endphp
-                <div class="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center">
+                <div class="w-7 h-7 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center text-xs">
                     <i class="fas fa-calendar-alt"></i>
                 </div>
-                <span class="text-slate-500">Menampilkan data: <span class="font-bold text-slate-900">{{ $periodText }}</span></span>
+                <span class="text-slate-500">Rentang: <strong class="text-slate-900">{{ $periodText }}</strong></span>
             </div>
         </form>
     </div>

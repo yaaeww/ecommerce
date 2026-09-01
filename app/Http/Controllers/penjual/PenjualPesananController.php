@@ -57,21 +57,37 @@ class PenjualPesananController extends Controller
 
     // Update status pesanan
     public function updateStatus(Request $request, Order $order)
-{
-    $request->validate([
-        'status_pesanan' => 'required|in:dikemas,dikirim,diterima,belum_diterima',
-    ]);
+    {
+        $request->validate([
+            'status_pesanan' => 'required|in:dikemas,dikirim,diterima,belum_diterima',
+            'no_resi' => 'nullable|string|max:100',
+            'kurir_ekspedisi' => 'nullable|string|max:100',
+            'foto_bukti_pengiriman' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+        ]);
 
-    $penjualId = Auth::id();
-    if ($order->produk->umkm->user_id !== $penjualId) {
-        abort(403, 'Anda tidak memiliki akses untuk mengubah status pesanan ini.');
+        $penjualId = Auth::id();
+        if ($order->produk->umkm->user_id !== $penjualId) {
+            abort(403, 'Anda tidak memiliki akses untuk mengubah status pesanan ini.');
+        }
+
+        $updateData = [
+            'status_pesanan' => $request->status_pesanan,
+        ];
+
+        if ($request->filled('no_resi')) {
+            $updateData['resi_pengiriman'] = $request->no_resi;
+        }
+        if ($request->filled('kurir_ekspedisi')) {
+            $updateData['kurir'] = $request->kurir_ekspedisi;
+        }
+        if ($request->hasFile('foto_bukti_pengiriman')) {
+            $fotoPath = $request->file('foto_bukti_pengiriman')->store('bukti_pengiriman', 'public');
+            $updateData['foto_bukti_pengiriman'] = $fotoPath;
+        }
+
+        $order->update($updateData);
+
+        return redirect()->route('penjual.pesanan.index')->with('success', 'Status pesanan, resi, dan bukti pengiriman berhasil diperbarui.');
     }
-
-    $order->update([
-        'status_pesanan' => $request->status_pesanan,
-    ]);
-
-    return redirect()->route('penjual.pesanan.index')->with('success', 'Status pesanan berhasil diperbarui.');
-}
 
 }

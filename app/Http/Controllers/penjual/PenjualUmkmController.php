@@ -93,6 +93,9 @@ class PenjualUmkmController extends Controller
             'alamat'    => 'required|string|max:255',
             'no_telp'   => 'nullable|string|max:255',
             'logo'      => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'is_libur'  => 'nullable|boolean',
+            'libur_pesan' => 'nullable|string|max:255',
+            'libur_sampai' => 'nullable|date',
         ]);
 
         // Simpan logo baru jika ada
@@ -110,12 +113,41 @@ class PenjualUmkmController extends Controller
         $umkm->deskripsi = $request->deskripsi;
         $umkm->alamat = $request->alamat;
         $umkm->no_telp = $request->no_telp;
+        $umkm->is_libur = $request->has('is_libur') ? true : false;
+        $umkm->libur_pesan = $request->libur_pesan;
+        $umkm->libur_sampai = $request->libur_sampai;
 
-        // Status direset ke pending setiap update
-        $umkm->status = 'pending';
+        // Jangan reset status ke pending jika toko sudah approved
+        if ($umkm->status !== 'approved') {
+            $umkm->status = 'pending';
+        }
 
         $umkm->save();
 
-        return redirect()->route('penjual.umkm.index')->with('success', 'Data toko berhasil diperbarui. Menunggu persetujuan admin.');
+        return redirect()->route('penjual.umkm.index')->with('success', 'Data profil & status operasional toko berhasil diperbarui.');
+    }
+
+    /**
+     * 🏖️ Quick Toggle Mode Libur / Toko Tutup via AJAX
+     */
+    public function toggleLibur(Request $request, $id)
+    {
+        $umkm = UMKM::findOrFail($id);
+        if ($umkm->user_id !== Auth::id()) {
+            return response()->json(['success' => false, 'message' => 'Akses ditolak.'], 403);
+        }
+
+        $newLibur = !$umkm->is_libur;
+        $umkm->is_libur = $newLibur;
+        if ($newLibur && !$umkm->libur_pesan) {
+            $umkm->libur_pesan = 'Kebun sedang masa pemulihan pasca-panen. Pemesanan baru ditutup sementara.';
+        }
+        $umkm->save();
+
+        return response()->json([
+            'success' => true,
+            'is_libur' => $newLibur,
+            'message' => 'Mode Libur Toko kini ' . ($newLibur ? 'AKTIF (Tutup Sementara)' : 'NONAKTIF (Buka Kembali)') . '.'
+        ]);
     }
 }

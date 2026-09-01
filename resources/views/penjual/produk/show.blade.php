@@ -138,27 +138,69 @@
 
         <div class="p-6">
             @if($ulasan->count())
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     @foreach($ulasan as $u)
-                        <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-200 transition">
-                            <div class="flex items-start gap-4">
-                                <div class="w-10 h-10 rounded-full bg-brand-100 text-brand-700 font-bold flex items-center justify-center shrink-0">
-                                    {{ strtoupper(substr($u->user->name ?? 'U', 0, 1)) }}
-                                </div>
-                                <div class="flex-1">
-                                    <div class="flex items-center justify-between mb-1">
-                                        <h6 class="font-bold text-sm text-slate-900">{{ $u->user->name ?? 'Pelanggan' }}</h6>
-                                        <span class="text-[11px] text-slate-400">{{ $u->created_at->format('d M Y') }}</span>
+                        <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 shadow-xs flex flex-col justify-between space-y-4">
+                            <div>
+                                <div class="flex items-start gap-3.5 mb-2.5">
+                                    <div class="w-10 h-10 rounded-full bg-brand-100 text-brand-700 font-bold flex items-center justify-center shrink-0 text-sm">
+                                        {{ strtoupper(substr($u->user->name ?? 'U', 0, 1)) }}
                                     </div>
-                                    <div class="flex items-center gap-1 mb-2 text-amber-400 text-xs">
-                                        @for ($i = 1; $i <= 5; $i++)
-                                            <i class="fas fa-star{{ $i <= $u->bintang ? '' : '-half-alt' }}"></i>
-                                        @endfor
+                                    <div class="flex-1">
+                                        <div class="flex items-center justify-between mb-1">
+                                            <h6 class="font-bold text-sm text-slate-900">{{ $u->user->name ?? 'Pelanggan' }}</h6>
+                                            <span class="text-[10px] text-slate-400 font-medium">{{ $u->created_at->format('d M Y') }}</span>
+                                        </div>
+                                        <div class="flex items-center gap-1 text-amber-400 text-xs">
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                <i class="fas fa-star{{ $i <= ($u->bintang ?? $u->rating ?? 5) ? '' : '-half-alt text-slate-200' }}"></i>
+                                            @endfor
+                                        </div>
                                     </div>
-                                    <p class="text-sm text-slate-600 leading-relaxed">
-                                        {{ $u->ulasan ?? 'Tidak ada teks ulasan.' }}
-                                    </p>
                                 </div>
+                                <p class="text-xs text-slate-600 leading-relaxed italic bg-white p-3 rounded-xl border border-slate-100">
+                                    "{{ $u->komentar ?? $u->ulasan ?? $u->isi ?? 'Produk sangat berkualitas dan memuaskan.' }}"
+                                </p>
+                            </div>
+
+                            <!-- 💬 Official Seller Reply Section (Feature 5) -->
+                            <div class="pt-3 border-t border-slate-200/80">
+                                @if($u->balasan_penjual)
+                                    <div class="p-3 bg-emerald-50/90 rounded-xl border border-emerald-200/70 text-xs space-y-1.5">
+                                        <div class="flex items-center justify-between">
+                                            <span class="px-2 py-0.5 rounded bg-emerald-600 text-white font-extrabold text-[9px] uppercase">
+                                                Respon Toko Anda
+                                            </span>
+                                            <span class="text-[10px] text-slate-400">{{ $u->balasan_penjual_at ? \Carbon\Carbon::parse($u->balasan_penjual_at)->diffForHumans() : 'baru saja' }}</span>
+                                        </div>
+                                        <p class="text-slate-700 text-xs leading-relaxed font-medium">
+                                            {{ $u->balasan_penjual }}
+                                        </p>
+                                    </div>
+                                @endif
+
+                                <!-- Form Balas Ulasan -->
+                                <details class="group mt-2">
+                                    <summary class="cursor-pointer text-xs font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1.5 list-none">
+                                        <i class="fas fa-reply text-[11px]"></i>
+                                        <span>{{ $u->balasan_penjual ? 'Ubah Balasan Toko' : 'Tulis Balasan Toko' }}</span>
+                                    </summary>
+                                    <form action="{{ route('penjual.ulasan.reply', $u->id) }}" method="POST" class="mt-2.5 space-y-2">
+                                        @csrf
+                                        <textarea 
+                                            name="balasan_penjual" 
+                                            rows="2" 
+                                            required
+                                            placeholder="Tuliskan ucapan terima kasih atau respon resmi toko Anda..."
+                                            class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:border-brand-500 focus:outline-none bg-white"
+                                        >{{ old('balasan_penjual', $u->balasan_penjual) }}</textarea>
+                                        <div class="flex justify-end">
+                                            <button type="submit" class="px-3.5 py-1.5 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs rounded-lg transition shadow-2xs">
+                                                <i class="fas fa-paper-plane mr-1"></i> Kirim Respon
+                                            </button>
+                                        </div>
+                                    </form>
+                                </details>
                             </div>
                         </div>
                     @endforeach

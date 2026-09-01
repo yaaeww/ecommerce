@@ -8,17 +8,37 @@ use Illuminate\Http\Request;
 
 class PenjualController extends Controller
 {
-    public function index()
+    /**
+     * Tampilkan seluruh akun mitra penjual / UMKM dengan pencarian dan pagination.
+     */
+    public function index(Request $request)
     {
-        $penjual = User::where('role', 'penjual')->get();
-        return view('admin.penjual.index', compact('penjual'));
-    }
-    public function edit($id)
-    {
-        $penjual = User::where('role', 'penjual')->findOrFail($id); // misal model User dengan role penjual
-        return view('admin.penjual.edit', compact('penjual'));
+        $search = $request->get('search');
+
+        $query = User::with('umkm')->where('role', 'penjual');
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhereHas('umkm', function ($u) use ($search) {
+                      $u->where('nama_toko', 'like', "%{$search}%")
+                        ->orWhere('alamat', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $penjual = $query->latest()->paginate(10)->withQueryString();
+        $totalPenjual = User::where('role', 'penjual')->count();
+
+        return view('admin.penjual.index', compact('penjual', 'totalPenjual', 'search'));
     }
 
+    public function edit($id)
+    {
+        $penjual = User::where('role', 'penjual')->findOrFail($id);
+        return view('admin.penjual.edit', compact('penjual'));
+    }
 
     public function update(Request $request, $id)
     {
@@ -27,6 +47,7 @@ class PenjualController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $id,
         ]);
+
         $user->update($request->only(['name', 'email']));
         return redirect()->route('admin.penjual.index')->with('success', 'Data penjual berhasil diperbarui');
     }
@@ -35,6 +56,6 @@ class PenjualController extends Controller
     {
         $user = User::where('role', 'penjual')->findOrFail($id);
         $user->delete();
-        return redirect()->route('admin.penjual.index')->with('success', 'Penjual berhasil dihapus');
+        return redirect()->route('admin.penjual.index')->with('success', 'Akun penjual berhasil dihapus');
     }
 }

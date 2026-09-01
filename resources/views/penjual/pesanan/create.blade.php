@@ -91,7 +91,7 @@
 
                 <div class="p-6">
                     @if($order->status === 'complete')
-                        <form action="{{ route('penjual.pesanan.updateStatus', $order->id) }}" method="POST">
+                        <form action="{{ route('penjual.pesanan.updateStatus', $order->id) }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             @method('PATCH')
                             
@@ -121,13 +121,66 @@
                                     @endforeach
                                 </div>
                                 
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                                    <div class="space-y-1.5">
+                                        <label for="kurir_ekspedisi" class="text-xs font-bold text-slate-700">Kurir / Ekspedisi</label>
+                                        <select name="kurir_ekspedisi" id="kurir_ekspedisi" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:border-brand-500 focus:outline-none bg-white">
+                                            <option value="J&T Cargo Fresh Chain" {{ old('kurir_ekspedisi', $order->kurir_ekspedisi) === 'J&T Cargo Fresh Chain' ? 'selected' : '' }}>J&T Cargo Fresh Chain</option>
+                                            <option value="JNE Express" {{ old('kurir_ekspedisi', $order->kurir_ekspedisi) === 'JNE Express' ? 'selected' : '' }}>JNE Express</option>
+                                            <option value="SiCepat" {{ old('kurir_ekspedisi', $order->kurir_ekspedisi) === 'SiCepat' ? 'selected' : '' }}>SiCepat</option>
+                                            <option value="Anteraja" {{ old('kurir_ekspedisi', $order->kurir_ekspedisi) === 'Anteraja' ? 'selected' : '' }}>Anteraja</option>
+                                            <option value="Kurir Toko / Pengantaran Langsung" {{ old('kurir_ekspedisi', $order->kurir_ekspedisi) === 'Kurir Toko / Pengantaran Langsung' ? 'selected' : '' }}>Kurir Toko / Pengantaran Langsung</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="space-y-1.5">
+                                        <label for="no_resi" class="text-xs font-bold text-slate-700">Nomor Resi / Bukti Pengiriman</label>
+                                        <input 
+                                            type="text" 
+                                            name="no_resi" 
+                                            id="no_resi" 
+                                            value="{{ old('no_resi', $order->no_resi) }}" 
+                                            class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:border-brand-500 focus:outline-none"
+                                            placeholder="Contoh: JT8921829102"
+                                        >
+                                    </div>
+                                </div>
+
+                                <!-- Upload Foto Bukti Pengiriman (Feature 7) -->
+                                <div class="pt-2">
+                                    <label class="block text-xs font-bold text-slate-700 mb-1.5 flex items-center justify-between">
+                                        <span><i class="fas fa-camera text-slate-400 mr-1"></i> Foto Bukti Paket / Serah Terima (Opsional)</span>
+                                        <span class="text-[10px] text-slate-400">JPG, PNG maks 5MB</span>
+                                    </label>
+                                    
+                                    <div class="flex items-center gap-4">
+                                        @if($order->foto_bukti_pengiriman)
+                                            <div class="relative group shrink-0">
+                                                <img src="{{ asset('storage/' . $order->foto_bukti_pengiriman) }}" alt="Bukti Paket" class="w-16 h-16 rounded-xl object-cover border border-slate-200 shadow-xs">
+                                                <a href="{{ asset('storage/' . $order->foto_bukti_pengiriman) }}" target="_blank" class="absolute inset-0 bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </div>
+                                        @endif
+                                        <input 
+                                            type="file" 
+                                            name="foto_bukti_pengiriman" 
+                                            accept="image/*" 
+                                            class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 file:transition cursor-pointer border border-slate-200 rounded-xl p-1"
+                                        >
+                                    </div>
+                                </div>
+                                
                                 @error('status_pesanan')
+                                    <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+                                @enderror
+                                @error('foto_bukti_pengiriman')
                                     <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
                                 @enderror
                                 
                                 <div class="pt-4 flex justify-end">
                                     <button type="submit" class="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm rounded-xl transition shadow-sm hover:shadow">
-                                        <i class="fas fa-save"></i> Simpan Status
+                                        <i class="fas fa-save"></i> Simpan Status, Resi & Foto
                                     </button>
                                 </div>
                             </div>
@@ -147,10 +200,10 @@
 
         <!-- Sidebar Content -->
         <div class="space-y-6">
-            <!-- Status Badges -->
+            <!-- Status Badges & Quick Action Printing -->
             <div class="card bg-white border border-slate-200/80 shadow-sm rounded-2xl overflow-hidden">
                 <div class="p-5 border-b border-slate-100">
-                    <h3 class="font-bold text-slate-900">Status Terkini</h3>
+                    <h3 class="font-bold text-slate-900">Status & Cetak Dokumen</h3>
                 </div>
                 <div class="p-5 space-y-4">
                     <div>
@@ -169,9 +222,22 @@
                     </div>
                     
                     @if($order->status === 'complete')
-                    <div class="pt-4 border-t border-slate-100">
-                        <a href="{{ route('penjual.invoice.show', $order->id) }}" class="flex items-center justify-center gap-2 w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm rounded-xl transition">
-                            <i class="fas fa-file-invoice"></i> Lihat Invoice
+                    <div class="pt-4 border-t border-slate-100 space-y-2.5">
+                        <!-- 🏷️ Cetak Label Pengiriman A6 Thermal -->
+                        <a 
+                            href="{{ route('penjual.pesanan.shipping-label', $order->id) }}" 
+                            target="_blank" 
+                            class="flex items-center justify-center gap-2 w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition shadow-xs"
+                        >
+                            <i class="fas fa-barcode"></i> Cetak Label Resi (A6)
+                        </a>
+
+                        <!-- Lihat Invoice -->
+                        <a 
+                            href="{{ route('penjual.invoice.show', $order->id) }}" 
+                            class="flex items-center justify-center gap-2 w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition"
+                        >
+                            <i class="fas fa-file-invoice"></i> Lihat Faktur Invoice
                         </a>
                     </div>
                     @endif

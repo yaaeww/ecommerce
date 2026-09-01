@@ -36,8 +36,10 @@ class ProdukPenjualController extends Controller
         if ($redirect = $this->ensureUserHasUMKM()) return $redirect;
 
         $kategoriProduks = KategoriProduk::with('children')->get();
+        $komisiPersen = (float) \App\Models\Setting::get('komisi_persen', 20);
+        $tokoPersen = 100 - $komisiPersen;
 
-        return view('penjual.produk.create', compact('kategoriProduks'));
+        return view('penjual.produk.create', compact('kategoriProduks', 'komisiPersen', 'tokoPersen'));
     }
 
     public function store(Request $request)
@@ -49,6 +51,8 @@ class ProdukPenjualController extends Controller
             'nama' => 'required|string|max:255',
             'deskripsi' => 'nullable|string|max:5000',
             'harga' => 'required|numeric|min:0',
+            'harga_coret' => 'nullable|numeric|gt:harga',
+            'berat_gram' => 'nullable|integer|min:100',
             'stok' => 'required|integer|min:0',
             'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             // Validasi diskon opsional, jika salah satu field diskon diisi maka wajib lengkap
@@ -59,10 +63,12 @@ class ProdukPenjualController extends Controller
 
         $umkm = $this->getUserUMKM();
 
-        $data = $request->only(['kategori_produk_id', 'nama', 'deskripsi', 'harga', 'stok']);
+        $data = $request->only(['kategori_produk_id', 'nama', 'deskripsi', 'harga', 'harga_coret', 'berat_gram', 'stok']);
         $data['user_id'] = Auth::id();
         $data['umkm_id'] = $umkm->id;
         $data['rating'] = 0;
+        $data['is_active'] = true;
+        $data['berat_gram'] = $request->input('berat_gram', 1000);
 
         if ($request->hasFile('gambar')) {
             $data['gambar'] = $request->file('gambar')->store('produks', 'public');
@@ -79,7 +85,7 @@ class ProdukPenjualController extends Controller
             ]);
         }
 
-        return redirect()->route('penjual.produk.index')->with('success', 'Produk berhasil ditambahkan.');
+        return redirect()->route('penjual.produk.index')->with('success', 'Produk berhasil ditambahkan ke etalase.');
     }
 
     public function edit($id)
@@ -90,8 +96,10 @@ class ProdukPenjualController extends Controller
         $kategoriUtamas = KategoriProduk::whereNull('parent_id')->get();
 
         $subkategoris = KategoriProduk::where('parent_id', $produk->kategori->parent_id ?? $produk->kategori->id)->get();
+        $komisiPersen = (float) \App\Models\Setting::get('komisi_persen', 20);
+        $tokoPersen = 100 - $komisiPersen;
 
-        return view('penjual.produk.edit', compact('produk', 'kategoriUtamas', 'subkategoris'));
+        return view('penjual.produk.edit', compact('produk', 'kategoriUtamas', 'subkategoris', 'komisiPersen', 'tokoPersen'));
     }
 
     public function update(Request $request, $id)
@@ -105,6 +113,8 @@ class ProdukPenjualController extends Controller
             'nama' => 'required|string|max:255',
             'deskripsi' => 'nullable|string|max:5000',
             'harga' => 'required|numeric|min:0',
+            'harga_coret' => 'nullable|numeric|gt:harga',
+            'berat_gram' => 'nullable|integer|min:100',
             'stok' => 'required|integer|min:0',
             'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             // Validasi diskon opsional
@@ -113,7 +123,8 @@ class ProdukPenjualController extends Controller
             'tanggal_berakhir' => 'nullable|date|after_or_equal:tanggal_mulai|required_with:persen_diskon,tanggal_mulai',
         ]);
 
-        $data = $request->only(['kategori_produk_id', 'nama', 'deskripsi', 'harga', 'stok']);
+        $data = $request->only(['kategori_produk_id', 'nama', 'deskripsi', 'harga', 'harga_coret', 'berat_gram', 'stok']);
+        $data['berat_gram'] = $request->input('berat_gram', 1000);
 
         if ($request->hasFile('gambar')) {
             if ($produk->gambar && Storage::disk('public')->exists($produk->gambar)) {
@@ -148,6 +159,43 @@ class ProdukPenjualController extends Controller
         }
 
         return redirect()->route('penjual.produk.index')->with('success', 'Produk berhasil diperbarui.');
+    }
+
+    /**
+     * ⚡ Quick Inline Stock Adjuster (+ / -) via AJAX
+     */
+    public function quickStock(Request $request, $id)
+    {
+        $request->validate([
+            'change' => 'required|integer',
+        ]);
+
+        $produk = $this->findProdukByUser($id);
+        $newStock = max(0, $produk->stok + (int) $request->change);
+        $produk->update(['stok' => $newStock]);
+
+        return response()->json([
+            'success' => true,
+            'new_stock' => $newStock,
+            'is_low' => $newStock < 5,
+            'message' => "Stok {$produk->nama} diperbarui menjadi {$newStock} Kg."
+        ]);
+    }
+
+    /**
+     * ⚡ Toggle Status Aktif / Nonaktif Produk via AJAX
+     */
+    public function toggleStatus(Request $request, $id)
+    {
+        $produk = $this->findProdukByUser($id);
+        $newStatus = !$produk->is_active;
+        $produk->update(['is_active' => $newStatus]);
+
+        return response()->json([
+            'success' => true,
+            'is_active' => $newStatus,
+            'message' => "Status {$produk->nama} kini " . ($newStatus ? 'Aktif (Dijual)' : 'Diarsipkan (Nonaktif)') . "."
+        ]);
     }
 
     public function destroy($id)

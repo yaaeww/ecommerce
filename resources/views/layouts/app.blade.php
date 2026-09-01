@@ -165,6 +165,67 @@
     <!-- Bootstrap 5 Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+    <!-- 🔍 Universal Real-Time Search Handler (No Enter Needed) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInputs = document.querySelectorAll('input[name="search"], input[type="search"], .realtime-search');
+            
+            searchInputs.forEach(input => {
+                let debounceTimer = null;
+                const form = input.closest('form');
+
+                // If URL has search query and this input has value, restore focus to end of text
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.has('search') && urlParams.get('search') === input.value && input.value.trim() !== '') {
+                    input.focus();
+                    const val = input.value;
+                    input.value = '';
+                    input.value = val;
+                }
+
+                input.addEventListener('input', function () {
+                    const query = this.value.toLowerCase().trim();
+
+                    // 1. Instant client-side filtering on current table rows
+                    const table = document.querySelector('.table tbody');
+                    if (table) {
+                        const rows = table.querySelectorAll('tr');
+                        rows.forEach(row => {
+                            // Don't filter empty-state row if it's the only one
+                            if (row.querySelector('td[colspan]')) return;
+
+                            const rowText = row.innerText.toLowerCase();
+                            if (query === '' || rowText.includes(query)) {
+                                row.style.display = '';
+                            } else {
+                                row.style.display = 'none';
+                            }
+                        });
+                    }
+
+                    // 2. Debounced server-side query (450ms)
+                    if (form && form.method.toUpperCase() === 'GET') {
+                        clearTimeout(debounceTimer);
+                        debounceTimer = setTimeout(() => {
+                            form.submit();
+                        }, 450);
+                    }
+                });
+
+                // Prevent standard form submission on Enter if already searching live
+                input.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        if (form) {
+                            clearTimeout(debounceTimer);
+                            form.submit();
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+
     @stack('scripts')
 </body>
 

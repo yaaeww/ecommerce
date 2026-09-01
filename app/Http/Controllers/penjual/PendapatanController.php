@@ -140,6 +140,8 @@ class PendapatanController extends Controller
     private function getPendapatanQuery($umkm, Request $request)
     { 
         $filter = $request->input('filter', 'bulan');
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
 
         $query = DB::table('orders')
             ->join('produks', 'orders.produk_id', '=', 'produks.id')
@@ -153,7 +155,12 @@ class PendapatanController extends Controller
                 DB::raw('SUM(orders.total_harga) as total_pendapatan')
             );
 
-        if ($filter === 'minggu') {
+        if ($startDate && $endDate) {
+            $query->whereBetween('orders.created_at', [
+                Carbon::parse($startDate)->startOfDay(),
+                Carbon::parse($endDate)->endOfDay(),
+            ]);
+        } elseif ($filter === 'minggu') {
             $query->whereBetween('orders.created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
         } elseif ($filter === 'bulan') {
             $query->whereMonth('orders.created_at', Carbon::now()->month)

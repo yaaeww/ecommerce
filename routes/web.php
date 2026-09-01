@@ -17,6 +17,13 @@ use App\Http\Controllers\Admin\{
     KategoriController,
     AdminUmkmController,
     AdminProfileController,
+    AdminPesananController,
+    AdminPengirimanController,
+    AdminUlasanController,
+    AdminKeranjangController,
+    AdminPenarikanController,
+    AdminActivityLogController,
+    AdminNotificationController,
     PenjualController,
     PembeliController,
     PendapatanController as AdminPendapatanController
@@ -30,6 +37,9 @@ use App\Http\Controllers\Penjual\{
     PenjualProfileController,
     PenjualPesananController,
     PenjualInvoiceController,
+    PenjualPenarikanController,
+    PenjualNotificationController,
+    PenjualUlasanController,
     PendapatanController
 };
 
@@ -92,17 +102,6 @@ Route::middleware(['auth', 'role:penjual'])
         Route::get('/history/{receiverId}', [PenjualChatController::class, 'history'])->name('history');
     });
 
-/* ===================================================
-🧑‍💼 Admin Chat (AdminChatController)
-=================================================== */
-Route::middleware(['auth', 'role:admin'])
-    ->prefix('admin/chat')
-    ->name('admin.chat.')
-    ->group(function () {
-        Route::get('/', [AdminChatController::class, 'index'])->name('index');
-        Route::post('/send', [AdminChatController::class, 'chat'])->name('send')->middleware('throttle:60,1');
-        Route::get('/history', [AdminChatController::class, 'history'])->name('history');
-    });
 
 /*
 |--------------------------------------------------------------------------
@@ -161,6 +160,36 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     });
 
     Route::get('pendapatan', [AdminPendapatanController::class, 'index'])->name('pendapatan.index');
+    Route::post('pendapatan/update-komisi', [AdminPendapatanController::class, 'updateKomisi'])->name('pendapatan.update-komisi');
+    Route::resource('pesanan', AdminPesananController::class)->only(['index', 'show']);
+    
+    // 🚚 Fulfillment & Pengiriman Tracker
+    Route::get('pengiriman', [AdminPengirimanController::class, 'index'])->name('pengiriman.index');
+    Route::post('pengiriman/{id}/resi', [AdminPengirimanController::class, 'updateResi'])->name('pengiriman.update-resi');
+
+    // 💳 Pencairan Saldo (Payout) Mitra
+    Route::get('penarikan', [AdminPenarikanController::class, 'index'])->name('penarikan.index');
+    Route::post('penarikan/{id}/approve', [AdminPenarikanController::class, 'approve'])->name('penarikan.approve');
+    Route::post('penarikan/{id}/reject', [AdminPenarikanController::class, 'reject'])->name('penarikan.reject');
+
+    // 💬 Moderasi Chat & Anti-Fraud Hub
+    Route::get('chat-monitoring', [AdminChatController::class, 'index'])->name('chat.index');
+    Route::get('chat-monitoring/{userA}/{userB}', [AdminChatController::class, 'show'])->name('chat.show');
+
+    // ⭐ Moderasi Ulasan & Sentimen
+    Route::get('ulasan', [AdminUlasanController::class, 'index'])->name('ulasan.index');
+    Route::post('ulasan/{id}/moderate', [AdminUlasanController::class, 'moderate'])->name('ulasan.moderate');
+
+    // 🛒 Analisis Keranjang Terbengkalai
+    Route::get('keranjang-analytics', [AdminKeranjangController::class, 'index'])->name('keranjang.index');
+
+    // 🛡️ Audit Trail & Log Aktivitas Sistem
+    Route::get('activity-log', [AdminActivityLogController::class, 'index'])->name('activity-log.index');
+
+    // 🔔 Real-time Platform Notifications (Navbar Center)
+    Route::get('notifications/unread', [AdminNotificationController::class, 'getUnreadJson'])->name('notifications.unread');
+    Route::post('notifications/mark-read', [AdminNotificationController::class, 'markAllAsRead'])->name('notifications.mark-read');
+
     Route::resource('penjual', PenjualController::class)->only(['index', 'edit', 'update', 'destroy']);
     Route::resource('pembeli', PembeliController::class)->only(['index', 'edit', 'update', 'destroy']);
 });
@@ -173,17 +202,24 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 Route::middleware(['auth', 'role:penjual'])->prefix('penjual')->name('penjual.')->group(function () {
     Route::get('/dashboard', [DashboardPenjualController::class, 'index'])->name('dashboard');
 
+    Route::post('/produk/{id}/quick-stock', [ProdukPenjualController::class, 'quickStock'])->name('produk.quick-stock');
+    Route::post('/produk/{id}/toggle-status', [ProdukPenjualController::class, 'toggleStatus'])->name('produk.toggle-status');
     Route::resource('produk', ProdukPenjualController::class);
+    Route::post('/umkm/{id}/toggle-libur', [PenjualUmkmController::class, 'toggleLibur'])->name('umkm.toggle-libur');
     Route::resource('umkm', PenjualUmkmController::class)->only(['index', 'create', 'store', 'edit', 'update']);
 
     Route::get('/pesanan', [PenjualPesananController::class, 'index'])->name('pesanan.index');
     Route::get('/pesanan/{order}/buat', [PenjualPesananController::class, 'create'])->name('pesanan.create');
     Route::patch('/pesanan/{order}/update-status', [PenjualPesananController::class, 'updateStatus'])->name('pesanan.updateStatus');
     Route::get('/pesanan/{order}/invoice/pdf', [PenjualInvoiceController::class, 'generatePdf'])->name('pesanan.invoice.pdf');
+    Route::get('/pesanan/{id}/shipping-label', [PenjualInvoiceController::class, 'shippingLabel'])->name('pesanan.shipping-label');
     Route::get('/invoice/{id}', [PenjualInvoiceController::class, 'show'])->name('invoice.show');
+    Route::post('/ulasan/{id}/balas', [PenjualUlasanController::class, 'reply'])->name('ulasan.reply');
 
-    // Pendapatan
+    // Pendapatan & Tarik Saldo
     Route::get('/pendapatan', [PendapatanController::class, 'index'])->name('pendapatan.index');
+    Route::get('/penarikan', [PenjualPenarikanController::class, 'index'])->name('penarikan.index');
+    Route::post('/penarikan', [PenjualPenarikanController::class, 'store'])->name('penarikan.store');
     Route::get('/pendapatan/{id}/detail', [PendapatanController::class, 'show'])->name('pendapatan.detail');
     Route::get('/pendapatan/{id}/export-excel', [PendapatanController::class, 'exportDetailExcel'])->name('pendapatan.detail.export.excel');
     Route::get('/pendapatan/{id}/export-pdf', [PendapatanController::class, 'exportDetailPdf'])->name('pendapatan.detail.export.pdf');
@@ -198,6 +234,10 @@ Route::middleware(['auth', 'role:penjual'])->prefix('penjual')->name('penjual.')
         Route::delete('/', 'destroy')->name('destroy');
         Route::post('/avatar', 'updateAvatar')->name('avatar');
     });
+
+    // 🔔 Real-time Seller Notification Center
+    Route::get('notifications/unread', [PenjualNotificationController::class, 'getUnreadJson'])->name('notifications.unread');
+    Route::post('notifications/mark-read', [PenjualNotificationController::class, 'markAllAsRead'])->name('notifications.mark-read');
 });
 
 /*

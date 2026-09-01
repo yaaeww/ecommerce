@@ -18,8 +18,39 @@ class Order extends Model
         'total_harga',
         'status',
         'status_pesanan',
-        'order_id_midtrans'
+        'order_id_midtrans',
+        'resi_pengiriman',
+        'kurir',
+        'foto_bukti_pengiriman',
+        'tanggal_dikirim',
+        'catatan_pengiriman',
     ];
+
+    protected $casts = [
+        'tanggal_dikirim' => 'datetime',
+        'total_harga' => 'float',
+        'jumlah' => 'integer',
+    ];
+
+    public function getNoResiAttribute()
+    {
+        return $this->attributes['resi_pengiriman'] ?? null;
+    }
+
+    public function setNoResiAttribute($value)
+    {
+        $this->attributes['resi_pengiriman'] = $value;
+    }
+
+    public function getKurirEkspedisiAttribute()
+    {
+        return $this->attributes['kurir'] ?? null;
+    }
+
+    public function setKurirEkspedisiAttribute($value)
+    {
+        $this->attributes['kurir'] = $value;
+    }
 
     public function user()
     {

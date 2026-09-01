@@ -93,9 +93,10 @@ class RatingController extends Controller
 
         $userId = Auth::id();
 
-        // Validasi order milik user dan status diterima
+        // Validasi order milik user dan status diterima & lunas
         $order = Order::where('id', $request->orders_id)
             ->where('user_id', $userId)
+            ->where('status', 'complete')
             ->where('status_pesanan', 'diterima')
             ->firstOrFail();
 
@@ -120,7 +121,18 @@ class RatingController extends Controller
             'produks_id' => $produk->id,
             'bintang' => $request->bintang,
             'ulasan' => $request->ulasan,
+            'status_moderasi' => 'published',
         ]);
+
+        // Sinkronisasi rata-rata rating pada tabel produks
+        $avgRating = Ulasan::where('produks_id', $produk->id)
+            ->where(function ($q) {
+                $q->whereNull('status_moderasi')
+                  ->orWhere('status_moderasi', '!=', 'hidden');
+            })
+            ->avg('bintang');
+
+        $produk->update(['rating' => round($avgRating, 1)]);
 
         return redirect()->route('pembeli.rating.index')->with('success', 'Terima kasih atas ulasan Anda!');
     }

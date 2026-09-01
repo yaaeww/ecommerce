@@ -117,18 +117,35 @@
                     </div>
                 </div>
 
-                <!-- Price Box -->
+                <!-- Price Box with Strikethrough Discount (Feature 4) -->
                 <div class="p-5 bg-brand-cream/50 rounded-2xl border border-slate-200/70">
                     <p class="text-xs text-slate-500 font-semibold mb-1">Harga Produk</p>
                     <div class="flex items-baseline gap-3">
-                        <span class="text-3xl sm:text-4xl font-extrabold text-indigo-600 font-display">
-                            Rp{{ number_format($produk->harga_setelah_diskon ?? $produk->harga, 0, ',', '.') }}
-                        </span>
-                        @if(isset($produk->harga_setelah_diskon) && $produk->harga_setelah_diskon < $produk->harga)
+                        @if($produk->harga_coret && $produk->harga_coret > $produk->harga)
+                            <span class="text-3xl sm:text-4xl font-extrabold text-rose-600 font-display">
+                                Rp{{ number_format($produk->harga, 0, ',', '.') }}
+                            </span>
+                            <span class="text-base text-slate-400 line-through font-semibold">
+                                Rp{{ number_format($produk->harga_coret, 0, ',', '.') }}
+                            </span>
+                            <span class="px-2 py-0.5 rounded-lg bg-rose-100 text-rose-700 text-xs font-black">
+                                HEMAT {{ $produk->diskon_persen }}%
+                            </span>
+                        @elseif(isset($produk->harga_setelah_diskon) && $produk->harga_setelah_diskon < $produk->harga)
+                            <span class="text-3xl sm:text-4xl font-extrabold text-indigo-600 font-display">
+                                Rp{{ number_format($produk->harga_setelah_diskon, 0, ',', '.') }}
+                            </span>
                             <span class="text-base text-slate-400 line-through font-semibold">
                                 Rp{{ number_format($produk->harga, 0, ',', '.') }}
                             </span>
+                        @else
+                            <span class="text-3xl sm:text-4xl font-extrabold text-indigo-600 font-display">
+                                Rp{{ number_format($produk->harga, 0, ',', '.') }}
+                            </span>
                         @endif
+                    </div>
+                    <div class="mt-2 text-xs text-slate-500 font-medium">
+                        <i class="fas fa-weight-scale text-slate-400 mr-1"></i> Berat Bersih: <strong>{{ ($produk->berat_gram ?? 1000) / 1000 }} Kg</strong> / Kemasan
                     </div>
                 </div>
 
@@ -140,133 +157,162 @@
                     </p>
                 </div>
 
+                <!-- 🏖️ Store Vacation Mode Alert & Checkout Lock (Feature 3) -->
+                @if($produk->umkm && $produk->umkm->is_libur)
+                    <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 space-y-1.5">
+                        <div class="flex items-center gap-2 font-bold text-sm text-amber-800">
+                            <i class="fas fa-umbrella-beach text-amber-600 text-base"></i>
+                            <span>Toko Sedang Tutup / Libur Panen</span>
+                        </div>
+                        <p class="text-xs text-amber-700 leading-relaxed">
+                            {{ $produk->umkm->libur_pesan ?: 'Kebun / Toko sedang libur sementara waktu untuk persiapan panen berikutnya.' }}
+                        </p>
+                        @if($produk->umkm->libur_sampai)
+                            <div class="text-[11px] font-bold text-amber-800 pt-1">
+                                <i class="fas fa-calendar-check mr-1"></i> Buka Kembali: {{ \Carbon\Carbon::parse($produk->umkm->libur_sampai)->format('d F Y') }}
+                            </div>
+                        @endif
+                    </div>
+                @endif
+
                 <!-- Quantity & Purchase Action Buttons -->
                 <div class="pt-4 border-t border-slate-100 space-y-4">
                     
-                    @auth
-                        @if(Auth::user()->role === 'pembeli')
-                            <!-- Form Beli untuk Pembeli yang sudah login -->
-                            <form action="{{ route('pembeli.keranjang.store') }}" method="POST" id="cartForm">
-                                @csrf
-                                <input type="hidden" name="produk_id" value="{{ $produk->id }}">
-                                
-                                <div class="flex flex-wrap items-center justify-between gap-4 mb-5 p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80">
-                                    <div class="flex items-center gap-3">
-                                        <span class="text-xs font-bold text-slate-700">Jumlah:</span>
-                                        <div class="inline-flex items-center border border-slate-200 rounded-xl bg-white p-1 shadow-sm">
-                                            <button type="button" onclick="decrementQty()" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-600 font-bold transition">
-                                                <i class="fas fa-minus text-xs"></i>
-                                            </button>
-                                            <input type="number" id="quantityInput" name="quantity" value="1" min="1" max="{{ $produk->stok }}" oninput="updateLiveSubtotal()" class="w-12 text-center text-sm font-bold text-slate-800 outline-none border-none bg-transparent">
-                                            <button type="button" onclick="incrementQty({{ $produk->stok }})" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-600 font-bold transition">
-                                                <i class="fas fa-plus text-xs"></i>
-                                            </button>
-                                        </div>
-                                        <span class="text-xs text-slate-400">Maks. {{ $produk->stok }} item</span>
-                                    </div>
-                                    <div class="text-right">
-                                        <span class="text-[10px] uppercase font-bold text-slate-400 block">Subtotal</span>
-                                        <span id="detail-subtotal-display" class="text-base font-extrabold text-indigo-600">
-                                            Rp{{ number_format($produk->harga_setelah_diskon ?? $produk->harga, 0, ',', '.') }}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <button type="submit" class="w-full py-3.5 px-6 rounded-xl bg-white border-2 border-indigo-600 text-indigo-600 font-bold text-sm hover:bg-indigo-50 transition flex items-center justify-center gap-2 shadow-sm">
-                                        <i class="fas fa-cart-plus"></i> Tambah ke Keranjang
-                                    </button>
-                                    <button type="button" onclick="directBuy({{ $produk->id }})" class="w-full py-3.5 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm transition flex items-center justify-center gap-2 shadow-md shadow-indigo-600/20">
-                                        <i class="fas fa-bag-shopping"></i> Beli Sekarang
-                                    </button>
-                                </div>
-                            </form>
-                        @else
-                            <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs text-slate-600">
-                                <i class="fas fa-info-circle text-indigo-600 mr-1"></i> Anda sedang masuk sebagai <strong>{{ ucfirst(Auth::user()->role) }}</strong>. Gunakan akun pembeli untuk bertransaksi.
-                            </div>
-                        @endif
+                    @if($produk->umkm && $produk->umkm->is_libur)
+                        <div class="p-4 rounded-xl bg-slate-100 border border-slate-200 text-center text-slate-500 text-xs font-bold">
+                            <i class="fas fa-lock mr-1.5"></i> Pemesanan ditutup sementara karena toko sedang dalam mode libur.
+                        </div>
                     @else
-                        <!-- Guest Mode: Prompt Login Only on Purchase -->
-                        <div class="flex items-center gap-4 mb-5">
-                            <span class="text-xs font-bold text-slate-700">Jumlah:</span>
-                            <div class="inline-flex items-center border border-slate-200 rounded-xl bg-white p-1 shadow-sm">
-                                <button type="button" onclick="decrementQty()" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-600 font-bold transition">
-                                    <i class="fas fa-minus text-xs"></i>
-                                </button>
-                                <input type="number" id="quantityInput" value="1" min="1" max="{{ $produk->stok }}" class="w-12 text-center text-sm font-bold text-slate-800 outline-none border-none bg-transparent">
-                                <button type="button" onclick="incrementQty({{ $produk->stok }})" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-600 font-bold transition">
-                                    <i class="fas fa-plus text-xs"></i>
-                                </button>
-                            </div>
-                            <span class="text-xs text-slate-400">Maks. {{ $produk->stok }} item</span>
-                        </div>
+                        @auth
+                            @if(Auth::user()->role === 'pembeli')
+                                <!-- Form Beli untuk Pembeli yang sudah login -->
+                                <form action="{{ route('pembeli.keranjang.store') }}" method="POST" id="cartForm">
+                                    @csrf
+                                    <input type="hidden" name="produk_id" value="{{ $produk->id }}">
+                                    
+                                    <div class="flex flex-wrap items-center justify-between gap-4 mb-5 p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80">
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-xs font-bold text-slate-700">Jumlah:</span>
+                                            <div class="inline-flex items-center border border-slate-200 rounded-xl bg-white p-1 shadow-sm">
+                                                <button type="button" onclick="decrementQty()" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-600 font-bold transition">
+                                                    <i class="fas fa-minus text-xs"></i>
+                                                </button>
+                                                <input type="number" id="quantityInput" name="quantity" value="1" min="1" max="{{ $produk->stok }}" oninput="updateLiveSubtotal()" class="w-12 text-center text-sm font-bold text-slate-800 outline-none border-none bg-transparent">
+                                                <button type="button" onclick="incrementQty({{ $produk->stok }})" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-600 font-bold transition">
+                                                    <i class="fas fa-plus text-xs"></i>
+                                                </button>
+                                            </div>
+                                            <span class="text-xs text-slate-400">Maks. {{ $produk->stok }} item</span>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="text-[10px] uppercase font-bold text-slate-400 block">Subtotal</span>
+                                            <span id="detail-subtotal-display" class="text-base font-extrabold text-indigo-600">
+                                                Rp{{ number_format($produk->harga, 0, ',', '.') }}
+                                            </span>
+                                        </div>
+                                    </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <a href="{{ route('login') }}" class="w-full py-3.5 px-6 rounded-xl bg-white border-2 border-indigo-600 text-indigo-600 font-bold text-sm hover:bg-indigo-50 transition flex items-center justify-center gap-2 shadow-sm text-center">
-                                <i class="fas fa-cart-plus"></i> Tambah ke Keranjang
-                            </a>
-                            <a href="{{ route('login') }}" class="w-full py-3.5 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm transition flex items-center justify-center gap-2 shadow-md shadow-indigo-600/20 text-center">
-                                <i class="fas fa-bag-shopping"></i> Beli Sekarang
-                            </a>
-                        </div>
-                        <p class="text-[11px] text-slate-400 text-center">
-                            <i class="fas fa-lock text-[10px] mr-1"></i> Anda akan diarahkan untuk login terlebih dahulu sebelum melanjutkan pembayaran.
-                        </p>
-                    @endauth
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <button type="submit" class="w-full py-3.5 px-6 rounded-xl bg-white border-2 border-indigo-600 text-indigo-600 font-bold text-sm hover:bg-indigo-50 transition flex items-center justify-center gap-2 shadow-sm">
+                                            <i class="fas fa-cart-plus"></i> Tambah ke Keranjang
+                                        </button>
+                                        <button type="button" onclick="directBuy({{ $produk->id }})" class="w-full py-3.5 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm transition flex items-center justify-center gap-2 shadow-md shadow-indigo-600/20">
+                                            <i class="fas fa-bag-shopping"></i> Beli Sekarang
+                                        </button>
+                                    </div>
+                                </form>
+                            @else
+                                <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs text-slate-600">
+                                    <i class="fas fa-info-circle text-indigo-600 mr-1"></i> Anda sedang masuk sebagai <strong>{{ ucfirst(Auth::user()->role) }}</strong>. Gunakan akun pembeli untuk bertransaksi.
+                                </div>
+                            @endif
+                        @else
+                            <!-- Guest Mode: Prompt Login Only on Purchase -->
+                            <div class="flex items-center gap-4 mb-5">
+                                <span class="text-xs font-bold text-slate-700">Jumlah:</span>
+                                <div class="inline-flex items-center border border-slate-200 rounded-xl bg-white p-1 shadow-sm">
+                                    <button type="button" onclick="decrementQty()" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-600 font-bold transition">
+                                        <i class="fas fa-minus text-xs"></i>
+                                    </button>
+                                    <input type="number" id="quantityInput" value="1" min="1" max="{{ $produk->stok }}" class="w-12 text-center text-sm font-bold text-slate-800 outline-none border-none bg-transparent">
+                                    <button type="button" onclick="incrementQty({{ $produk->stok }})" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-600 font-bold transition">
+                                        <i class="fas fa-plus text-xs"></i>
+                                    </button>
+                                </div>
+                                <span class="text-xs text-slate-400">Maks. {{ $produk->stok }} item</span>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <a href="{{ route('login') }}" class="w-full py-3.5 px-6 rounded-xl bg-white border-2 border-indigo-600 text-indigo-600 font-bold text-sm hover:bg-indigo-50 transition flex items-center justify-center gap-2 shadow-sm text-center">
+                                    <i class="fas fa-cart-plus"></i> Tambah ke Keranjang
+                                </a>
+                                <a href="{{ route('login') }}" class="w-full py-3.5 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm transition flex items-center justify-center gap-2 shadow-md shadow-indigo-600/20 text-center">
+                                    <i class="fas fa-bag-shopping"></i> Beli Sekarang
+                                </a>
+                            </div>
+                            <p class="text-[11px] text-slate-400 text-center">
+                                <i class="fas fa-lock text-[10px] mr-1"></i> Anda akan diarahkan untuk login terlebih dahulu sebelum melanjutkan pembayaran.
+                            </p>
+                        @endauth
+                    @endif
 
                 </div>
 
                 <!-- Seller Profile Card -->
-                <div class="bento-card p-5 bg-white border border-slate-200/80 mt-6 flex items-center justify-between gap-4">
-                    <div class="flex items-center gap-3.5">
-                        <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl shadow-sm shrink-0">
+                <div class="p-5 bg-white rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-lg">
                             <i class="fas fa-store"></i>
                         </div>
                         <div>
-                            <p class="text-[11px] text-slate-400 font-semibold uppercase">Toko Mitra UMKM</p>
-                            <h4 class="font-bold text-sm text-slate-900">{{ $produk->umkm->nama_toko ?? $produk->user->name ?? 'Mitra Juragan Pelem' }}</h4>
-                            <p class="text-xs text-slate-500"><i class="fas fa-location-dot text-amber-500 mr-1"></i> {{ $produk->umkm->alamat ?? 'Indramayu, Jawa Barat' }}</p>
+                            <span class="text-[10px] uppercase font-bold text-slate-400 block">Penjual Terverifikasi</span>
+                            <h4 class="font-bold text-slate-800 text-sm">{{ $produk->umkm->nama_toko ?? 'Kebun Mitra' }}</h4>
+                            <p class="text-xs text-slate-500">{{ $produk->umkm->alamat ?? 'Indramayu, Jawa Barat' }}</p>
                         </div>
                     </div>
-                    <span class="text-xs font-bold px-3 py-1.5 bg-indigo-50 text-indigo-600 rounded-lg border border-indigo-200/60 shrink-0">
-                        <i class="fas fa-check-circle mr-1"></i> Terverifikasi
-                    </span>
+                    @if(Auth::id() !== ($produk->umkm->user_id ?? null))
+                        <a href="{{ route('chat.index', ['umkm_id' => $produk->umkm_id]) }}" class="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-bold text-xs rounded-xl transition flex items-center gap-1.5">
+                            <i class="fas fa-comment-dots"></i> Chat Penjual
+                        </a>
+                    @endif
                 </div>
 
             </div>
         </div>
 
-        <!-- Product Reviews Section -->
-        <section class="py-10 border-t border-slate-200">
+        <!-- Ulasan Produk Section (Feature 5: Respon Balasan Toko) -->
+        <section class="py-12 border-t border-slate-200">
             <div class="flex items-center justify-between mb-8">
                 <div>
-                    <h2 class="text-2xl font-extrabold text-brand-slate tracking-tight">Ulasan & Penilaian Pembeli</h2>
-                    <p class="text-xs text-slate-500 mt-0.5">Ulasan dari konsumen yang telah membeli produk ini.</p>
+                    <p class="text-xs uppercase tracking-wider font-bold text-indigo-600 mb-1">Ulasan Pembeli</p>
+                    <h2 class="text-2xl font-extrabold text-brand-slate tracking-tight">Kepuasan Pelanggan</h2>
                 </div>
-                <div class="flex items-center gap-2 bg-amber-50 px-3.5 py-2 rounded-xl border border-amber-200 text-amber-900 font-bold text-sm">
-                    <i class="fas fa-star text-amber-400"></i>
-                    <span>{{ number_format($produk->rating ?? 5.0, 1) }} / 5.0</span>
+                <div class="flex items-center gap-2">
+                    <div class="flex text-amber-400 text-sm">
+                        @for ($i = 1; $i <= 5; $i++)
+                            <i class="fas fa-star"></i>
+                        @endfor
+                    </div>
+                    <span class="font-bold text-slate-800 text-sm">{{ $produk->rating > 0 ? number_format($produk->rating, 1) : '5.0' }} / 5.0</span>
                 </div>
             </div>
 
             @if($ulasan->isEmpty())
-                <div class="text-center py-12 bg-brand-cream/40 rounded-2xl border border-dashed border-slate-200">
-                    <i class="fas fa-comments text-slate-300 text-4xl mb-3"></i>
-                    <p class="text-sm font-bold text-slate-700">Belum Ada Ulasan</p>
-                    <p class="text-xs text-slate-400 mt-1">Jadilah yang pertama memberikan ulasan setelah berbelanja!</p>
+                <div class="p-8 text-center bg-white rounded-2xl border border-slate-200/80">
+                    <i class="fas fa-comments text-3xl text-slate-300 mb-2"></i>
+                    <p class="text-xs text-slate-500">Belum ada ulasan untuk produk ini.</p>
                 </div>
             @else
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     @foreach($ulasan as $review)
-                        <div class="bento-card p-5 bg-white border border-slate-200/80 space-y-3">
+                        <div class="p-5 bg-white rounded-2xl border border-slate-200/80 shadow-xs space-y-3">
                             <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-2.5">
-                                    <div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 font-bold text-xs flex items-center justify-center">
-                                        {{ strtoupper(substr($review->user->name ?? 'U', 0, 2)) }}
+                                <div class="flex items-center gap-3">
+                                    <div class="w-9 h-9 rounded-full bg-indigo-50 text-indigo-600 font-bold flex items-center justify-center text-xs">
+                                        {{ substr($review->user->name ?? 'User', 0, 1) }}
                                     </div>
                                     <div>
-                                        <h4 class="text-xs font-bold text-slate-900">{{ $review->user->name ?? 'Pembeli' }}</h4>
+                                        <h4 class="font-bold text-slate-800 text-xs">{{ $review->user->name ?? 'Pembeli' }}</h4>
                                         <p class="text-[10px] text-slate-400">{{ $review->created_at->format('d M Y') }}</p>
                                     </div>
                                 </div>
@@ -283,6 +329,22 @@
                             <p class="text-xs text-slate-600 leading-relaxed italic">
                                 "{{ $review->komentar ?? $review->isi ?? 'Produk sangat berkualitas dan memuaskan.' }}"
                             </p>
+
+                            <!-- 💬 Official Seller Reply Bubble (Feature 5) -->
+                            @if($review->balasan_penjual)
+                                <div class="mt-3 p-3.5 bg-emerald-50/90 rounded-xl border border-emerald-200/70 text-xs text-slate-700 space-y-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="px-1.5 py-0.5 rounded bg-emerald-600 text-white font-black text-[9px] uppercase tracking-wider">
+                                            Respon Toko
+                                        </span>
+                                        <span class="font-bold text-emerald-950 text-xs">{{ $produk->umkm->nama_toko ?? 'Penjual' }}</span>
+                                        <span class="text-[10px] text-slate-400">• {{ $review->balasan_penjual_at ? \Carbon\Carbon::parse($review->balasan_penjual_at)->diffForHumans() : 'baru saja' }}</span>
+                                    </div>
+                                    <p class="text-slate-700 leading-relaxed pl-1">
+                                        {{ $review->balasan_penjual }}
+                                    </p>
+                                </div>
+                            @endif
                         </div>
                     @endforeach
                 </div>

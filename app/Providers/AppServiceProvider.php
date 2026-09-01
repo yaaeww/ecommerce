@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Facades\Keranjang;
 use App\Models\Order;
 use App\Models\Produk;
+use App\Models\Umkm;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Auth;
@@ -68,10 +69,15 @@ class AppServiceProvider extends ServiceProvider
             $notifStatusPesanan = collect();
 
             if (Auth::check() && Auth::user()->role === 'penjual') {
-                $produkIds = Produk::where('user_id', Auth::id())->pluck('id');
+                $umkm = Umkm::where('user_id', Auth::id())->first();
+                $produkIds = $umkm ? Produk::where('umkm_id', $umkm->id)->pluck('id') : collect();
 
                 $notifPesananComplete = Order::whereIn('produk_id', $produkIds)
                     ->where('status', 'complete')
+                    ->where(function ($q) {
+                        $q->whereNull('status_pesanan')
+                          ->orWhere('status_pesanan', 'menunggu_diproses');
+                    })
                     ->latest()
                     ->get();
 

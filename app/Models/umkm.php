@@ -18,6 +18,14 @@ class Umkm extends Model
         'alamat',
         'no_telp',
         'logo',
+        'is_libur',
+        'libur_pesan',
+        'libur_sampai',
+    ];
+
+    protected $casts = [
+        'is_libur' => 'boolean',
+        'libur_sampai' => 'date',
     ];
 
     public function getLogoAttribute($value)
@@ -35,8 +43,12 @@ class Umkm extends Model
         return $this->belongsTo(User::class);
     }
     public function produks()
-{
-    return $this->hasMany(Produk::class);
-}
+    {
+        return $this->hasMany(Produk::class);
+    }
 
+    public function penarikanSaldos()
+    {
+        return $this->hasMany(PenarikanSaldo::class, 'umkm_id');
+    }
 }
