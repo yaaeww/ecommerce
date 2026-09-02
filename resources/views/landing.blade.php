@@ -558,16 +558,7 @@
             <!-- Left Column: Copywriting & Download Action -->
             <div class="lg:col-span-7 space-y-6">
                 <!-- Pill Badge (Dark Section) -->
-                <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/10 border border-emerald-500/30 text-emerald-300 text-xs font-bold shadow-xs backdrop-blur-sm cursor-pointer hover:bg-white/15 transition group" onclick="openPlayStoreModal()">
-                    <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M3.609 1.814L13.793 12 3.61 22.186A2.213 2.213 0 0 1 3 20.618V3.382c0-.608.23-1.168.609-1.568z" fill="#00E676"/>
-                        <path d="M17.18 8.613L13.793 12 3.61 1.814c.398-.388.94-.614 1.543-.614.475 0 .927.14 1.312.388l10.715 7.025z" fill="#FFD600"/>
-                        <path d="M17.18 15.387L6.465 22.412a2.38 2.38 0 0 1-1.312.388c-.603 0-1.145-.226-1.543-.614L13.793 12l3.387 3.387z" fill="#FF1744"/>
-                        <path d="M21.573 11.233l-4.393-2.62-3.387 3.387 3.387 3.387 4.393-2.62a1.365 1.365 0 0 0 0-2.534z" fill="#00B0FF"/>
-                    </svg>
-                    <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300">Android v1.2.4</span>
-                    <i class="fas fa-chevron-right text-[9px] text-emerald-400 group-hover:translate-x-1 transition-transform"></i>
-                </div>
+                
 
                 <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight font-display">
                     Belanja Mangga Segar Kini <br class="hidden sm:block">
