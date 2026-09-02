@@ -15,15 +15,16 @@
             
             <!-- Left Column (Content) -->
             <div class="lg:col-span-7 space-y-6">
-                <!-- Mobile App Playstore Launch Badge -->
-                <div class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-brand-green text-xs font-bold shadow-xs cursor-pointer hover:bg-emerald-100/70 transition" onclick="openPlayStoreModal()">
-                    <span class="flex h-2 w-2 relative">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                    </span>
-                    <i class="fab fa-google-play text-emerald-600"></i>
-                    <span>Tersedia di Google Play Store</span>
-                    <span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-white border border-emerald-200 text-emerald-800 shadow-xs">v1.2.4</span>
+                <!-- Mobile App Playstore Launch Badge (Premium Pill) -->
+                <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-emerald-50/90 border border-emerald-200 text-brand-green text-xs font-bold shadow-2xs cursor-pointer hover:bg-emerald-100 hover:border-emerald-300 transition duration-300 group" onclick="openPlayStoreModal()">
+                    <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3.609 1.814L13.793 12 3.61 22.186A2.213 2.213 0 0 1 3 20.618V3.382c0-.608.23-1.168.609-1.568z" fill="#00E676"/>
+                        <path d="M17.18 8.613L13.793 12 3.61 1.814c.398-.388.94-.614 1.543-.614.475 0 .927.14 1.312.388l10.715 7.025z" fill="#FFD600"/>
+                        <path d="M17.18 15.387L6.465 22.412a2.38 2.38 0 0 1-1.312.388c-.603 0-1.145-.226-1.543-.614L13.793 12l3.387 3.387z" fill="#FF1744"/>
+                        <path d="M21.573 11.233l-4.393-2.62-3.387 3.387 3.387 3.387 4.393-2.62a1.365 1.365 0 0 0 0-2.534z" fill="#00B0FF"/>
+                    </svg>
+                    <span class="text-slate-800 font-extrabold tracking-tight">Tersedia di Google Play Store</span>
+                    <i class="fas fa-chevron-right text-[9px] text-emerald-600 group-hover:translate-x-1 transition-transform"></i>
                 </div>
 
                 <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-brand-slate leading-[1.12]">
@@ -556,12 +557,17 @@
             
             <!-- Left Column: Copywriting & Download Action -->
             <div class="lg:col-span-7 space-y-6">
-                <!-- Pill Badge -->
-                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold shadow-xs">
-                    <i class="fab fa-google-play"></i>
-                    <span>Aplikasi Mobile Resmi Juragan Pelem</span>
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                    <span class="text-white font-extrabold">Android v1.2.4</span>
+                <!-- Pill Badge (Dark Section) -->
+                <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/10 border border-emerald-500/30 text-emerald-300 text-xs font-bold shadow-xs backdrop-blur-sm cursor-pointer hover:bg-white/15 transition group" onclick="openPlayStoreModal()">
+                    <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3.609 1.814L13.793 12 3.61 22.186A2.213 2.213 0 0 1 3 20.618V3.382c0-.608.23-1.168.609-1.568z" fill="#00E676"/>
+                        <path d="M17.18 8.613L13.793 12 3.61 1.814c.398-.388.94-.614 1.543-.614.475 0 .927.14 1.312.388l10.715 7.025z" fill="#FFD600"/>
+                        <path d="M17.18 15.387L6.465 22.412a2.38 2.38 0 0 1-1.312.388c-.603 0-1.145-.226-1.543-.614L13.793 12l3.387 3.387z" fill="#FF1744"/>
+                        <path d="M21.573 11.233l-4.393-2.62-3.387 3.387 3.387 3.387 4.393-2.62a1.365 1.365 0 0 0 0-2.534z" fill="#00B0FF"/>
+                    </svg>
+                    <span class="text-white font-extrabold tracking-tight">Aplikasi Mobile Resmi Juragan Pelem</span>
+                    <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300">Android v1.2.4</span>
+                    <i class="fas fa-chevron-right text-[9px] text-emerald-400 group-hover:translate-x-1 transition-transform"></i>
                 </div>
 
                 <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight font-display">

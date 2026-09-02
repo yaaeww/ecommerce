@@ -161,8 +161,14 @@
                 <a href="{{ route('kategori') }}" class="{{ request()->routeIs('kategori') ? 'text-indigo-600' : 'hover:text-indigo-600' }} transition">Kategori</a>
                 <a href="{{ route('tentang') }}" class="{{ request()->routeIs('tentang') ? 'text-indigo-600' : 'hover:text-indigo-600' }} transition">Tentang Kami</a>
                 <a href="{{ route('kontak') }}" class="{{ request()->routeIs('kontak') ? 'text-indigo-600' : 'hover:text-indigo-600' }} transition">Hubungi Kami</a>
-                <button type="button" onclick="openPlayStoreModal()" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-extrabold transition border border-emerald-200/80 shadow-2xs hover:scale-105 cursor-pointer">
-                    <i class="fab fa-google-play text-emerald-600"></i> Unduh App
+                <button type="button" onclick="openPlayStoreModal()" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 hover:bg-emerald-100 text-slate-800 text-xs font-extrabold transition border border-emerald-200/90 shadow-2xs hover:scale-105 cursor-pointer">
+                    <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3.609 1.814L13.793 12 3.61 22.186A2.213 2.213 0 0 1 3 20.618V3.382c0-.608.23-1.168.609-1.568z" fill="#00E676"/>
+                        <path d="M17.18 8.613L13.793 12 3.61 1.814c.398-.388.94-.614 1.543-.614.475 0 .927.14 1.312.388l10.715 7.025z" fill="#FFD600"/>
+                        <path d="M17.18 15.387L6.465 22.412a2.38 2.38 0 0 1-1.312.388c-.603 0-1.145-.226-1.543-.614L13.793 12l3.387 3.387z" fill="#FF1744"/>
+                        <path d="M21.573 11.233l-4.393-2.62-3.387 3.387 3.387 3.387 4.393-2.62a1.365 1.365 0 0 0 0-2.534z" fill="#00B0FF"/>
+                    </svg>
+                    <span>Unduh App</span>
                 </button>
             </nav>
 
