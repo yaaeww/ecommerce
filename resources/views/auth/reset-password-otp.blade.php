@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buat Kata Sandi Baru — Juragan Pelem | Marketplace Mangga Indramayu</title>
+    <title>Buat Kata Sandi Baru — Juragan Pelem</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,10 +25,9 @@
             font-family: 'Outfit', sans-serif;
         }
         .bg-brand-green { background-color: #1B4D3E !important; }
-        .bg-brand-green:hover, .hover\:bg-brand-green-dark:hover { background-color: #143D31 !important; }
+        .bg-brand-green:hover { background-color: #143D31 !important; }
         .text-brand-green { color: #1B4D3E !important; }
         .text-brand-amber { color: #F59E0B !important; }
-        .bg-brand-amber { background-color: #F59E0B !important; }
         .bg-brand-cream { background-color: #FAFAF7 !important; }
         .text-brand-slate { color: #0F172A !important; }
     </style>
@@ -38,10 +37,11 @@
     <div class="flex-1 flex flex-col lg:flex-row min-h-full">
         
         <!-- Left Side: Brand Showcase Panel -->
-        <div class="hidden lg:flex lg:w-1/2 p-12 text-white flex-col justify-between relative overflow-hidden" style="background: linear-gradient(135deg, #0d281e 0%, #1b4d3e 45%, #064e3b 100%) !important; color: #ffffff !important;">
+        <div class="hidden lg:flex lg:w-1/2 p-8 xl:p-12 text-white flex-col justify-between gap-8 relative overflow-hidden" style="background: linear-gradient(135deg, #0d281e 0%, #1b4d3e 45%, #064e3b 100%) !important; color: #ffffff !important;">
             <div class="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl pointer-events-none" style="background: rgba(52, 211, 153, 0.15);"></div>
             <div class="absolute bottom-0 left-0 w-96 h-96 rounded-full blur-3xl pointer-events-none" style="background: rgba(245, 158, 11, 0.15);"></div>
 
+            <!-- Top Header -->
             <div class="relative z-10">
                 <a href="{{ route('landing') }}" class="inline-flex items-center gap-3 group">
                     <div class="w-11 h-11 rounded-xl bg-white shadow-sm p-1.5 flex items-center justify-center group-hover:scale-105 transition-transform">
@@ -54,32 +54,34 @@
                 </a>
             </div>
 
-            <div class="space-y-6 relative z-10 max-w-lg">
+            <!-- Narrative -->
+            <div class="space-y-5 relative z-10 max-w-lg my-auto py-2">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur border border-white/20 text-emerald-200 text-xs font-bold uppercase tracking-wider">
-                    <i class="fas fa-lock text-brand-amber"></i> Pembaruan Kata Sandi
+                    <i class="fas fa-circle-check text-brand-amber"></i> OTP Terverifikasi
                 </div>
 
-                <h1 class="text-4xl sm:text-5xl font-extrabold font-display leading-tight tracking-tight text-white">
-                    Buat Kata Sandi <br>
-                    <span class="text-amber-300">Baru yang Kuat</span>.
+                <h1 class="text-3xl xl:text-4xl font-extrabold font-display leading-tight tracking-tight text-white">
+                    Tentukan Kata Sandi <br>
+                    <span class="text-amber-300">Baru yang Aman</span>.
                 </h1>
 
-                <p class="text-emerald-100/90 text-sm leading-relaxed">
-                    Pastikan kata sandi baru Anda unik, aman, dan mudah diingat agar akun Anda selalu terlindungi saat bertransaksi di Juragan Pelem.
+                <p class="text-emerald-100/90 text-xs sm:text-sm leading-relaxed">
+                    Identitas Anda telah berhasil diverifikasi melalui kode OTP. Silakan tentukan kata sandi baru untuk mengamankan akses akun Anda.
                 </p>
             </div>
 
-            <div class="p-4 rounded-2xl bg-white/5 border border-white/10 text-xs text-emerald-200/80">
-                <i class="fas fa-check-shield text-brand-amber mr-2"></i> Gunakan kombinasi huruf, angka, dan simbol untuk keamanan maksimal.
+            <!-- Bottom Note -->
+            <div class="p-4.5 rounded-2xl bg-white/10 border border-white/15 backdrop-blur relative z-10 text-xs text-emerald-200/80">
+                <i class="fas fa-key text-brand-amber mr-1"></i> Setelah kata sandi disimpan, Anda akan diarahkan ke halaman login untuk masuk.
             </div>
         </div>
 
-        <!-- Right Side: Form -->
+        <!-- Right Side: New Password Form -->
         <div class="flex-1 flex flex-col justify-between p-6 sm:p-12 lg:p-16 bg-brand-cream overflow-y-auto">
             
             <div class="flex items-center justify-between">
                 <a href="{{ route('login') }}" class="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-brand-green transition">
-                    <i class="fas fa-arrow-left"></i> Kembali ke Halaman Masuk
+                    <i class="fas fa-arrow-left"></i> Kembali ke Login
                 </a>
                 
                 <a href="{{ route('landing') }}" class="flex lg:hidden items-center gap-2">
@@ -91,13 +93,23 @@
             <div class="max-w-md w-full mx-auto my-auto py-6">
                 
                 <div class="mb-8">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-brand-green flex items-center justify-center text-xl mb-4 shadow-sm">
+                        <i class="fas fa-lock-open"></i>
+                    </div>
                     <h2 class="text-3xl font-extrabold text-brand-slate tracking-tight font-display">
-                        Kata Sandi Baru
+                        Buat Kata Sandi Baru
                     </h2>
-                    <p class="text-sm text-slate-500 mt-1.5">
-                        Silakan tentukan kata sandi baru untuk akun Anda.
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">
+                        Akun: <strong class="text-slate-800">{{ $email }}</strong>
                     </p>
                 </div>
+
+                @if(session('status'))
+                    <div class="mb-5 p-4 bg-emerald-50 border border-emerald-200 text-brand-green rounded-2xl flex items-start gap-3 text-xs font-medium shadow-sm">
+                        <i class="fas fa-circle-check text-base text-emerald-500 mt-0.5 shrink-0"></i>
+                        <div>{{ session('status') }}</div>
+                    </div>
+                @endif
 
                 @if ($errors->any())
                     <div class="mb-5 p-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl text-xs font-medium shadow-sm">
@@ -112,28 +124,8 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('password.store') }}" class="space-y-4">
+                <form method="POST" action="{{ route('password.otp.update') }}" class="space-y-4">
                     @csrf
-
-                    <input type="hidden" name="token" value="{{ $request->route('token') }}">
-
-                    <div>
-                        <label for="email" class="block text-xs font-bold text-slate-700 mb-1.5">Alamat Email</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                                <i class="fas fa-envelope text-sm"></i>
-                            </div>
-                            <input 
-                                id="email" 
-                                type="email" 
-                                name="email" 
-                                value="{{ old('email', $request->email) }}" 
-                                required 
-                                readonly 
-                                class="w-full bg-slate-100 text-slate-500 text-sm pl-10 pr-4 py-3 rounded-xl border border-slate-200 outline-none cursor-not-allowed shadow-sm"
-                            >
-                        </div>
-                    </div>
 
                     <div>
                         <label for="password" class="block text-xs font-bold text-slate-700 mb-1.5">Kata Sandi Baru</label>

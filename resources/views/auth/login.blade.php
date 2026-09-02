@@ -9,7 +9,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -21,6 +21,16 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: #FAFAF7;
         }
+        .font-display {
+            font-family: 'Outfit', sans-serif;
+        }
+        .bg-brand-green { background-color: #1B4D3E !important; }
+        .bg-brand-green:hover, .hover\:bg-brand-green-dark:hover { background-color: #143D31 !important; }
+        .text-brand-green { color: #1B4D3E !important; }
+        .text-brand-amber { color: #F59E0B !important; }
+        .bg-brand-amber { background-color: #F59E0B !important; }
+        .bg-brand-cream { background-color: #FAFAF7 !important; }
+        .text-brand-slate { color: #0F172A !important; }
     </style>
 </head>
 
@@ -28,10 +38,10 @@
     <div class="flex-1 flex flex-col lg:flex-row min-h-full">
         
         <!-- Left Side: Brand Showcase Panel (Visible on LG screens) -->
-        <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-brand-green-dark via-brand-green to-emerald-900 p-12 text-white flex-col justify-between relative overflow-hidden">
+        <div class="hidden lg:flex lg:w-1/2 p-8 xl:p-12 text-white flex-col justify-between gap-8 relative overflow-hidden" style="background: linear-gradient(135deg, #0d281e 0%, #1b4d3e 45%, #064e3b 100%) !important; color: #ffffff !important;">
             <!-- Subtle Radial Glows -->
-            <div class="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="absolute bottom-0 left-0 w-96 h-96 bg-brand-amber/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl pointer-events-none" style="background: rgba(52, 211, 153, 0.15);"></div>
+            <div class="absolute bottom-0 left-0 w-96 h-96 rounded-full blur-3xl pointer-events-none" style="background: rgba(245, 158, 11, 0.15);"></div>
 
             <!-- Top Header in Panel -->
             <div class="relative z-10">
@@ -47,48 +57,48 @@
             </div>
 
             <!-- Central Hero Narrative -->
-            <div class="space-y-6 relative z-10 max-w-lg">
+            <div class="space-y-5 relative z-10 max-w-lg my-auto py-2">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur border border-white/20 text-emerald-200 text-xs font-bold uppercase tracking-wider">
                     <i class="fas fa-shield-check text-brand-amber"></i> Portal Terverifikasi
                 </div>
 
-                <h1 class="text-4xl sm:text-5xl font-extrabold font-display leading-tight tracking-tight text-white">
+                <h1 class="text-3xl xl:text-4xl font-extrabold font-display leading-tight tracking-tight text-white">
                     Akses Langsung ke <br>
                     <span class="text-amber-300">Ekosistem Mangga</span> Terbaik.
                 </h1>
 
-                <p class="text-emerald-100/90 text-sm leading-relaxed">
+                <p class="text-emerald-100/90 text-xs sm:text-sm leading-relaxed">
                     Masuk ke akun Anda untuk memantau status pesanan panen raya, mengelola keranjang belanja UMKM, atau mengatur inventaris toko kebun Anda.
                 </p>
 
                 <!-- Value Props -->
-                <div class="grid grid-cols-2 gap-4 pt-4">
-                    <div class="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur">
-                        <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center mb-2">
+                <div class="grid grid-cols-2 gap-3.5 pt-3">
+                    <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur">
+                        <div class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center mb-2">
                             <i class="fas fa-truck-fast text-xs"></i>
                         </div>
                         <h4 class="font-bold text-xs text-white">Logistik 24 Jam</h4>
-                        <p class="text-[11px] text-emerald-200/70 mt-0.5">Pengiriman bergaransi segar</p>
+                        <p class="text-[10px] text-emerald-200/70 mt-0.5">Pengiriman bergaransi segar</p>
                     </div>
-                    <div class="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur">
-                        <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-300 flex items-center justify-center mb-2">
+                    <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur">
+                        <div class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-300 flex items-center justify-center mb-2">
                             <i class="fas fa-shield-halved text-xs"></i>
                         </div>
                         <h4 class="font-bold text-xs text-white">Pembayaran Aman</h4>
-                        <p class="text-[11px] text-emerald-200/70 mt-0.5">Terenkripsi via Midtrans</p>
+                        <p class="text-[10px] text-emerald-200/70 mt-0.5">Terenkripsi via Midtrans</p>
                     </div>
                 </div>
             </div>
 
             <!-- Testimonial Quote -->
-            <div class="p-5 rounded-2xl bg-white/10 border border-white/15 backdrop-blur relative z-10">
-                <div class="flex items-center gap-1 text-amber-400 text-xs mb-2">
+            <div class="p-4.5 rounded-2xl bg-white/10 border border-white/15 backdrop-blur relative z-10 mt-2">
+                <div class="flex items-center gap-1 text-amber-400 text-xs mb-1.5">
                     <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
                 </div>
-                <p class="text-xs italic text-emerald-100 leading-relaxed">
+                <p class="text-[11px] italic text-emerald-100 leading-relaxed">
                     "Platform ini memberikan kemudahan luar biasa untuk mendapatkan mangga asli Indramayu langsung saat baru petik matang pohon."
                 </p>
-                <div class="flex items-center justify-between mt-3 pt-3 border-t border-white/10 text-[11px] text-emerald-200">
+                <div class="flex items-center justify-between mt-2.5 pt-2 border-t border-white/10 text-[10px] text-emerald-200">
                     <span class="font-bold text-white">Mitra Pembeli Terverifikasi</span>
                     <span>Jakarta Selatan</span>
                 </div>
@@ -113,7 +123,7 @@
             </div>
 
             <!-- Form Container -->
-            <div class="max-w-md w-full mx-auto my-8">
+            <div class="max-w-md w-full mx-auto my-auto py-6">
                 
                 <!-- Header Title -->
                 <div class="mb-8">
@@ -121,7 +131,7 @@
                         Selamat Datang Kembali
                     </h2>
                     <p class="text-sm text-slate-500 mt-1.5">
-                        Masukkan email dan password akun Anda untuk melanjutkan.
+                        Masukkan email dan kata sandi akun Anda untuk melanjutkan.
                     </p>
                 </div>
 
@@ -220,7 +230,7 @@
                     <!-- Submit Button -->
                     <button 
                         type="submit" 
-                        class="w-full py-3.5 bg-brand-green hover:bg-brand-green-dark text-white font-bold text-sm rounded-xl transition shadow-lg shadow-brand-green/20 hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center gap-2"
+                        class="w-full py-3.5 bg-brand-green hover:bg-brand-green-dark text-white font-bold text-sm rounded-xl transition shadow-lg shadow-brand-green/20 hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer"
                     >
                         <i class="fas fa-arrow-right-to-bracket"></i> Masuk ke Akun
                     </button>
@@ -263,7 +273,7 @@
             </div>
 
             <!-- Footer Small -->
-            <div class="text-center text-[11px] text-slate-400">
+            <div class="text-center text-[11px] text-slate-400 mt-4">
                 &copy; {{ date('Y') }} Juragan Pelem Indramayu. Seluruh hak cipta dilindungi.
             </div>
 

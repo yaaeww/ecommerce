@@ -104,12 +104,13 @@
                                     @endphp
                                     
                                     @foreach ($pengirimanStatus as $value => $label)
-                                        <label class="cursor-pointer relative">
-                                            <input type="radio" name="status_pesanan" value="{{ $value }}" class="peer sr-only" {{ old('status_pesanan', $order->status_pesanan) === $value ? 'checked' : '' }}>
-                                            <div class="p-4 rounded-xl border-2 border-slate-200 hover:border-brand-200 peer-checked:border-brand-500 peer-checked:bg-brand-50 transition flex items-center gap-3">
-                                                <div class="w-5 h-5 rounded-full border-2 border-slate-300 peer-checked:border-brand-500 flex items-center justify-center shrink-0">
-                                                    <div class="w-2.5 h-2.5 rounded-full bg-brand-500 opacity-0 peer-checked:opacity-100 transition"></div>
-                                                </div>
+                                        <label class="status-radio-label cursor-pointer relative block">
+                                            <input type="radio" name="status_pesanan" value="{{ $value }}" class="sr-only status-radio-input" {{ old('status_pesanan', $order->status_pesanan) === $value ? 'checked' : '' }}>
+                                            <div class="status-radio-card p-4 rounded-xl border-2 border-slate-200 hover:border-indigo-300 transition flex items-center gap-3">
+                                                {{-- Custom Radio Circle --}}
+                                                <span class="status-radio-circle" style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;border:2px solid #cbd5e1;flex-shrink:0;transition:border-color .2s">
+                                                    <span class="status-radio-dot" style="display:block;width:10px;height:10px;border-radius:50%;background:#6366f1;transform:scale(0);transition:transform .2s"></span>
+                                                </span>
                                                 <div>
                                                     <span class="block font-bold text-slate-900">{{ $label }}</span>
                                                     <span class="block text-xs text-slate-500 mt-0.5">
@@ -120,6 +121,19 @@
                                         </label>
                                     @endforeach
                                 </div>
+
+                                <style>
+                                    .status-radio-input:checked ~ .status-radio-card {
+                                        border-color: #6366f1 !important;
+                                        background-color: #eef2ff !important;
+                                    }
+                                    .status-radio-input:checked ~ .status-radio-card .status-radio-circle {
+                                        border-color: #6366f1 !important;
+                                    }
+                                    .status-radio-input:checked ~ .status-radio-card .status-radio-dot {
+                                        transform: scale(1) !important;
+                                    }
+                                </style>
                                 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                                     <div class="space-y-1.5">

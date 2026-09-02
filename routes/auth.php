@@ -27,9 +27,28 @@ Route::middleware('guest')->group(function () {
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
                 ->name('password.request');
 
-    Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
+    Route::post('forgot-password', [\App\Http\Controllers\Auth\OtpPasswordResetController::class, 'requestOtp'])
                 ->middleware('throttle:5,1')
                 ->name('password.email');
+
+    // 🔹 6-Digit OTP Verification Routes
+    Route::get('forgot-password/verify-otp', [\App\Http\Controllers\Auth\OtpPasswordResetController::class, 'showOtpForm'])
+                ->name('password.otp.view');
+
+    Route::post('forgot-password/verify-otp', [\App\Http\Controllers\Auth\OtpPasswordResetController::class, 'verifyOtp'])
+                ->middleware('throttle:10,1')
+                ->name('password.otp.verify');
+
+    Route::post('forgot-password/resend-otp', [\App\Http\Controllers\Auth\OtpPasswordResetController::class, 'resendOtp'])
+                ->middleware('throttle:3,1')
+                ->name('password.otp.resend');
+
+    Route::get('forgot-password/new-password', [\App\Http\Controllers\Auth\OtpPasswordResetController::class, 'showNewPasswordForm'])
+                ->name('password.otp.new-password');
+
+    Route::post('forgot-password/new-password', [\App\Http\Controllers\Auth\OtpPasswordResetController::class, 'updatePassword'])
+                ->middleware('throttle:5,1')
+                ->name('password.otp.update');
 
     Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
                 ->name('password.reset');
