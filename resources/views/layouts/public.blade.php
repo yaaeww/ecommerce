@@ -156,11 +156,14 @@
             </div>
 
             <!-- Nav Links (Desktop) -->
-            <nav class="hidden md:flex items-center gap-7 text-sm font-semibold text-slate-600">
+            <nav class="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-600">
                 <a href="{{ route('landing') }}" class="{{ request()->routeIs('landing') ? 'text-indigo-600' : 'hover:text-indigo-600' }} transition">Beranda</a>
                 <a href="{{ route('kategori') }}" class="{{ request()->routeIs('kategori') ? 'text-indigo-600' : 'hover:text-indigo-600' }} transition">Kategori</a>
                 <a href="{{ route('tentang') }}" class="{{ request()->routeIs('tentang') ? 'text-indigo-600' : 'hover:text-indigo-600' }} transition">Tentang Kami</a>
                 <a href="{{ route('kontak') }}" class="{{ request()->routeIs('kontak') ? 'text-indigo-600' : 'hover:text-indigo-600' }} transition">Hubungi Kami</a>
+                <button type="button" onclick="openPlayStoreModal()" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-extrabold transition border border-emerald-200/80 shadow-2xs hover:scale-105 cursor-pointer">
+                    <i class="fab fa-google-play text-emerald-600"></i> Unduh App
+                </button>
             </nav>
 
             <!-- Desktop User Auth Actions -->
@@ -276,7 +279,25 @@
                     <p class="text-sm text-slate-400 leading-relaxed">
                         Platform digital marketplace agrikultur terintegrasi pertama di Kabupaten Indramayu, menghubungkan langsung petani mangga dan pelaku UMKM dengan konsumen seluruh Indonesia.
                     </p>
-                    <div class="flex items-center gap-3 pt-2">
+
+                    <!-- Google Play Store Download Button in Footer -->
+                    <div class="pt-1">
+                        <p class="text-[11px] uppercase tracking-wider font-extrabold text-slate-400 mb-2">Download Aplikasi Mobile</p>
+                        <button type="button" onclick="openPlayStoreModal()" class="inline-flex items-center gap-2.5 px-4 py-2 bg-slate-900 hover:bg-black text-white rounded-xl border border-slate-700 transition group text-left cursor-pointer hover:border-emerald-500/50">
+                            <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3.609 1.814L13.793 12 3.61 22.186A2.213 2.213 0 0 1 3 20.618V3.382c0-.608.23-1.168.609-1.568z" fill="#00E676"/>
+                                <path d="M17.18 8.613L13.793 12 3.61 1.814c.398-.388.94-.614 1.543-.614.475 0 .927.14 1.312.388l10.715 7.025z" fill="#FFD600"/>
+                                <path d="M17.18 15.387L6.465 22.412a2.38 2.38 0 0 1-1.312.388c-.603 0-1.145-.226-1.543-.614L13.793 12l3.387 3.387z" fill="#FF1744"/>
+                                <path d="M21.573 11.233l-4.393-2.62-3.387 3.387 3.387 3.387 4.393-2.62a1.365 1.365 0 0 0 0-2.534z" fill="#00B0FF"/>
+                            </svg>
+                            <div>
+                                <span class="block text-[8px] uppercase tracking-wider text-slate-400 font-bold leading-none">GET IT ON</span>
+                                <span class="block text-xs font-black text-white leading-tight font-display">Google Play</span>
+                            </div>
+                        </button>
+                    </div>
+
+                    <div class="flex items-center gap-3 pt-1">
                         <a href="#" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-indigo-600 text-slate-400 hover:text-white flex items-center justify-center transition"><i class="fab fa-instagram"></i></a>
                         <a href="#" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-indigo-600 text-slate-400 hover:text-white flex items-center justify-center transition"><i class="fab fa-whatsapp"></i></a>
                         <a href="#" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-indigo-600 text-slate-400 hover:text-white flex items-center justify-center transition"><i class="fab fa-facebook-f"></i></a>
@@ -643,15 +664,164 @@
             }
         };
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const modal = document.getElementById('guestLoginModal');
+        // 🚀 Global Google Play Store Download Modal Functions
+        window.openPlayStoreModal = function() {
+            const modal = document.getElementById('playstoreModal');
             if (modal) {
-                modal.addEventListener('click', (e) => {
-                    if (e.target === modal) closeGuestLoginModal();
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                document.body.classList.add('overflow-hidden');
+            }
+        };
+
+        window.closePlayStoreModal = function() {
+            const modal = document.getElementById('playstoreModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                document.body.classList.remove('overflow-hidden');
+            }
+        };
+
+        window.triggerApkDownload = function() {
+            // Simulate APK download notification
+            const btn = document.getElementById('apkDownloadBtn');
+            if (btn) {
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Menyiapkan File APK...';
+                btn.classList.add('opacity-80', 'pointer-events-none');
+                
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fas fa-check-circle text-emerald-400 mr-2"></i> Mengunduh JuraganPelem-v1.2.4.apk';
+                    
+                    // Create simulated download trigger
+                    const tempLink = document.createElement('a');
+                    tempLink.href = 'javascript:void(0)';
+                    tempLink.setAttribute('download', 'JuraganPelem-v1.2.4.apk');
+                    document.body.appendChild(tempLink);
+                    tempLink.click();
+                    document.body.removeChild(tempLink);
+
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.classList.remove('opacity-80', 'pointer-events-none');
+                    }, 3000);
+                }, 1000);
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const guestModal = document.getElementById('guestLoginModal');
+            if (guestModal) {
+                guestModal.addEventListener('click', (e) => {
+                    if (e.target === guestModal) closeGuestLoginModal();
                 });
             }
+
+            const playModal = document.getElementById('playstoreModal');
+            if (playModal) {
+                playModal.addEventListener('click', (e) => {
+                    if (e.target === playModal) closePlayStoreModal();
+                });
+            }
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeGuestLoginModal();
+                    closePlayStoreModal();
+                }
+            });
         });
     </script>
+
+    <!-- 📱 Modal Google Play Store & Download App -->
+    <div id="playstoreModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md transition-all duration-300">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-100 transform transition-all text-left relative overflow-hidden">
+            <!-- Ambient Glow -->
+            <div class="absolute -top-20 -right-20 w-48 h-48 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-20 -left-20 w-48 h-48 bg-amber-400/15 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <!-- Close Button -->
+            <button type="button" onclick="closePlayStoreModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center transition cursor-pointer" aria-label="Tutup">
+                <i class="fas fa-times text-base"></i>
+            </button>
+
+            <!-- App Profile Header -->
+            <div class="flex items-start gap-4 mb-6">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white shadow-md border border-slate-100 p-2 flex items-center justify-center shrink-0">
+                    <img src="{{ asset('aset/finalisasi logo.png') }}" alt="Juragan Pelem App" class="w-full h-full object-contain">
+                </div>
+                <div class="min-w-0 flex-1">
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                        <h3 class="text-lg sm:text-xl font-extrabold text-slate-900 font-display leading-tight">
+                            Juragan Pelem: Pasar Mangga
+                        </h3>
+                        <i class="fas fa-certificate text-emerald-600 text-xs" title="Official Verified App"></i>
+                    </div>
+                    <p class="text-xs font-semibold text-brand-green mt-0.5">PT Agro Commerce Indramayu</p>
+                    
+                    <div class="flex items-center gap-4 mt-2 text-xs text-slate-500">
+                        <div class="flex items-center gap-1 font-bold text-slate-800">
+                            <span>4.9</span>
+                            <i class="fas fa-star text-amber-400 text-[11px]"></i>
+                            <span class="font-normal text-slate-400 text-[10px]">(2.4k)</span>
+                        </div>
+                        <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+                        <div class="font-bold text-slate-800">10k+ <span class="font-normal text-slate-400 text-[10px]">Unduhan</span></div>
+                        <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+                        <div class="px-1.5 py-0.5 rounded bg-slate-100 text-[10px] font-extrabold text-slate-700">3+</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Bento Card inside Modal -->
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/70 mb-6 space-y-2.5">
+                <div class="flex items-center gap-2.5 text-xs text-slate-700">
+                    <i class="fas fa-truck-fast text-emerald-600 w-4"></i>
+                    <span><strong>Live Tracking:</strong> Pantau ekspedisi kurir buah mangga real-time.</span>
+                </div>
+                <div class="flex items-center gap-2.5 text-xs text-slate-700">
+                    <i class="fas fa-bell text-amber-500 w-4"></i>
+                    <span><strong>Notifikasi Panen:</strong> Info pertama panen mangga segar matang pohon.</span>
+                </div>
+                <div class="flex items-center gap-2.5 text-xs text-slate-700">
+                    <i class="fas fa-tags text-indigo-600 w-4"></i>
+                    <span><strong>Diskon Khusus:</strong> Voucher potongan ongkir eksklusif aplikasi.</span>
+                </div>
+            </div>
+
+            <!-- Download Action Buttons -->
+            <div class="space-y-3">
+                <!-- 1. Google Play Store Link -->
+                <a href="https://play.google.com/store" target="_blank" class="w-full py-3.5 px-5 rounded-2xl bg-black hover:bg-slate-800 text-white font-bold text-sm transition flex items-center justify-center gap-3 shadow-lg shadow-black/10 group cursor-pointer">
+                    <svg class="w-6 h-6 shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3.609 1.814L13.793 12 3.61 22.186A2.213 2.213 0 0 1 3 20.618V3.382c0-.608.23-1.168.609-1.568z" fill="#00E676"/>
+                        <path d="M17.18 8.613L13.793 12 3.61 1.814c.398-.388.94-.614 1.543-.614.475 0 .927.14 1.312.388l10.715 7.025z" fill="#FFD600"/>
+                        <path d="M17.18 15.387L6.465 22.412a2.38 2.38 0 0 1-1.312.388c-.603 0-1.145-.226-1.543-.614L13.793 12l3.387 3.387z" fill="#FF1744"/>
+                        <path d="M21.573 11.233l-4.393-2.62-3.387 3.387 3.387 3.387 4.393-2.62a1.365 1.365 0 0 0 0-2.534z" fill="#00B0FF"/>
+                    </svg>
+                    <div class="text-left">
+                        <span class="block text-[9px] uppercase tracking-wider text-slate-400 leading-none">Buka di Toko Aplikasi</span>
+                        <span class="block text-sm font-black leading-tight">Buka Google Play Store</span>
+                    </div>
+                </a>
+
+                <!-- 2. Direct APK Download Button -->
+                <button type="button" id="apkDownloadBtn" onclick="triggerApkDownload()" class="w-full py-3 px-5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 font-extrabold text-xs transition flex items-center justify-center gap-2 cursor-pointer shadow-xs">
+                    <i class="fab fa-android text-emerald-600 text-sm"></i>
+                    <span>Unduh File APK Langsung (v1.2.4 &bull; 18.4 MB)</span>
+                </button>
+            </div>
+
+            <!-- Footer Details inside Modal -->
+            <div class="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+                <span class="flex items-center gap-1">
+                    <i class="fas fa-shield-halved text-emerald-500"></i> Google Play Protect Verified
+                </span>
+                <span>Kompatibel: Android 7.0+</span>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal Login Required (Popup Alert Tamu) -->
     <div id="guestLoginModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-all duration-300">

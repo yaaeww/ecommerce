@@ -14,7 +14,18 @@
         <div class="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
             
             <!-- Left Column (Content) -->
-            <div class="lg:col-span-7 space-y-7">
+            <div class="lg:col-span-7 space-y-6">
+                <!-- Mobile App Playstore Launch Badge -->
+                <div class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-brand-green text-xs font-bold shadow-xs cursor-pointer hover:bg-emerald-100/70 transition" onclick="openPlayStoreModal()">
+                    <span class="flex h-2 w-2 relative">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    <i class="fab fa-google-play text-emerald-600"></i>
+                    <span>Tersedia di Google Play Store</span>
+                    <span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-white border border-emerald-200 text-emerald-800 shadow-xs">v1.2.4</span>
+                </div>
+
                 <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-brand-slate leading-[1.12]">
                     Mangga Segar Pilihan, <br>
                     <span class="text-brand-green">Langsung Dari Petani</span> Indramayu.
@@ -25,13 +36,26 @@
                 </p>
 
                 <!-- CTAs -->
-                <div class="flex flex-wrap items-center gap-4 pt-2">
-                    <a href="#produk" class="inline-flex items-center gap-3 px-7 py-3.5 bg-brand-green text-white rounded-xl text-base font-semibold hover:bg-brand-green-dark transition shadow-lg shadow-brand-green/20 hover:shadow-xl hover:-translate-y-0.5">
+                <div class="flex flex-wrap items-center gap-3.5 pt-2">
+                    <a href="#produk" class="inline-flex items-center gap-2.5 px-6 py-3.5 bg-brand-green text-white rounded-2xl text-sm sm:text-base font-bold hover:bg-brand-green-dark transition shadow-lg shadow-brand-green/20 hover:shadow-xl hover:-translate-y-0.5">
                         <i class="fas fa-bag-shopping"></i> Belanja Mangga Segar
                     </a>
-                    <a href="{{ route('kategori') }}" class="inline-flex items-center gap-2.5 px-6 py-3.5 bg-white text-slate-700 rounded-xl text-base font-semibold border border-slate-200 hover:bg-slate-50 hover:text-brand-green transition hover:-translate-y-0.5">
+                    <a href="{{ route('kategori') }}" class="inline-flex items-center gap-2 px-5 py-3.5 bg-white text-slate-700 rounded-2xl text-sm sm:text-base font-bold border border-slate-200 hover:bg-slate-50 hover:text-brand-green transition hover:-translate-y-0.5 shadow-xs">
                         <i class="fas fa-layer-group text-slate-400"></i> Jelajahi Kategori
                     </a>
+                    <!-- Google Play Store Button -->
+                    <button type="button" onclick="openPlayStoreModal()" class="inline-flex items-center gap-3 px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl transition shadow-md hover:shadow-xl hover:-translate-y-0.5 border border-slate-800 group text-left">
+                        <svg class="w-6 h-6 shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3.609 1.814L13.793 12 3.61 22.186A2.213 2.213 0 0 1 3 20.618V3.382c0-.608.23-1.168.609-1.568z" fill="#00E676"/>
+                            <path d="M17.18 8.613L13.793 12 3.61 1.814c.398-.388.94-.614 1.543-.614.475 0 .927.14 1.312.388l10.715 7.025z" fill="#FFD600"/>
+                            <path d="M17.18 15.387L6.465 22.412a2.38 2.38 0 0 1-1.312.388c-.603 0-1.145-.226-1.543-.614L13.793 12l3.387 3.387z" fill="#FF1744"/>
+                            <path d="M21.573 11.233l-4.393-2.62-3.387 3.387 3.387 3.387 4.393-2.62a1.365 1.365 0 0 0 0-2.534z" fill="#00B0FF"/>
+                        </svg>
+                        <div>
+                            <span class="block text-[8.5px] uppercase tracking-wider text-slate-400 font-bold leading-none">Download di</span>
+                            <span class="block text-xs font-black text-white leading-tight font-display tracking-tight">Google Play</span>
+                        </div>
+                    </button>
                 </div>
 
                 <!-- Social Proof / Stats Ticker -->
@@ -517,6 +541,290 @@
                     Kurir kargo meluncur mengantarkan paket segar langsung ke alamat tujuan Anda di seluruh Nusantara.
                 </p>
             </div>
+        </div>
+    </div>
+</section>
+
+<!-- 📱 Dedicated Mobile App & Google Play Store Showcase Section -->
+<section id="download-app" class="py-20 lg:py-24 bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950 text-white relative overflow-hidden">
+    <!-- Ambient Lighting / Glow Backgrounds -->
+    <div class="absolute -top-32 -left-32 w-96 h-96 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+            
+            <!-- Left Column: Copywriting & Download Action -->
+            <div class="lg:col-span-7 space-y-6">
+                <!-- Pill Badge -->
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold shadow-xs">
+                    <i class="fab fa-google-play"></i>
+                    <span>Aplikasi Mobile Resmi Juragan Pelem</span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                    <span class="text-white font-extrabold">Android v1.2.4</span>
+                </div>
+
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight font-display">
+                    Belanja Mangga Segar Kini <br class="hidden sm:block">
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-300">
+                        Lebih Cepat di Smartphone.
+                    </span>
+                </h2>
+
+                <p class="text-slate-300 text-sm sm:text-base leading-relaxed max-w-xl">
+                    Nikmati kemudahan pesan langsung dari kebun Indramayu. Dapatkan notifikasi saat panen matang pohon, pantau pengiriman ekspedisi secara real-time, serta nikmati promo eksklusif aplikasi.
+                </p>
+
+                <!-- 4 Value Props Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    <div class="flex items-start gap-3 p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                            <i class="fas fa-bell text-sm"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-extrabold text-white">Notifikasi Panen Kebun</h4>
+                            <p class="text-[11px] text-slate-400 mt-0.5 leading-snug">Info instan saat varietas unggulan siap petik.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3 p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
+                        <div class="w-9 h-9 rounded-xl bg-teal-500/20 text-teal-400 flex items-center justify-center shrink-0">
+                            <i class="fas fa-route text-sm"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-extrabold text-white">Live Tracking Ekspedisi</h4>
+                            <p class="text-[11px] text-slate-400 mt-0.5 leading-snug">Pantau paket kurir langsung ke depan pintu.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3 p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
+                        <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                            <i class="fas fa-ticket text-sm"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-extrabold text-white">Voucher Eksklusif App</h4>
+                            <p class="text-[11px] text-slate-400 mt-0.5 leading-snug">Gratis ongkir & potongan harga belanja pertama.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3 p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
+                        <div class="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0">
+                            <i class="fas fa-shield-check text-sm"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-extrabold text-white">Garansi 100% Ganti Baru</h4>
+                            <p class="text-[11px] text-slate-400 mt-0.5 leading-snug">Klaim garansi buah rusak langsung 1-klik.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Download Actions & QR Section -->
+                <div class="pt-4 flex flex-wrap items-center gap-4">
+                    <!-- Google Play Button -->
+                    <button type="button" onclick="openPlayStoreModal()" class="inline-flex items-center gap-3 px-6 py-3.5 bg-black hover:bg-slate-800 text-white rounded-2xl transition shadow-xl hover:shadow-emerald-500/10 hover:-translate-y-0.5 border border-slate-700 group text-left">
+                        <svg class="w-7 h-7 shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3.609 1.814L13.793 12 3.61 22.186A2.213 2.213 0 0 1 3 20.618V3.382c0-.608.23-1.168.609-1.568z" fill="#00E676"/>
+                            <path d="M17.18 8.613L13.793 12 3.61 1.814c.398-.388.94-.614 1.543-.614.475 0 .927.14 1.312.388l10.715 7.025z" fill="#FFD600"/>
+                            <path d="M17.18 15.387L6.465 22.412a2.38 2.38 0 0 1-1.312.388c-.603 0-1.145-.226-1.543-.614L13.793 12l3.387 3.387z" fill="#FF1744"/>
+                            <path d="M21.573 11.233l-4.393-2.62-3.387 3.387 3.387 3.387 4.393-2.62a1.365 1.365 0 0 0 0-2.534z" fill="#00B0FF"/>
+                        </svg>
+                        <div>
+                            <span class="block text-[10px] uppercase tracking-wider text-slate-400 font-bold leading-none">GET IT ON</span>
+                            <span class="block text-base font-black text-white leading-tight font-display tracking-tight">Google Play</span>
+                        </div>
+                    </button>
+
+                    <!-- Direct APK Download Button -->
+                    <button type="button" onclick="openPlayStoreModal()" class="inline-flex items-center gap-2.5 px-5 py-3.5 bg-white/10 hover:bg-white/15 text-white rounded-2xl transition border border-white/20 backdrop-blur text-xs font-extrabold hover:-translate-y-0.5">
+                        <i class="fab fa-android text-emerald-400 text-lg"></i>
+                        <div class="text-left">
+                            <span class="block text-white leading-tight">Unduh File APK</span>
+                            <span class="block text-[10px] text-slate-400 font-normal">v1.2.4 &bull; 18.4 MB</span>
+                        </div>
+                    </button>
+
+                    <!-- Micro QR Code preview -->
+                    <div class="hidden sm:flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-white/5 border border-white/10">
+                        <div class="w-10 h-10 bg-white rounded-xl p-1 shrink-0 flex items-center justify-center">
+                            <!-- SVG QR Code Icon -->
+                            <svg class="w-full h-full text-slate-900" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M2 2h8v8H2V2zm2 2v4h4V4H4zm10-2h8v8h-8V2zm2 2v4h4V4h-4zM2 14h8v8H2v-8zm2 2v4h4v-4H4zm14 0h4v2h-4v-2zm-4-2h2v4h-2v-4zm2 6h4v2h-4v-2zm-2-2h2v4h-2v-4zm6-2h2v4h-2v-4zM6 6h0v0H6zm12 0h0v0h0zM6 18h0v0H6z" />
+                            </svg>
+                        </div>
+                        <div class="text-left">
+                            <p class="text-[10px] font-extrabold text-white leading-tight">Scan QR</p>
+                            <p class="text-[9px] text-slate-400 leading-tight">Download di HP</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rating and Download Trust Metrics -->
+                <div class="pt-4 border-t border-slate-800/80 flex flex-wrap items-center gap-6 text-xs text-slate-400">
+                    <div class="flex items-center gap-1.5">
+                        <i class="fas fa-star text-amber-400 text-sm"></i>
+                        <span class="font-extrabold text-white">4.9 / 5.0</span>
+                        <span>(2.4k+ rating di Play Store)</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <i class="fas fa-shield-halved text-emerald-400 text-sm"></i>
+                        <span class="text-slate-300">Terverifikasi Google Play Protect</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Realistic Smartphone App Mockup -->
+            <div class="lg:col-span-5 relative flex justify-center">
+                <!-- Phone Mockup Outer Frame -->
+                <div class="relative w-[280px] sm:w-[310px] bg-slate-950 rounded-[44px] p-3 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] border-[4px] border-slate-800 ring-1 ring-white/20 transform hover:-translate-y-2 transition duration-500">
+                    
+                    <!-- Dynamic Island / Speaker Notch -->
+                    <div class="absolute top-5 left-1/2 -translate-x-1/2 w-28 h-4 bg-slate-900 rounded-full z-30 flex items-center justify-center">
+                        <div class="w-2.5 h-2.5 rounded-full bg-slate-950 mr-2"></div>
+                        <div class="w-2 h-2 rounded-full bg-blue-950"></div>
+                    </div>
+
+                    <!-- Screen Container -->
+                    <div class="bg-brand-cream rounded-[34px] overflow-hidden text-slate-800 select-none shadow-inner border border-slate-200">
+                        
+                        <!-- Status Bar -->
+                        <div class="pt-2 px-6 pb-2 flex items-center justify-between text-[11px] font-bold text-slate-700 bg-white/80">
+                            <span>09:41</span>
+                            <div class="flex items-center gap-1.5 text-xs text-slate-600">
+                                <i class="fas fa-signal text-[10px]"></i>
+                                <i class="fas fa-wifi text-[10px]"></i>
+                                <i class="fas fa-battery-full text-xs text-emerald-600"></i>
+                            </div>
+                        </div>
+
+                        <!-- App Header -->
+                        <div class="px-4 py-3 bg-white border-b border-slate-100 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-lg bg-emerald-600 p-1 flex items-center justify-center text-white text-xs font-bold">
+                                    <i class="fas fa-leaf"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-xs font-extrabold text-slate-900 font-display leading-tight">Juragan<span class="text-amber-500">Pelem</span></h5>
+                                    <p class="text-[9px] text-slate-400">Sentra Mangga Indramayu</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 text-slate-600 text-xs">
+                                <div class="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center relative">
+                                    <i class="fas fa-bell text-[11px]"></i>
+                                    <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-rose-500"></span>
+                                </div>
+                                <div class="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center">
+                                    <i class="fas fa-cart-shopping text-[11px]"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- App Body Content -->
+                        <div class="p-3.5 space-y-3 bg-slate-50/70">
+                            
+                            <!-- Search Bar Mockup -->
+                            <div class="bg-white rounded-xl px-3 py-2 border border-slate-200 flex items-center gap-2 text-[11px] text-slate-400 shadow-xs">
+                                <i class="fas fa-magnifying-glass text-slate-400"></i>
+                                <span>Cari Gedong Gincu, Harum Manis...</span>
+                            </div>
+
+                            <!-- Promo Banner in App -->
+                            <div class="rounded-2xl bg-gradient-to-r from-emerald-800 to-emerald-600 text-white p-3 shadow-md relative overflow-hidden">
+                                <span class="text-[9px] font-black uppercase tracking-wider bg-amber-400 text-slate-950 px-2 py-0.5 rounded-full inline-block mb-1">Panen Hari Ini</span>
+                                <h6 class="text-xs font-extrabold leading-snug">Diskon 20% Mangga Super Manis</h6>
+                                <p class="text-[9.5px] text-emerald-100 mt-0.5">Kode: <strong>PANENSEGAR</strong></p>
+                            </div>
+
+                            <!-- Live Tracking Floating Widget in Mockup -->
+                            <div class="bg-white rounded-2xl p-3 border border-emerald-100 shadow-sm space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] font-extrabold text-emerald-800 flex items-center gap-1.5">
+                                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                        Pesanan Dikirim
+                                    </span>
+                                    <span class="text-[9px] font-bold text-slate-400">J&T Fresh #JT8921</span>
+                                </div>
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
+                                        <i class="fas fa-truck-fast text-xs"></i>
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <p class="text-[10.5px] font-bold text-slate-900 truncate">3 Kg Gedong Gincu Grade A</p>
+                                        <p class="text-[9px] text-slate-500">Estimasi tiba sore ini (16:30 WIB)</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mini Product Grid in Mockup -->
+                            <div>
+                                <div class="flex items-center justify-between text-[11px] font-bold text-slate-700 mb-1.5 px-0.5">
+                                    <span>Rekomendasi Petani</span>
+                                    <span class="text-[10px] text-emerald-700">Lihat Semua</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div class="bg-white rounded-xl p-2 border border-slate-100 shadow-xs">
+                                        <div class="h-16 rounded-lg bg-amber-50 flex items-center justify-center mb-1.5 text-2xl">
+                                            🥭
+                                        </div>
+                                        <p class="text-[10px] font-bold text-slate-800 truncate">Gedong Gincu Super</p>
+                                        <p class="text-[10px] font-black text-emerald-700">Rp 35.000<span class="text-[8px] font-normal text-slate-400">/kg</span></p>
+                                    </div>
+                                    <div class="bg-white rounded-xl p-2 border border-slate-100 shadow-xs">
+                                        <div class="h-16 rounded-lg bg-emerald-50 flex items-center justify-center mb-1.5 text-2xl">
+                                            🥭
+                                        </div>
+                                        <p class="text-[10px] font-bold text-slate-800 truncate">Harum Manis Pohon</p>
+                                        <p class="text-[10px] font-black text-emerald-700">Rp 28.000<span class="text-[8px] font-normal text-slate-400">/kg</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- App Bottom Navigation Mockup -->
+                        <div class="bg-white border-t border-slate-100 px-4 py-2 flex items-center justify-between text-slate-400 text-xs">
+                            <div class="flex flex-col items-center text-emerald-700 font-bold text-[9px]">
+                                <i class="fas fa-house text-xs"></i>
+                                <span>Home</span>
+                            </div>
+                            <div class="flex flex-col items-center text-[9px]">
+                                <i class="fas fa-layer-group text-xs"></i>
+                                <span>Kategori</span>
+                            </div>
+                            <div class="flex flex-col items-center text-[9px]">
+                                <i class="fas fa-clipboard-list text-xs"></i>
+                                <span>Pesanan</span>
+                            </div>
+                            <div class="flex flex-col items-center text-[9px]">
+                                <i class="fas fa-user text-xs"></i>
+                                <span>Akun</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Floating Interactive Feature Badges -->
+                <div class="absolute -top-4 -right-4 sm:-right-8 bg-white/95 backdrop-blur-md p-3 rounded-2xl shadow-xl border border-slate-100 text-slate-900 hidden sm:flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center">
+                        <i class="fas fa-bolt text-xs"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-medium text-slate-500">Kadar Manis Teruji</p>
+                        <p class="text-xs font-bold text-slate-900">18° Brix Sweet</p>
+                    </div>
+                </div>
+
+                <div class="absolute -bottom-4 -left-4 sm:-left-8 bg-emerald-600 text-white p-3 rounded-2xl shadow-xl border border-emerald-500 hidden sm:flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
+                        <i class="fab fa-google-play text-xs text-white"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-emerald-100">Rating di Playstore</p>
+                        <p class="text-xs font-extrabold text-white">4.9 / 5.0 (2.4k+)</p>
+                    </div>
+                </div>
+
+            </div>
+
         </div>
     </div>
 </section>
