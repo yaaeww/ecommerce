@@ -296,6 +296,23 @@
             return div.innerHTML;
         }
 
+        function formatChatMessage(text) {
+            if (!text) return '';
+            let formatted = escapeHtml(text);
+            // Bold **text**
+            formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold">$1</strong>');
+            // Italic *text* or _text_
+            formatted = formatted.replace(/_(.*?)_/g, '<em class="italic opacity-90">$1</em>');
+            formatted = formatted.replace(/\*([^*\n]+)\*/g, '<em class="italic opacity-90">$1</em>');
+            // Strikethrough ~~text~~
+            formatted = formatted.replace(/~~(.*?)~~/g, '<del class="opacity-60">$1</del>');
+            // Inline code `code`
+            formatted = formatted.replace(/`([^`]+)`/g, '<code class="bg-slate-100 text-slate-800 px-1.5 py-0.5 rounded text-[11px] font-mono border border-slate-200">$1</code>');
+            // Line breaks
+            formatted = formatted.replace(/\n/g, '<br>');
+            return formatted;
+        }
+
         function createBubble(chat) {
             const senderId = chat.sender_id || (chat.sender ? chat.sender.id : null);
             const isMine = senderId === authUserId;
@@ -305,25 +322,25 @@
             wrapper.className = `flex ${isMine ? 'justify-end' : 'justify-start'} mb-4`;
 
             const bubble = document.createElement('div');
-            let bubbleClass = 'message-bubble bubble-appear px-4 py-2.5 shadow-sm ';
+            let bubbleClass = 'message-bubble bubble-appear px-4 py-3 shadow-sm max-w-[85%] md:max-w-[75%] ';
 
             if (isAI) {
-                bubbleClass += 'message-ai border border-amber-200';
+                bubbleClass += 'message-ai border border-amber-200 bg-amber-50/90 text-slate-800';
             } else if (isMine) {
-                bubbleClass += 'message-mine';
+                bubbleClass += 'message-mine bg-brand-green text-white';
             } else {
-                bubbleClass += 'message-other border border-gray-200';
+                bubbleClass += 'message-other border border-gray-200 bg-white text-slate-800';
             }
 
             bubble.className = bubbleClass;
 
             const timestampText = formatTime(chat.created_at ?? new Date());
-            const timestampClass = isMine ? 'text-indigo-200' : (isAI ? 'text-amber-700/70' : 'text-gray-400');
+            const timestampClass = isMine ? 'text-emerald-200' : (isAI ? 'text-amber-700/70' : 'text-gray-400');
 
             bubble.innerHTML = `
-                            <div class="text-sm leading-relaxed">${escapeHtml(chat.message)}</div>
-                            <div class="text-[10px] text-right mt-1 ${timestampClass}">${timestampText}</div>
-                        `;
+                <div class="text-xs sm:text-sm leading-relaxed">${formatChatMessage(chat.message)}</div>
+                <div class="text-[10px] text-right mt-1.5 ${timestampClass}">${timestampText}</div>
+            `;
 
             wrapper.appendChild(bubble);
             return wrapper;

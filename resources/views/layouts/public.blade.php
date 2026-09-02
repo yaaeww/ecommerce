@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Juragan Pelem — Marketplace Resmi Mangga & UMKM Indramayu')</title>
     <meta name="description" content="@yield('meta_description', 'Platform digital penghubung langsung petani mangga Indramayu dan UMKM lokal dengan konsumen seluruh Indonesia.')">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,32 +15,7 @@
     <!-- Icons & Scripts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'brand-green': '#1B4D3E',
-                        'brand-green-dark': '#12352A',
-                        'brand-green-light': '#2D6A4F',
-                        'brand-amber': '#d97706',
-                        'indigo-600': '#1B4D3E',
-                        'indigo-700': '#12352A',
-                        'indigo-500': '#2D6A4F',
-                        'amber-500': '#d97706',
-                        'yellow-500': '#f59e0b',
-                        'brand-cream': '#FBF9F5',
-                        'brand-slate': '#0f172a',
-                    },
-                    fontFamily: {
-                        'display': ['Outfit', 'sans-serif'],
-                        'sans': ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
+    @vite(['resources/css/app.css'])
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         h1, h2, h3, h4, .font-display { font-family: 'Outfit', sans-serif; }
@@ -59,6 +35,21 @@
             transform: translateY(-3px);
             box-shadow: 0 20px 35px -15px rgba(0, 0, 0, 0.07);
             border-color: rgba(45, 106, 79, 0.3);
+        }
+
+        /* 🛡️ Defensive Pagination SVG constraint */
+        nav[role="navigation"] svg,
+        .pagination svg,
+        nav svg.w-3\.5,
+        nav svg.w-4,
+        nav svg.w-5,
+        .ajax-pagination svg {
+            width: 1rem !important;
+            height: 1rem !important;
+            max-width: 1rem !important;
+            max-height: 1rem !important;
+            display: inline-block !important;
+            vertical-align: middle !important;
         }
 
         /* 🌟 Universal Professional Custom Select Styling */
@@ -328,10 +319,10 @@
                 <div class="md:col-span-3 space-y-3">
                     <h4 class="text-white font-bold text-sm uppercase tracking-wider">Bantuan & Regulasi</h4>
                     <ul class="space-y-2 text-sm text-slate-400">
-                        <li><a href="#" class="hover:text-emerald-400 transition">Kebijakan Garansi 100%</a></li>
-                        <li><a href="#" class="hover:text-emerald-400 transition">Panduan Mitra Petani & UMKM</a></li>
-                        <li><a href="#" class="hover:text-emerald-400 transition">Syarat & Ketentuan Layanan</a></li>
-                        <li><a href="#" class="hover:text-emerald-400 transition">Kebijakan Privasi Data</a></li>
+                        <li><a href="{{ route('bantuan.garansi') }}" class="hover:text-emerald-400 transition">Kebijakan Garansi 100%</a></li>
+                        <li><a href="{{ route('bantuan.panduan-mitra') }}" class="hover:text-emerald-400 transition">Panduan Mitra Petani & UMKM</a></li>
+                        <li><a href="{{ route('bantuan.syarat-ketentuan') }}" class="hover:text-emerald-400 transition">Syarat & Ketentuan Layanan</a></li>
+                        <li><a href="{{ route('bantuan.kebijakan-privasi') }}" class="hover:text-emerald-400 transition">Kebijakan Privasi Data</a></li>
                     </ul>
                 </div>
 

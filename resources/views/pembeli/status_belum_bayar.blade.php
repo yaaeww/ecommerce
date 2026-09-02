@@ -80,6 +80,9 @@
                                         <a href="{{ route('pembeli.pending', ['order_id_midtrans' => $order->order_id_midtrans]) }}" class="inline-flex items-center justify-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                             <i class="fas fa-credit-card mr-1.5"></i> Bayar
                                         </a>
+                                        <button type="button" onclick="cekStatusPembayaran('{{ $order->order_id_midtrans }}', this)" class="inline-flex items-center justify-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md text-indigo-700 bg-white hover:bg-indigo-50 hover:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                                            <i class="fas fa-rotate mr-1.5"></i> Cek Status
+                                        </button>
                                         <form action="{{ route('pembeli.order.cancelExpired', $order->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin membatalkan pesanan ini?')">
                                             @csrf
                                             <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md text-red-700 bg-white hover:bg-red-50 hover:border-red-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
@@ -121,6 +124,9 @@
                                 <a href="{{ route('pembeli.pending', ['order_id_midtrans' => $order->order_id_midtrans]) }}" class="inline-flex items-center justify-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                     <i class="fas fa-credit-card mr-1.5"></i> Bayar
                                 </a>
+                                <button type="button" onclick="cekStatusPembayaran('{{ $order->order_id_midtrans }}', this)" class="inline-flex items-center justify-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md text-indigo-700 bg-white hover:bg-indigo-50 hover:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                                    <i class="fas fa-rotate mr-1.5"></i> Cek Status
+                                </button>
                                 <form action="{{ route('pembeli.order.cancelExpired', $order->id) }}" method="POST" onsubmit="return confirm('Yakin ingin membatalkan pesanan ini?')">
                                     @csrf
                                     <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md text-red-700 bg-white hover:bg-red-50 hover:border-red-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
@@ -146,4 +152,38 @@
         @endif
     </div>
 </div>
+
+@push('scripts')
+<script>
+    function cekStatusPembayaran(orderId, btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5"></i> Mengecek...';
+
+        fetch('/pembeli/order/cek-status/' + encodeURIComponent(orderId), {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            if (data.success) {
+                alert('Status pembayaran: ' + data.status.toUpperCase());
+                window.location.reload();
+            } else {
+                alert(data.message || 'Gagal memeriksa status pembayaran.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-rotate mr-1.5"></i> Cek Status';
+            }
+        })
+        .catch(function () {
+            alert('Gagal memeriksa status pembayaran. Coba lagi.');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-rotate mr-1.5"></i> Cek Status';
+        });
+    }
+</script>
+@endpush
 @endsection

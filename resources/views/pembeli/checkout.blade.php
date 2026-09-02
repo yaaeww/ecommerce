@@ -102,8 +102,21 @@
         window.snap.pay('{{$snapToken}}', {
             onSuccess: function (result) {
                 console.log('Payment success result:', result);
-                // Redirect to pesanan page if multiple orders, or invoice if you handle it
-                window.location.href = '/pembeli/pesanan';
+                // Sinkronkan status order dengan Midtrans sebelum redirect
+                fetch('/pembeli/order/cek-status/' + encodeURIComponent(result.order_id), {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(function () {
+                    window.location.href = '/pembeli/pesanan';
+                })
+                .catch(function () {
+                    window.location.href = '/pembeli/pesanan';
+                });
             },
             onPending: function (result) {
                 alert("Menunggu pembayaran Anda.");

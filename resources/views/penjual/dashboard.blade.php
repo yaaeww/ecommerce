@@ -681,7 +681,13 @@
         font-weight: 500 !important;
     }
     .flatpickr-prev-month svg, 
-    .flatpickr-next-month svg {
+    .flatpickr-next-month svg,
+    .flatpickr-calendar svg {
+        width: 14px !important;
+        height: 14px !important;
+        max-width: 14px !important;
+        max-height: 14px !important;
+        display: inline-block !important;
         fill: #0f172a !important;
     }
 </style>
@@ -723,7 +729,7 @@
                 altInputClass: "w-full pl-10 pr-9 py-2.5 bg-slate-50 hover:bg-white focus:bg-white text-xs font-extrabold text-slate-800 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-hidden transition shadow-xs cursor-pointer",
                 defaultDate: defaultDates,
                 showMonths: 1,
-                animate: true,
+                animate: false,
                 onClose: function(selectedDates, dateStr, instance) {
                     if (selectedDates.length === 2) {
                         const startStr = instance.formatDate(selectedDates[0], "Y-m-d");

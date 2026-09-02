@@ -21,38 +21,7 @@
     <!-- Alpine.js CDN -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-                        display: ['"Outfit"', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            50: '#eef2ff',
-                            100: '#e0e7ff',
-                            200: '#c7d2fe',
-                            300: '#a5b4fc',
-                            400: '#818cf8',
-                            500: '#6366f1',
-                            600: '#4f46e5', // Primary Royal Indigo
-                            700: '#4338ca',
-                            800: '#3730a3',
-                            900: '#312e81',
-                        },
-                        slate: {
-                            850: '#151f32',
-                            900: '#0f172a',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    @vite(['resources/css/app.css'])
 
     <!-- Bootstrap 5 & FontAwesome for Legacy Compatibility -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -91,6 +60,24 @@
             border: 1px solid #e2e8f0;
             border-radius: 1.25rem;
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        /* 🛡️ Defensive Pagination & Flatpickr SVG constraint */
+        nav[role="navigation"] svg,
+        .pagination svg,
+        nav svg.w-3\.5,
+        nav svg.w-4,
+        nav svg.w-5,
+        .ajax-pagination svg,
+        .flatpickr-calendar svg,
+        .flatpickr-prev-month svg,
+        .flatpickr-next-month svg {
+            width: 1rem !important;
+            height: 1rem !important;
+            max-width: 1rem !important;
+            max-height: 1rem !important;
+            display: inline-block !important;
+            vertical-align: middle !important;
         }
 
         /* 🌟 Universal Professional Custom Select Styling */
@@ -255,6 +242,10 @@
         }
     </style>
 
+    <!-- Flatpickr CSS CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    @stack('styles')
     @stack('style')
 </head>
 

@@ -3,17 +3,22 @@
 namespace App\Http\Controllers\Pembeli;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
+use App\Models\Order;
+use App\Models\Produk;
+use App\Traits\SyncsMidtransStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Order;
-
-use App\Models\Produk;
-use App\Models\ActivityLog;
 
 class PesananController extends Controller
 {
+    use SyncsMidtransStatus;
+
     public function index()
     {
+        // Sinkronkan dulu status pembayaran langsung ke Midtrans
+        $this->syncPendingOrdersMidtrans();
+
         $orders = Order::with(['produk.umkm', 'produk.kategori', 'komplain', 'ulasan'])
             ->where('user_id', Auth::id())
             ->latest()
@@ -26,11 +31,11 @@ class PesananController extends Controller
     {
         $orders = Order::with(['produk.umkm', 'komplain'])
             ->where('user_id', Auth::id())
-            ->where(function($q) {
+            ->where(function ($q) {
                 $q->where('status_pesanan', 'dikemas')
-                  ->orWhere(function($sub) {
-                      $sub->where('status', 'complete')->whereNull('status_pesanan');
-                  });
+                    ->orWhere(function ($sub) {
+                        $sub->where('status', 'complete')->whereNull('status_pesanan');
+                    });
             })
             ->latest()
             ->get();
@@ -56,7 +61,7 @@ class PesananController extends Controller
             ->firstOrFail();
 
         // Validasi ketat: order harus complete, berstatus dikirim, memiliki nomor resi, dan belum pernah direlease
-        if ($order->status === 'complete' && $order->status_pesanan === 'dikirim' && !empty($order->resi_pengiriman) && !$order->is_escrow_released) {
+        if ($order->status === 'complete' && $order->status_pesanan === 'dikirim' && ! empty($order->resi_pengiriman) && ! $order->is_escrow_released) {
             $order->status_pesanan = 'diterima';
             $order->diterima_at = now();
             $order->is_escrow_released = true;
@@ -135,6 +140,7 @@ class PesananController extends Controller
 
         if ($order->status === 'cancel') {
             $order->delete();
+
             return back()->with('success', 'Pesanan berhasil dihapus.');
         }
 

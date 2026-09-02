@@ -11,31 +11,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-                        display: ['"Outfit"', 'sans-serif'],
-                    },
-                    colors: {
-                        'brand-green': '#1B4D3E',
-                        'brand-green-dark': '#12352A',
-                        'brand-green-light': '#2D6A4F',
-                        'brand-amber': '#E88D14',
-                        'brand-cream': '#FAFAF7',
-                        'brand-slate': '#1E293B',
-                    }
-                }
-            }
-        }
-    </script>
-    
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    @vite(['resources/css/app.css'])
 </head>
 
 <body class="h-full flex items-center justify-center p-4 sm:p-6 bg-brand-cream font-sans">

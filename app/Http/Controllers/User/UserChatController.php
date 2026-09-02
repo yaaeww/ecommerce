@@ -8,7 +8,7 @@ use App\Models\Chat;
 use App\Models\User;
 use App\Models\Umkm;
 use Illuminate\Support\Facades\Auth;
-use App\Services\GeminiService;
+use App\Services\LocalAiBotService;
 use App\Events\NewChatMessage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Crypt;
@@ -101,14 +101,8 @@ class UserChatController extends Controller
                 'is_read' => true,
             ]);
 
-            $prompt = "Kamu adalah AI Asisten UMKM Indramayu.\n\nUser: {$message}";
-            $aiReply = '⚠️ Maaf, saya tidak dapat memproses pesan ini.';
-            try {
-                $aiReply = GeminiService::askOnce($prompt)
-                    ?? '⚠️ Terjadi kesalahan saat memproses permintaan.';
-            } catch (\Throwable $err) {
-                Log::error("Gemini Error: " . $err->getMessage());
-            }
+            // Respon Cerdas AI Lokal berbasis Realtime Database & User Context
+            $aiReply = LocalAiBotService::reply($sender, $message);
 
             $chatAI = Chat::create([
                 'sender_id' => $sender->id,

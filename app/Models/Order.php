@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'user_id',
         'produk_id',
@@ -19,6 +20,7 @@ class Order extends Model
         'status',
         'status_pesanan',
         'order_id_midtrans',
+        'snap_token',
         'resi_pengiriman',
         'kurir',
         'foto_bukti_pengiriman',

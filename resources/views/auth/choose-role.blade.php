@@ -11,39 +11,27 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-                        display: ['"Outfit"', 'sans-serif'],
-                    },
-                    colors: {
-                        'brand-green': '#1B4D3E',
-                        'brand-green-dark': '#12352A',
-                        'brand-green-light': '#2D6A4F',
-                        'brand-amber': '#E88D14',
-                        'brand-cream': '#FAFAF7',
-                        'brand-slate': '#1E293B',
-                    }
-                }
-            }
-        }
-    </script>
-    
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    @vite(['resources/css/app.css'])
     <style>
+        .role-card {
+            transition: all 0.2s ease-in-out;
+        }
         .role-card.active {
-            border-color: #1B4D3E;
-            background-color: rgba(27, 77, 62, 0.04);
-            box-shadow: 0 4px 14px rgba(27, 77, 62, 0.1);
+            border-color: #1B4D3E !important;
+            background-color: rgba(27, 77, 62, 0.04) !important;
+            box-shadow: 0 4px 14px rgba(27, 77, 62, 0.12) !important;
+        }
+        .role-card .role-check {
+            display: none !important;
         }
         .role-card.active .role-check {
-            display: flex;
+            display: flex !important;
+        }
+        .role-card:not(.active):hover {
+            border-color: #94a3b8;
+            background-color: #f8fafc;
         }
     </style>
 </head>
@@ -74,7 +62,7 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('auth.google.store-role') }}" class="space-y-6">
+        <form method="POST" action="{{ route('auth.google.saveRole') }}" class="space-y-6">
             @csrf
             <input type="hidden" name="role" id="roleInput" value="pembeli">
 
@@ -83,7 +71,7 @@
                 <div 
                     id="roleCardPembeli" 
                     onclick="selectRole('pembeli')" 
-                    class="role-card active cursor-pointer p-5 rounded-2xl border-2 border-slate-200 bg-white transition relative flex items-center justify-between gap-4"
+                    class="role-card active cursor-pointer p-5 rounded-2xl border-2 border-slate-200 bg-white relative flex items-center justify-between gap-4 select-none"
                 >
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-brand-green flex items-center justify-center text-xl shrink-0">
@@ -94,7 +82,7 @@
                             <p class="text-xs text-slate-500 mt-0.5">Belanja mangga segar dan aneka produk olahan UMKM.</p>
                         </div>
                     </div>
-                    <div class="role-check w-6 h-6 rounded-full bg-brand-green text-white flex items-center justify-center text-xs shrink-0">
+                    <div class="role-check w-6 h-6 rounded-full bg-brand-green text-white items-center justify-center text-xs shrink-0">
                         <i class="fas fa-check"></i>
                     </div>
                 </div>
@@ -103,7 +91,7 @@
                 <div 
                     id="roleCardPenjual" 
                     onclick="selectRole('penjual')" 
-                    class="role-card cursor-pointer p-5 rounded-2xl border-2 border-slate-200 bg-white transition relative flex items-center justify-between gap-4"
+                    class="role-card cursor-pointer p-5 rounded-2xl border-2 border-slate-200 bg-white relative flex items-center justify-between gap-4 select-none"
                 >
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 rounded-2xl bg-amber-50 text-brand-amber flex items-center justify-center text-xl shrink-0">
@@ -114,7 +102,7 @@
                             <p class="text-xs text-slate-500 mt-0.5">Buka toko digital, jual hasil panen, dan kelola produk.</p>
                         </div>
                     </div>
-                    <div class="role-check hidden w-6 h-6 rounded-full bg-brand-green text-white items-center justify-center text-xs shrink-0">
+                    <div class="role-check w-6 h-6 rounded-full bg-brand-green text-white items-center justify-center text-xs shrink-0">
                         <i class="fas fa-check"></i>
                     </div>
                 </div>

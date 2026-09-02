@@ -1,72 +1,63 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\GoogleController;
-use App\Http\Controllers\LandingController;
-use App\Http\Controllers\KontakController;
-use App\Http\Controllers\ChatBotController;
-
-// 🔹 Chat per Role
+use App\Http\Controllers\Admin\AdminActivityLogController;
 use App\Http\Controllers\Admin\AdminChatController;
-use App\Http\Controllers\Penjual\PenjualChatController;
-use App\Http\Controllers\User\UserChatController;
-
+use App\Http\Controllers\Admin\AdminKeranjangController;
+use App\Http\Controllers\Admin\AdminKomplainController;
+use App\Http\Controllers\Admin\AdminLedgerController;
+// 🔹 Chat per Role
+use App\Http\Controllers\Admin\AdminNotificationController;
+use App\Http\Controllers\Admin\AdminPenarikanController;
+use App\Http\Controllers\Admin\AdminPengirimanController;
 // 🔹 Admin Controllers
-use App\Http\Controllers\Admin\{
-    DashboardAdminController,
-    ProdukAdminController,
-    KategoriController,
-    AdminUmkmController,
-    AdminProfileController,
-    AdminPesananController,
-    AdminPengirimanController,
-    AdminUlasanController,
-    AdminKeranjangController,
-    AdminPenarikanController,
-    AdminActivityLogController,
-    AdminNotificationController,
-    AdminLedgerController,
-    AdminKomplainController,
-    AdminPesanKontakController,
-    PenjualController,
-    PembeliController,
-    PendapatanController as AdminPendapatanController
-};
-
-// 🔹 Penjual Controllers
-use App\Http\Controllers\Penjual\{
-    DashboardPenjualController,
-    ProdukPenjualController,
-    PenjualUmkmController,
-    PenjualProfileController,
-    PenjualPesananController,
-    PenjualInvoiceController,
-    PenjualPenarikanController,
-    PenjualNotificationController,
-    PenjualUlasanController,
-    PendapatanController
-};
-
-// 🔹 Pembeli Controllers
-use App\Http\Controllers\Pembeli\{
-    DashboardPembeliController,
-    ProdukPembeliController,
-    PembeliProfileController,
-    PembeliAlamatController,
-    KomplainPembeliController,
-    KeranjangController,
-    OrderController,
-    CheckoutController,
-    PesananController,
-    RatingController
-};
-
-// 🔹 Invoice Controller (umum)
+use App\Http\Controllers\Admin\AdminPesananController;
+use App\Http\Controllers\Admin\AdminPesanKontakController;
+use App\Http\Controllers\Admin\AdminProfileController;
+use App\Http\Controllers\Admin\AdminUlasanController;
+use App\Http\Controllers\Admin\AdminUmkmController;
+use App\Http\Controllers\Admin\DashboardAdminController;
+use App\Http\Controllers\Admin\KategoriController;
+use App\Http\Controllers\Admin\PembeliController;
+use App\Http\Controllers\Admin\PendapatanController as AdminPendapatanController;
+use App\Http\Controllers\Admin\PenjualController;
+use App\Http\Controllers\Admin\ProdukAdminController;
+use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\ChatBotController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\KontakController;
+use App\Http\Controllers\LandingController;
+use App\Http\Controllers\Pembeli\CheckoutController;
+use App\Http\Controllers\Pembeli\DashboardPembeliController;
+// 🔹 Penjual Controllers
+use App\Http\Controllers\Pembeli\KeranjangController;
+use App\Http\Controllers\Pembeli\KomplainPembeliController;
+use App\Http\Controllers\Pembeli\OrderController;
+use App\Http\Controllers\Pembeli\PembeliAlamatController;
+use App\Http\Controllers\Pembeli\PembeliProfileController;
+use App\Http\Controllers\Pembeli\PesananController;
+use App\Http\Controllers\Pembeli\ProdukPembeliController;
+use App\Http\Controllers\Pembeli\RatingController;
+use App\Http\Controllers\Penjual\DashboardPenjualController;
+use App\Http\Controllers\Penjual\PendapatanController;
+// 🔹 Pembeli Controllers
+use App\Http\Controllers\Penjual\PenjualChatController;
+use App\Http\Controllers\Penjual\PenjualInvoiceController;
+use App\Http\Controllers\Penjual\PenjualNotificationController;
+use App\Http\Controllers\Penjual\PenjualPenarikanController;
+use App\Http\Controllers\Penjual\PenjualPesananController;
+use App\Http\Controllers\Penjual\PenjualProfileController;
+use App\Http\Controllers\Penjual\PenjualUlasanController;
+use App\Http\Controllers\Penjual\PenjualUmkmController;
+use App\Http\Controllers\Penjual\ProdukPenjualController;
+use App\Http\Controllers\User\UserChatController;
+// 🔹 Invoice Controller (umum)
+use Illuminate\Support\Facades\Route;
+
+use App\Http\Controllers\BantuanController;
 
 /*
 |--------------------------------------------------------------------------
-| Landing Page
+| Landing & Info Pages
 |--------------------------------------------------------------------------
 */
 
@@ -77,6 +68,12 @@ Route::get('/kontak', [KontakController::class, 'index'])->name('kontak');
 Route::post('/kontak', [KontakController::class, 'store'])->name('kontak.store');
 Route::get('/api/search/live', [LandingController::class, 'liveSearch'])->name('api.search.live');
 Route::get('/produk/{id}', [ProdukPembeliController::class, 'show'])->name('pembeli.produk.show');
+
+// 🔹 Bantuan & Regulasi
+Route::get('/garansi', [BantuanController::class, 'garansi'])->name('bantuan.garansi');
+Route::get('/panduan-mitra', [BantuanController::class, 'panduanMitra'])->name('bantuan.panduan-mitra');
+Route::get('/syarat-ketentuan', [BantuanController::class, 'syaratKetentuan'])->name('bantuan.syarat-ketentuan');
+Route::get('/kebijakan-privasi', [BantuanController::class, 'kebijakanPrivasi'])->name('bantuan.kebijakan-privasi');
 /*
 |--------------------------------------------------------------------------
 | 💬 CHAT & CHATBOT ROUTES
@@ -110,7 +107,6 @@ Route::middleware(['auth', 'role:penjual'])
         Route::get('/history/{receiverId}', [PenjualChatController::class, 'history'])->name('history');
     });
 
-
 /*
 |--------------------------------------------------------------------------
 | Google Authentication
@@ -134,7 +130,7 @@ Route::middleware('auth')->get('/redirect-after-login', function () {
         default => abort(403),
     };
 });
-Route::middleware('auth')->get('/dashboard', fn() => redirect('/redirect-after-login'))->name('dashboard');
+Route::middleware('auth')->get('/dashboard', fn () => redirect('/redirect-after-login'))->name('dashboard');
 
 /*
 |--------------------------------------------------------------------------
@@ -170,7 +166,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('pendapatan', [AdminPendapatanController::class, 'index'])->name('pendapatan.index');
     Route::post('pendapatan/update-komisi', [AdminPendapatanController::class, 'updateKomisi'])->name('pendapatan.update-komisi');
     Route::resource('pesanan', AdminPesananController::class)->only(['index', 'show']);
-    
+
     // 🚚 Fulfillment & Pengiriman Tracker
     Route::get('pengiriman', [AdminPengirimanController::class, 'index'])->name('pengiriman.index');
     Route::post('pengiriman/{id}/resi', [AdminPengirimanController::class, 'updateResi'])->name('pengiriman.update-resi');
@@ -290,7 +286,8 @@ Route::middleware(['auth', 'role:pembeli'])->prefix('pembeli')->name('pembeli.')
     Route::get('/status/dikirim', [PesananController::class, 'dikirim'])->name('status.dikirim');
     Route::get('/pending/{order_id_midtrans}', [OrderController::class, 'pending'])->name('pending');
     Route::delete('/order/{id}', [OrderController::class, 'batal'])->name('order.batal');
-    Route::post('/order/cancel/{order_id}', [OrderController::class, 'cancelExpiredOrder'])->name('order.cancelExpired');
+    Route::post('/order/cancel/{order_id}', [OrderController::class, 'batal'])->name('order.cancelExpired');
+    Route::post('/order/cek-status/{order_id_midtrans}', [OrderController::class, 'cekStatus'])->name('order.cekStatus');
 
     Route::get('/invoice/{id}', [InvoiceController::class, 'show'])->name('invoice.show');
     Route::get('/invoice/{id}/pdf', [InvoiceController::class, 'generatePdf'])->name('invoice.pdf');
@@ -339,4 +336,4 @@ Route::middleware(['auth', 'role:pembeli'])->prefix('pembeli')->name('pembeli.')
 | Auth Routes
 |--------------------------------------------------------------------------
 */
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';
