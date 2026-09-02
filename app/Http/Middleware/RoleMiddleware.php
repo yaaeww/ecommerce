@@ -20,6 +20,12 @@ class RoleMiddleware
     {
         // Cek apakah user login dan memiliki peran yang sesuai
         if (!auth()->check() || auth()->user()->role !== $role) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized: Anda tidak memiliki akses ke peran ' . $role
+                ], 403);
+            }
             // Kembalikan 403 Forbidden jika tidak berizin
             abort(403, 'Unauthorized: You do not have access to this page.');
         }

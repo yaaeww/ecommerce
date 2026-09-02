@@ -13,7 +13,7 @@ use Exception;
 class GoogleController extends Controller
 {
     /**
-     * Redirect ke halaman login Google.
+     * Redirect ke halaman login Google (untuk website).
      */
     public function redirect()
     {
@@ -21,39 +21,112 @@ class GoogleController extends Controller
     }
 
     /**
-     * Callback dari Google setelah login.
+     * Redirect ke Google khusus Flutter mobile/web.
      */
-    public function callback()
+    public function mobileRedirect()
     {
+        session(['oauth_source' => 'flutter_web']);
+
+        // Simpan URL tujuan kembali ke Flutter app (dikirim dari sisi aplikasi)
+        $returnTo = request()->query('return_to');
+        $mode = request()->query('mode', 'popup');
+
+        if ($mode === 'redirect' || $returnTo) {
+            session(['oauth_mode' => 'redirect']);
+            if ($returnTo) {
+                session(['oauth_return_to' => $returnTo]);
+            }
+        }
+
+        return Socialite::driver('google')->redirect();
+    }
+
+    /**
+     * Callback dari Google setelah login (menangani Website dan Flutter Web).
+     */
+    public function callback(Request $request)
+    {
+        $isMobile = session('oauth_source') === 'flutter_web' || $request->query('state') === 'mobile_flutter';
+        $isRedirectMode = session('oauth_mode') === 'redirect';
+
         try {
             $googleUser = Socialite::driver('google')->user();
-
-            // Cek apakah user sudah terdaftar
             $user = User::where('email', $googleUser->getEmail())->first();
 
+            if ($isMobile) {
+                session()->forget('oauth_source');
+                session()->forget('oauth_mode');
+
+                if (!$user) {
+                    $payload = [
+                        'success'                 => true,
+                        'requires_role_selection' => true,
+                        'name'                    => $googleUser->getName(),
+                        'email'                   => $googleUser->getEmail(),
+                        'avatar'                  => $googleUser->getAvatar(),
+                    ];
+                    return $isRedirectMode
+                        ? $this->redirectResponse($payload)
+                        : $this->postMessageResponse($payload);
+                }
+
+                $token = $user->createToken('flutter_mobile')->plainTextToken;
+
+                if ($user->role === 'penjual') {
+                    $user->load('umkm');
+                }
+
+                $payload = [
+                    'success'                 => true,
+                    'requires_role_selection' => false,
+                    'token'                   => $token,
+                    'user'                    => [
+                        'id'         => $user->id,
+                        'name'       => $user->name,
+                        'email'      => $user->email,
+                        'role'       => $user->role,
+                        'avatar'     => $user->avatar,
+                        'no_telepon' => $user->no_telepon,
+                    ],
+                ];
+
+                return $isRedirectMode
+                    ? $this->redirectResponse($payload)
+                    : $this->postMessageResponse($payload);
+            }
+
+            // Handler default untuk Website
             if (!$user) {
-                // Simpan data sementara ke session untuk memilih role
                 session(['google_user' => [
-                    'name' => $googleUser->getName(),
+                    'name'  => $googleUser->getName(),
                     'email' => $googleUser->getEmail(),
                 ]]);
-
-                // Arahkan ke halaman pemilihan role
                 return redirect()->route('auth.google.role');
             }
 
-            // Login langsung jika user sudah ada
             Auth::login($user);
             request()->session()->regenerate();
 
             return $this->redirectByRole($user);
         } catch (Exception $e) {
+            if ($isMobile) {
+                session()->forget('oauth_source');
+                session()->forget('oauth_mode');
+                $payload = [
+                    'success' => false,
+                    'error'   => 'Login Google gagal: ' . $e->getMessage(),
+                ];
+                return $isRedirectMode
+                    ? $this->redirectResponse($payload)
+                    : $this->postMessageResponse($payload);
+            }
+
             return redirect()->route('login')->with('error', 'Login dengan Google gagal! ' . $e->getMessage());
         }
     }
 
     /**
-     * Menampilkan halaman untuk memilih role setelah login Google pertama kali.
+     * Menampilkan halaman untuk memilih role setelah login Google pertama kali (Website).
      */
     public function chooseRole()
     {
@@ -64,7 +137,7 @@ class GoogleController extends Controller
     }
 
     /**
-     * Menyimpan role dan buat akun baru.
+     * Menyimpan role dan buat akun baru (Website).
      */
     public function saveRole(Request $request)
     {
@@ -76,12 +149,11 @@ class GoogleController extends Controller
             return redirect()->route('login')->with('error', 'Sesi Google sudah berakhir.');
         }
 
-        // Simpan user baru
         $user = User::create([
-            'name' => $googleData['name'],
-            'email' => $googleData['email'],
+            'name'     => $googleData['name'],
+            'email'    => $googleData['email'],
             'password' => bcrypt(Str::random(16)),
-            'role' => $request->role,
+            'role'     => $request->role,
         ]);
 
         Auth::login($user);
@@ -89,6 +161,91 @@ class GoogleController extends Controller
         session()->forget('google_user');
 
         return $this->redirectByRole($user);
+    }
+
+    /**
+     * Render halaman HTML yang mengirim data via window.postMessage lalu tutup popup.
+     */
+    private function postMessageResponse(array $data): \Illuminate\Http\Response
+    {
+        $json = json_encode($data, JSON_UNESCAPED_UNICODE);
+        $html = <<<HTML
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Menghubungkan Akun Google...</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background: #f8fafc;
+      color: #334155;
+    }
+    .card {
+      background: white;
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      text-align: center;
+      max-width: 320px;
+    }
+    .spinner {
+      width: 44px;
+      height: 44px;
+      border: 4px solid #e2e8f0;
+      border-top-color: #10b981;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    h3 { margin: 0 0 8px; font-size: 16px; font-weight: 700; color: #0f172a; }
+    p { margin: 0; font-size: 13px; color: #64748b; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="spinner"></div>
+    <h3>Menghubungkan Google</h3>
+    <p>Sinkronisasi akun ke aplikasi...</p>
+  </div>
+  <script>
+    var payload = {$json};
+    function sendAndClose() {
+      if (window.opener) {
+        window.opener.postMessage({ type: 'GOOGLE_AUTH_RESULT', data: payload }, '*');
+        setTimeout(function() { window.close(); }, 400);
+      } else {
+        document.querySelector('p').textContent = 'Selesai. Silakan tutup tab ini.';
+      }
+    }
+    window.addEventListener('load', sendAndClose);
+  </script>
+</body>
+</html>
+HTML;
+        return response($html, 200)->header('Content-Type', 'text/html');
+    }
+
+    /**
+     * Redirect ke Flutter web app dengan data auth di URL params (untuk redirect flow di mobile).
+     */
+    private function redirectResponse(array $data): \Illuminate\Http\RedirectResponse
+    {
+        // URL kembali ke Flutter app (jika tidak ada, kembali ke root server)
+        $returnTo = session('oauth_return_to');
+        session()->forget('oauth_return_to');
+
+        $encoded = base64_encode(json_encode($data, JSON_UNESCAPED_UNICODE));
+        $sep = $returnTo && parse_url($returnTo, PHP_URL_QUERY) ? '&' : '?';
+        $url = ($returnTo ?: url('/')) . $sep . 'google_auth=' . urlencode($encoded);
+
+        return redirect($url);
     }
 
     /**

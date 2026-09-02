@@ -117,6 +117,10 @@ Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
 Route::get('/auth/google/role', [GoogleController::class, 'chooseRole'])->name('auth.google.role');
 Route::post('/auth/google/save-role', [GoogleController::class, 'saveRole'])->name('auth.google.saveRole');
 
+// 📱 Mobile OAuth (Flutter Web) — menggunakan window.postMessage
+Route::get('/auth/google/mobile', [GoogleController::class, 'mobileRedirect'])->name('auth.google.mobile');
+Route::get('/auth/google/mobile-callback', [GoogleController::class, 'mobileCallback'])->name('auth.google.mobile.callback');
+
 /*
 |--------------------------------------------------------------------------
 | Redirect After Login

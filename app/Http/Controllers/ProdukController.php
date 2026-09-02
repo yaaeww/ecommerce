@@ -7,13 +7,26 @@ use Illuminate\Http\Request;
 
 class ProdukController extends Controller
 {
-    public function indexApi()
+    public function indexApi(Request $request)
     {
         try {
-            $produks = Produk::with(['diskon', 'kategori', 'umkm'])
-                ->where('stok', '>', 0)
-                ->orderBy('created_at', 'desc')
-                ->get();
+            $query = Produk::with(['diskon', 'kategori', 'umkm'])
+                ->where('is_active', true)
+                ->where('stok', '>', 0);
+
+            if ($request->has('search') && $request->search !== '') {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('nama', 'like', "%{$search}%")
+                      ->orWhere('deskripsi', 'like', "%{$search}%");
+                });
+            }
+
+            if ($request->has('kategori_id') && $request->kategori_id !== '') {
+                $query->where('kategori_produk_id', $request->kategori_id);
+            }
+
+            $produks = $query->orderBy('created_at', 'desc')->get();
 
             return response()->json([
                 'success' => true,
@@ -32,7 +45,8 @@ class ProdukController extends Controller
     public function produkTerbaru()
     {
         try {
-            $produks = Produk::with(['diskon', 'kategori'])
+            $produks = Produk::with(['diskon', 'kategori', 'umkm'])
+                ->where('is_active', true)
                 ->where('stok', '>', 0)
                 ->orderBy('created_at', 'desc')
                 ->take(20)
@@ -59,7 +73,7 @@ class ProdukController extends Controller
                 'diskon', 
                 'kategori', 
                 'umkm',
-                'ulasans' => function($query) {
+                'ulasan' => function($query) {
                     $query->where(function($q) {
                         $q->whereNull('status_moderasi')
                           ->orWhere('status_moderasi', '!=', 'hidden');
@@ -69,15 +83,14 @@ class ProdukController extends Controller
                 }
             ])->find($id);
 
-            if (!$produk) {
+            if (!$produk || !$produk->is_active) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Produk tidak ditemukan'
                 ], 404);
             }
 
-            // Calculate average rating
-            $averageRating = $produk->ulasans->avg('bintang');
+            $averageRating = $produk->ulasan->avg('bintang');
             $produk->average_rating = $averageRating ? round($averageRating, 1) : 0;
 
             return response()->json([
@@ -106,7 +119,7 @@ class ProdukController extends Controller
                 ], 404);
             }
 
-            $ulasans = $produk->ulasans()
+            $ulasans = $produk->ulasan()
                 ->with('user')
                 ->orderBy('created_at', 'desc')
                 ->get();

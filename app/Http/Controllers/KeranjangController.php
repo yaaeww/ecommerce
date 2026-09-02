@@ -52,6 +52,13 @@ class KeranjangController extends Controller
             $user = $request->user();
             $produk = Produk::find($request->produk_id);
 
+            if (!$produk || !$produk->is_active) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Produk tidak tersedia atau sudah tidak aktif'
+                ], 400);
+            }
+
             // Check stock
             if ($produk->stok < $request->jumlah) {
                 return response()->json([
