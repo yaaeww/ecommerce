@@ -565,7 +565,6 @@
                         <path d="M17.18 15.387L6.465 22.412a2.38 2.38 0 0 1-1.312.388c-.603 0-1.145-.226-1.543-.614L13.793 12l3.387 3.387z" fill="#FF1744"/>
                         <path d="M21.573 11.233l-4.393-2.62-3.387 3.387 3.387 3.387 4.393-2.62a1.365 1.365 0 0 0 0-2.534z" fill="#00B0FF"/>
                     </svg>
-                    <span class="text-white font-extrabold tracking-tight">Aplikasi Mobile Resmi Juragan Pelem</span>
                     <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300">Android v1.2.4</span>
                     <i class="fas fa-chevron-right text-[9px] text-emerald-400 group-hover:translate-x-1 transition-transform"></i>
                 </div>
