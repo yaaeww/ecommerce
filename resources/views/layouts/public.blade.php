@@ -15,6 +15,40 @@
     <!-- Icons & Scripts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Tailwind CSS CDN & Palette Configuration -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        display: ['"Outfit"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            200: '#a7f3d0',
+                            300: '#6ee7b7',
+                            400: '#34d399',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                            green: '#2d6a4f',
+                            'green-dark': '#1b4332',
+                            yellow: '#ffb703',
+                            cream: '#fefae0',
+                            slate: '#1e293b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     @vite(['resources/css/app.css'])
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }

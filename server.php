@@ -17,17 +17,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// Serve static files with CORS headers
+// Serve static files with CORS headers & correct MIME types
 if ($uri !== '/' && file_exists($publicPath.$uri)) {
-    $ext = pathinfo($uri, PATHINFO_EXTENSION);
+    $ext = strtolower(pathinfo($uri, PATHINFO_EXTENSION));
     $mimeTypes = [
-        'jpg'  => 'image/jpeg',
-        'jpeg' => 'image/jpeg',
-        'png'  => 'image/png',
-        'gif'  => 'image/gif',
-        'webp' => 'image/webp',
-        'svg'  => 'image/svg+xml',
-        'pdf'  => 'application/pdf',
+        'css'   => 'text/css; charset=UTF-8',
+        'js'    => 'application/javascript; charset=UTF-8',
+        'mjs'   => 'application/javascript; charset=UTF-8',
+        'json'  => 'application/json',
+        'jpg'   => 'image/jpeg',
+        'jpeg'  => 'image/jpeg',
+        'png'   => 'image/png',
+        'gif'   => 'image/gif',
+        'webp'  => 'image/webp',
+        'svg'   => 'image/svg+xml',
+        'ico'   => 'image/x-icon',
+        'pdf'   => 'application/pdf',
+        'woff'  => 'font/woff',
+        'woff2' => 'font/woff2',
+        'ttf'   => 'font/ttf',
+        'otf'   => 'font/otf',
+        'eot'   => 'application/vnd.ms-fontobject',
+        'map'   => 'application/json',
+        'apk'   => 'application/vnd.android.package-archive',
     ];
     if (isset($mimeTypes[$ext])) {
         header('Content-Type: ' . $mimeTypes[$ext]);
