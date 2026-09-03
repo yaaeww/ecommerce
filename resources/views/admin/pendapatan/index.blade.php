@@ -484,6 +484,12 @@
         max-height: 14px !important;
         display: inline-block !important;
         fill: #0f172a !important;
+        width: 14px !important;
+        height: 14px !important;
+        max-width: 14px !important;
+        max-height: 14px !important;
+        display: inline-block !important;
+        vertical-align: middle !important;
     }
 </style>
 @endpush

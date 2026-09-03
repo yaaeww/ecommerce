@@ -817,6 +817,15 @@
         padding: 0.5rem !important;
         top: 8px !important;
     }
+    .flatpickr-months .flatpickr-prev-month svg, 
+    .flatpickr-months .flatpickr-next-month svg {
+        width: 14px !important;
+        height: 14px !important;
+        max-width: 14px !important;
+        max-height: 14px !important;
+        display: inline-block !important;
+        vertical-align: middle !important;
+    }
     .flatpickr-months .flatpickr-prev-month:hover svg, 
     .flatpickr-months .flatpickr-next-month:hover svg {
         fill: #059669 !important;
