@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
 use App\Models\User;
 use App\Models\Umkm;
 use App\Models\KategoriProduk;
@@ -34,17 +35,9 @@ class DatabaseSeeder extends Seeder
         if (!File::exists($storagePath)) {
             $downloaded = false;
             try {
-                $ch = curl_init($onlineUrl);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-                curl_setopt($ch, CURLOPT_TIMEOUT, 6);
-                curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)');
-                $imageData = curl_exec($ch);
-                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                curl_close($ch);
-
-                if ($httpCode === 200 && !empty($imageData) && strlen($imageData) > 1000) {
-                    file_put_contents($storagePath, $imageData);
+                $response = Http::timeout(5)->withoutVerifying()->get($onlineUrl);
+                if ($response->successful() && strlen($response->body()) > 1000) {
+                    file_put_contents($storagePath, $response->body());
                     $downloaded = true;
                 }
             } catch (\Throwable $e) {
@@ -338,9 +331,14 @@ class DatabaseSeeder extends Seeder
         // ===============================
         // 🔹 UMKM MITRA AGRIKULTUR & MANGGA
         // ===============================
+        $userSanusi = User::where('email', 'penjual@gmail.com')->first();
+        $userSiti = User::where('email', 'jo@gmail.com')->first();
+        $userSari = User::where('email', 'sari@gmail.com')->first();
+        $userAhmad = User::where('email', 'ahmad@gmail.com')->first();
+
         $umkms = [
             [
-                'user_id' => 2, // Pak Haji Sanusi
+                'user_id' => $userSanusi->id, // Pak Haji Sanusi
                 'nama_toko' => 'Kebun Mangga Gedong Gincu',
                 'deskripsi' => 'Pusat budidaya mangga gedong gincu super asli Indramayu dari kebun langsung. Garansi petik pohon dan mutu premium.',
                 'alamat' => 'Desa Krasak, Kec. Jatibarang, Kab. Indramayu',
@@ -349,7 +347,7 @@ class DatabaseSeeder extends Seeder
                 'status' => 'approved',
             ],
             [
-                'user_id' => 3, // Ibu Siti
+                'user_id' => $userSiti->id, // Ibu Siti
                 'nama_toko' => 'Sentra Olahan Mangga Indramayu',
                 'deskripsi' => 'Spesialis produk hilirisasi mangga: Dodol, Sirup, Manisan, Keripik, dan Sambal Mangga Gedong Gincu alami tanpa pengawet.',
                 'alamat' => 'Jl. Olahan Pangan No. 12, Indramayu',
@@ -358,7 +356,7 @@ class DatabaseSeeder extends Seeder
                 'status' => 'approved',
             ],
             [
-                'user_id' => 6, // Sari Wijaya
+                'user_id' => $userSari->id, // Sari Wijaya
                 'nama_toko' => 'Agro Pelem Super Dermayu',
                 'deskripsi' => 'Koleksi lengkap mangga khas Indramayu: Harum Manis, Cengkir, Dermayu, dan Golek Segar siap kirim ke seluruh kota.',
                 'alamat' => 'Jl. Raya Cikedung No. 45, Indramayu',
@@ -367,7 +365,7 @@ class DatabaseSeeder extends Seeder
                 'status' => 'approved',
             ],
             [
-                'user_id' => 7, // Ahmad Fauzi
+                'user_id' => $userAhmad->id, // Ahmad Fauzi
                 'nama_toko' => 'Bibit & Perkebunan Mangga Nusantara',
                 'deskripsi' => 'Penyedia bibit pohon mangga okulasi bersertifikasi unggul, pupuk organik pelebat buah, dan nutrisi khusus perkebunan mangga.',
                 'alamat' => 'Jl. Agraria Hijau No. 8, Indramayu',

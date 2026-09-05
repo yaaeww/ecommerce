@@ -56,7 +56,7 @@ class BuyerOrderApiController extends Controller
 
             $status = $request->query('status'); // pending, dikemas, dikirim, diterima, cancel
 
-            $query = Order::with(['produk.umkm', 'produk.diskon', 'komplain', 'ulasan'])
+            $query = Order::with(['produk.umkm', 'produk.diskon', 'komplain', 'ulasan', 'ulasan.user'])
                 ->where('user_id', $user->id);
 
             if ($status === 'pending') {
@@ -100,7 +100,7 @@ class BuyerOrderApiController extends Controller
     {
         try {
             $user = $request->user();
-            $order = Order::with(['produk.umkm', 'produk.diskon', 'komplain', 'ulasan'])
+            $order = Order::with(['produk.umkm', 'produk.diskon', 'komplain', 'ulasan', 'ulasan.user'])
                 ->where('user_id', $user->id)
                 ->find($id);
 

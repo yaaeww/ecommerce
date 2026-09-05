@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Services\ImageOptimizerService;
 
 class ProdukPenjualController extends Controller
 {
@@ -46,6 +47,26 @@ class ProdukPenjualController extends Controller
     {
         if ($redirect = $this->ensureUserHasUMKM()) return $redirect;
 
+        // Normalisasi diskon & harga coret: jadikan benar-benar opsional
+        $harga = (float) $request->input('harga', 0);
+        $hargaCoret = $request->input('harga_coret');
+
+        // Jika harga coret kosong, 0, negatif, atau tidak lebih besar dari harga jual normal,
+        // maka otomatis dianggap tanpa diskon (null) agar tidak menimbulkan error validasi.
+        if ($hargaCoret === null || $hargaCoret === '' || (float)$hargaCoret <= 0 || (float)$hargaCoret <= $harga) {
+            $request->merge(['harga_coret' => null]);
+        }
+
+        // Sanitasi diskon persentase opsional jika nilai 0 atau kosong
+        $persenDiskon = $request->input('persen_diskon');
+        if (empty($persenDiskon) || (int)$persenDiskon <= 0) {
+            $request->merge([
+                'persen_diskon' => null,
+                'tanggal_mulai' => null,
+                'tanggal_berakhir' => null,
+            ]);
+        }
+
         $request->validate([
             'kategori_produk_id' => 'required|exists:kategori_produks,id',
             'nama' => 'required|string|max:255',
@@ -54,11 +75,16 @@ class ProdukPenjualController extends Controller
             'harga_coret' => 'nullable|numeric|gt:harga',
             'berat_gram' => 'nullable|integer|min:100',
             'stok' => 'required|integer|min:0',
-            'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp,bmp,jfif|max:10240',
             // Validasi diskon opsional, jika salah satu field diskon diisi maka wajib lengkap
             'persen_diskon' => 'nullable|integer|min:0|max:100|required_with:tanggal_mulai,tanggal_berakhir',
             'tanggal_mulai' => 'nullable|date|required_with:persen_diskon,tanggal_berakhir',
             'tanggal_berakhir' => 'nullable|date|after_or_equal:tanggal_mulai|required_with:persen_diskon,tanggal_mulai',
+        ], [
+            'harga_coret.gt' => 'Harga coret harus lebih besar dari harga jual normal jika ingin memasang promo diskon. Kosongkan jika tidak ada diskon.',
+            'gambar.image' => 'File gambar yang diupload tidak valid.',
+            'gambar.mimes' => 'Format gambar harus berupa JPG, JPEG, PNG, WEBP, GIF, atau BMP.',
+            'gambar.max' => 'Ukuran gambar maksimal adalah 10MB.',
         ]);
 
         $umkm = $this->getUserUMKM();
@@ -71,7 +97,7 @@ class ProdukPenjualController extends Controller
         $data['berat_gram'] = $request->input('berat_gram', 1000);
 
         if ($request->hasFile('gambar')) {
-            $data['gambar'] = $request->file('gambar')->store('produks', 'public');
+            $data['gambar'] = \App\Services\ImageOptimizerService::convertToWebp($request->file('gambar'), 'produks');
         }
 
         $produk = Produk::create($data);
@@ -108,6 +134,23 @@ class ProdukPenjualController extends Controller
 
         $produk = $this->findProdukByUser($id);
 
+        // Normalisasi diskon & harga coret: jadikan benar-benar opsional
+        $harga = (float) $request->input('harga', 0);
+        $hargaCoret = $request->input('harga_coret');
+
+        if ($hargaCoret === null || $hargaCoret === '' || (float)$hargaCoret <= 0 || (float)$hargaCoret <= $harga) {
+            $request->merge(['harga_coret' => null]);
+        }
+
+        $persenDiskon = $request->input('persen_diskon');
+        if (empty($persenDiskon) || (int)$persenDiskon <= 0) {
+            $request->merge([
+                'persen_diskon' => null,
+                'tanggal_mulai' => null,
+                'tanggal_berakhir' => null,
+            ]);
+        }
+
         $request->validate([
             'kategori_produk_id' => 'required|exists:kategori_produks,id',
             'nama' => 'required|string|max:255',
@@ -116,11 +159,16 @@ class ProdukPenjualController extends Controller
             'harga_coret' => 'nullable|numeric|gt:harga',
             'berat_gram' => 'nullable|integer|min:100',
             'stok' => 'required|integer|min:0',
-            'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp,bmp,jfif|max:10240',
             // Validasi diskon opsional
             'persen_diskon' => 'nullable|integer|min:0|max:100|required_with:tanggal_mulai,tanggal_berakhir',
             'tanggal_mulai' => 'nullable|date|required_with:persen_diskon,tanggal_berakhir',
             'tanggal_berakhir' => 'nullable|date|after_or_equal:tanggal_mulai|required_with:persen_diskon,tanggal_mulai',
+        ], [
+            'harga_coret.gt' => 'Harga coret harus lebih besar dari harga jual normal jika ingin memasang promo diskon. Kosongkan jika tidak ada diskon.',
+            'gambar.image' => 'File gambar yang diupload tidak valid.',
+            'gambar.mimes' => 'Format gambar harus berupa JPG, JPEG, PNG, WEBP, GIF, atau BMP.',
+            'gambar.max' => 'Ukuran gambar maksimal adalah 10MB.',
         ]);
 
         $data = $request->only(['kategori_produk_id', 'nama', 'deskripsi', 'harga', 'harga_coret', 'berat_gram', 'stok']);
@@ -130,7 +178,7 @@ class ProdukPenjualController extends Controller
             if ($produk->gambar && Storage::disk('public')->exists($produk->gambar)) {
                 Storage::disk('public')->delete($produk->gambar);
             }
-            $data['gambar'] = $request->file('gambar')->store('produks', 'public');
+            $data['gambar'] = \App\Services\ImageOptimizerService::convertToWebp($request->file('gambar'), 'produks');
         }
 
         $produk->update($data);

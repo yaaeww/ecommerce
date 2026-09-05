@@ -289,6 +289,56 @@
             });
         }
 
+        // ── Label tanggal ala WhatsApp ─────────────────────────────
+        function isSameDay(a, b) {
+            const da = new Date(a);
+            const db = new Date(b);
+            return da.getFullYear() === db.getFullYear() &&
+                da.getMonth() === db.getMonth() &&
+                da.getDate() === db.getDate();
+        }
+
+        function formatDayLabel(iso) {
+            if (!iso) return '';
+            const date = new Date(iso);
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const day = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+            const yesterday = new Date(today);
+            yesterday.setDate(today.getDate() - 1);
+
+            if (day.getTime() === today.getTime()) return 'Hari Ini';
+            if (day.getTime() === yesterday.getTime()) return 'Kemarin';
+            return date.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+        }
+
+        let lastRenderedDate = null;
+
+        function createDateSeparator(iso) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'flex justify-center my-2';
+            const span = document.createElement('span');
+            span.className = 'px-3 py-1 rounded-full bg-gray-200/80 text-[10px] font-semibold text-gray-500';
+            span.textContent = formatDayLabel(iso);
+            wrapper.appendChild(span);
+            return wrapper;
+        }
+
+        function appendChat(chat, bubble) {
+            if (chat.created_at) {
+                const dateKey = new Date(chat.created_at).toDateString();
+                if (dateKey !== lastRenderedDate) {
+                    chatBox.appendChild(createDateSeparator(chat.created_at));
+                    lastRenderedDate = dateKey;
+                }
+            }
+            appendBubble(bubble || createBubble(chat));
+        }
+
         function escapeHtml(text) {
             if (!text) return '';
             const div = document.createElement('div');
@@ -465,6 +515,7 @@
                 }
 
                 chatBox.innerHTML = '';
+                            lastRenderedDate = null;
 
                 if (data.chats.length === 0) {
                     chatBox.innerHTML = `
@@ -477,7 +528,7 @@
                                     </div>
                                 `;
                 } else {
-                    data.chats.forEach(chat => chatBox.appendChild(createBubble(chat)));
+                    data.chats.forEach(chat => appendChat(chat));
                 }
 
                 chatBox.scrollTop = chatBox.scrollHeight;
@@ -485,9 +536,9 @@
                 if (userId !== 0 && echo) {
                     echo.private('chat.' + authUserId)
                         .listen('.chat.message', (data) => {
-                            if (data.chat.sender_id == currentUserId) {
-                                appendBubble(createBubble(data.chat));
-                            }
+if (data.chat.sender_id == currentUserId) {
+                appendChat(data.chat);
+            }
                         });
                     console.log("🎧 Listening to channel: chat." + authUserId);
                 }
@@ -525,8 +576,8 @@
                 is_ai: false
             };
 
-            const myBubble = createBubble(optimisticChat);
-            appendBubble(myBubble);
+const myBubble = createBubble(optimisticChat);
+            appendChat(optimisticChat, myBubble);
             msgInput.value = '';
 
             const timestampElement = myBubble.querySelector('.text-\\[10px\\]');
@@ -544,8 +595,8 @@
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.message || 'Server error');
 
-                if (receiver == 0 && data.ai_reply) {
-                    appendBubble(createBubble(data.ai_reply));
+if (receiver == 0 && data.ai_reply) {
+                    appendChat(data.ai_reply);
                 }
 
                 if (receiver != 0 && data.status == 'sent') {
@@ -573,6 +624,7 @@
                 });
                 const data = await res.json();
                 if (data.message) {
+                    lastRenderedDate = null;
                     chatBox.innerHTML = `
                                     <div class="flex flex-col items-center justify-center h-full text-center text-gray-400">
                                         <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">

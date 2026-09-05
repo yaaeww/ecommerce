@@ -88,18 +88,27 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <!-- Harga -->
                 <div>
-                    <label for="harga" class="block text-sm font-bold text-slate-700 mb-2">Harga Jual Normal (Rp) <span class="text-rose-500">*</span></label>
+                    <label for="harga" class="block text-sm font-bold text-slate-700 mb-2">
+                        Harga Jual (Rp) <span class="text-rose-500">*</span>
+                    </label>
                     <input type="number" name="harga" id="harga" min="0" oninput="updateBagiHasil(); updateDiskonPreview();" class="w-full rounded-xl border-slate-200 bg-slate-50 text-sm focus:border-brand-500 focus:ring-brand-500 transition shadow-sm px-4 py-3 font-semibold" value="{{ old('harga', $produk->harga) }}" placeholder="0" required>
+                    <p class="text-[11px] text-slate-400 mt-1">Harga akhir yang dibayar oleh pembeli</p>
                 </div>
 
                 <!-- 🏷️ Harga Coret (Diskon Promo) -->
                 <div>
-                    <label for="harga_coret" class="block text-sm font-bold text-slate-700 mb-2 flex items-center justify-between">
-                        <span>Harga Coret (Sebelum Diskon)</span>
-                        <span class="text-[10px] text-slate-400 font-normal">Opsional</span>
-                    </label>
+                    <div class="flex items-center justify-between mb-2">
+                        <label for="harga_coret" class="block text-sm font-bold text-slate-700">
+                            Harga Coret / Asli
+                        </label>
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-[10px] text-slate-400 font-normal bg-slate-100 px-1.5 py-0.5 rounded">Opsional</span>
+                            <button type="button" onclick="clearHargaCoret()" class="text-[10px] text-rose-500 hover:text-rose-700 font-semibold hover:underline">Kosongkan</button>
+                        </div>
+                    </div>
                     <input type="number" name="harga_coret" id="harga_coret" min="0" oninput="updateDiskonPreview()" class="w-full rounded-xl border-slate-200 bg-slate-50 text-sm focus:border-brand-500 focus:ring-brand-500 transition shadow-sm px-4 py-3 font-semibold" value="{{ old('harga_coret', $produk->harga_coret) }}" placeholder="Contoh: 55000">
-                    <span id="diskonPreviewBadge" class="hidden inline-block mt-1 text-[10px] font-extrabold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200"></span>
+                    <p class="text-[11px] text-slate-400 mt-1">Harga awal sebelum diskon. Kosongkan jika tanpa diskon.</p>
+                    <div id="diskonPreviewBadge" class="hidden mt-1.5 text-xs"></div>
                 </div>
 
                 <!-- Berat Komoditas -->
@@ -179,7 +188,7 @@
                                 <input id="gambar" name="gambar" type="file" class="sr-only" accept="image/*" onchange="previewImage(event)">
                             </label>
                         </div>
-                        <p class="text-xs text-slate-500 mt-1">PNG, JPG, GIF up to 2MB</p>
+                        <p class="text-xs text-slate-500 mt-1">JPG, PNG, WEBP, GIF, BMP hingga 10MB (Otomatis dikonversi ke WebP agar ringan)</p>
                     </div>
                     
                     <div id="image-preview-container" class="hidden w-full">
@@ -276,17 +285,33 @@
         document.getElementById('estimasiKomisi').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(Math.round(komisi));
     }
 
+    function clearHargaCoret() {
+        const input = document.getElementById('harga_coret');
+        if (input) {
+            input.value = '';
+            updateDiskonPreview();
+        }
+    }
+
     function updateDiskonPreview() {
         const harga = parseFloat(document.getElementById('harga').value) || 0;
-        const hargaCoret = parseFloat(document.getElementById('harga_coret').value) || 0;
+        const hargaCoretInput = document.getElementById('harga_coret');
+        const hargaCoret = parseFloat(hargaCoretInput.value) || 0;
         const badge = document.getElementById('diskonPreviewBadge');
 
-        if (hargaCoret > harga && harga > 0) {
+        if (!badge) return;
+
+        if (hargaCoret > 0 && hargaCoret > harga && harga > 0) {
             const diskonPersen = Math.round(((hargaCoret - harga) / hargaCoret) * 100);
-            badge.innerText = `🔥 Hemat ${diskonPersen}% (Diskon Rp ${(hargaCoret - harga).toLocaleString('id-ID')})`;
-            badge.classList.remove('hidden');
+            const hemat = hargaCoret - harga;
+            badge.className = 'inline-flex items-center gap-1 mt-1.5 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200';
+            badge.innerHTML = `<i class="fas fa-tag"></i> Diskon ${diskonPersen}% (Hemat Rp ${new Intl.NumberFormat('id-ID').format(hemat)})`;
+        } else if (hargaCoret > 0 && hargaCoret <= harga) {
+            badge.className = 'inline-flex items-center gap-1 mt-1.5 text-[11px] font-medium text-amber-700 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200';
+            badge.innerHTML = `<i class="fas fa-info-circle"></i> Harga coret harus > harga jual (Rp ${new Intl.NumberFormat('id-ID').format(harga)}). Kosongkan jika tanpa diskon.`;
         } else {
-            badge.classList.add('hidden');
+            badge.className = 'hidden';
+            badge.innerHTML = '';
         }
     }
 

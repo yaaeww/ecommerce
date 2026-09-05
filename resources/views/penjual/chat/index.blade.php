@@ -195,6 +195,58 @@
         return new Date(iso).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
     }
 
+    // ── Label tanggal ala WhatsApp ─────────────────────────────
+    function isSameDay(a, b) {
+        const da = new Date(a);
+        const db = new Date(b);
+        return da.getFullYear() === db.getFullYear() &&
+            da.getMonth() === db.getMonth() &&
+            da.getDate() === db.getDate();
+    }
+
+    function formatDayLabel(iso) {
+        if (!iso) return '';
+        const date = new Date(iso);
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const day = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
+
+        if (day.getTime() === today.getTime()) return 'Hari Ini';
+        if (day.getTime() === yesterday.getTime()) return 'Kemarin';
+        return date.toLocaleDateString('id-ID', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+    }
+
+    let lastRenderedDate = null;
+
+    function createDateSeparator(iso) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'flex justify-center my-2';
+        const span = document.createElement('span');
+        span.className = 'px-3 py-1 rounded-full bg-gray-200/80 text-[10px] font-semibold text-gray-500';
+        span.textContent = formatDayLabel(iso);
+        wrapper.appendChild(span);
+        return wrapper;
+    }
+
+    function appendChat(chat, bubble) {
+        const chatBox = document.getElementById('chatMessages');
+        if (chat.created_at) {
+            const dateKey = new Date(chat.created_at).toDateString();
+            if (dateKey !== lastRenderedDate) {
+                chatBox.appendChild(createDateSeparator(chat.created_at));
+                lastRenderedDate = dateKey;
+            }
+        }
+        chatBox.appendChild(bubble || createBubble(chat));
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
     function escapeHtml(text) {
         const div = document.createElement('div');
         div.textContent = text;
@@ -304,9 +356,10 @@
             const data = await res.json();
 
             chatBox.innerHTML = '';
+            lastRenderedDate = null;
 
             if (data.chats && data.chats.length > 0) {
-                data.chats.forEach(chat => chatBox.appendChild(createBubble(chat)));
+                data.chats.forEach(chat => appendChat(chat));
                 chatBox.scrollTop = chatBox.scrollHeight;
             } else {
                 chatBox.innerHTML = `
@@ -324,8 +377,7 @@
                 echo.private('chat.' + authUserId)
                     .listen('.chat.message', (data) => {
                         if (data.chat.sender_id == currentUserId) {
-                            chatBox.appendChild(createBubble(data.chat));
-                            chatBox.scrollTop = chatBox.scrollHeight;
+                            appendChat(data.chat);
                         }
                     });
             }
@@ -351,13 +403,13 @@
         const chatBox = document.getElementById('chatMessages');
 
         // Append locally
-        const myBubble = createBubble({
+        const optimisticChat = {
             sender_id: authUserId,
             message: msg,
             created_at: new Date().toISOString()
-        });
-        chatBox.appendChild(myBubble);
-        chatBox.scrollTop = chatBox.scrollHeight;
+        };
+        const myBubble = createBubble(optimisticChat);
+        appendChat(optimisticChat, myBubble);
 
         msgInput.value = '';
         sendButton.disabled = true;

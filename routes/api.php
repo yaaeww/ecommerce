@@ -135,10 +135,14 @@ Route::middleware('auth:sanctum')->group(function () {
         // Dashboard
         Route::get('/dashboard', [SellerApiController::class, 'dashboard']);
 
+        // Settings (komisi info)
+        Route::get('/settings', [SellerApiController::class, 'getSettings']);
+
         // Toko UMKM
         Route::get('/umkm', [SellerApiController::class, 'getUmkm']);
         Route::post('/umkm', [SellerApiController::class, 'storeUmkm']);
         Route::put('/umkm', [SellerApiController::class, 'updateUmkm']);
+        Route::post('/umkm/update', [SellerApiController::class, 'updateUmkm']);
         Route::post('/umkm/toggle-libur', [SellerApiController::class, 'toggleLibur']);
 
         // Produk
@@ -162,6 +166,15 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Balas Ulasan
         Route::post('/ulasan/{id}/balas', [SellerApiController::class, 'replyUlasan']);
+        Route::get('/ulasan', [SellerApiController::class, 'getUlasanList']);
+
+        // Komplain / Garansi (read-only view untuk penjual)
+        Route::get('/komplain', [SellerApiController::class, 'getKomplain']);
+        Route::get('/komplain/{id}', [SellerApiController::class, 'showKomplain']);
+
+        // Notifikasi
+        Route::get('/notifications', [SellerApiController::class, 'getNotifications']);
+        Route::post('/notifications/read', [SellerApiController::class, 'markNotificationsRead']);
     });
 
     // ==========================================

@@ -6,19 +6,21 @@ $uri = urldecode(
     parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? ''
 );
 
-// Add CORS headers for all responses (development convenience)
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, PATCH, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, Accept, Origin');
-
-// Handle preflight OPTIONS requests
+// Handle preflight OPTIONS requests (Laravel's HandleCors middleware never
+// runs here because this file exits before reaching the framework).
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, Accept, Origin');
     http_response_code(204);
     exit;
 }
 
 // Serve static files with CORS headers & correct MIME types
 if ($uri !== '/' && file_exists($publicPath.$uri)) {
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+    header('Access-Control-Allow-Headers: *');
     $ext = strtolower(pathinfo($uri, PATHINFO_EXTENSION));
     $mimeTypes = [
         'css'   => 'text/css; charset=UTF-8',

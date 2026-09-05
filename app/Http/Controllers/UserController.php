@@ -14,6 +14,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $request->user()->id,
+            'no_telepon' => 'nullable|string|max:50',
         ]);
 
         if ($validator->fails()) {
@@ -26,7 +27,7 @@ class UserController extends Controller
 
         try {
             $user = $request->user();
-            $user->update($request->only(['name', 'email']));
+            $user->update($request->only(['name', 'email', 'no_telepon']));
 
             return response()->json([
                 'success' => true,

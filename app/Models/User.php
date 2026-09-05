@@ -22,7 +22,9 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
-
+        'avatar',
+        'no_telepon',
+        'last_read_notif_at',
     ];
     public function produk()
     {
@@ -97,5 +99,6 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'last_read_notif_at' => 'datetime',
     ];
 }

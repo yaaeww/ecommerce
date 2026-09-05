@@ -74,6 +74,11 @@ Route::get('/garansi', [BantuanController::class, 'garansi'])->name('bantuan.gar
 Route::get('/panduan-mitra', [BantuanController::class, 'panduanMitra'])->name('bantuan.panduan-mitra');
 Route::get('/syarat-ketentuan', [BantuanController::class, 'syaratKetentuan'])->name('bantuan.syarat-ketentuan');
 Route::get('/kebijakan-privasi', [BantuanController::class, 'kebijakanPrivasi'])->name('bantuan.kebijakan-privasi');
+
+// 🔹 Cetak Dokumen Pesanan Penjual (A6 Thermal & Invoice dengan Autentikasi Token Mobile / Web)
+Route::get('/pesanan/{id}/shipping-label-token', [PenjualInvoiceController::class, 'shippingLabelWithToken'])->name('pesanan.shipping-label.token');
+Route::get('/invoice/{id}/token', [PenjualInvoiceController::class, 'invoiceWithToken'])->name('invoice.token');
+Route::get('/pesanan/{id}/invoice-pdf-token', [PenjualInvoiceController::class, 'generatePdfWithToken'])->name('pesanan.invoice.pdf.token');
 /*
 |--------------------------------------------------------------------------
 | 💬 CHAT & CHATBOT ROUTES

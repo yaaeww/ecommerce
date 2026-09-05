@@ -53,6 +53,7 @@ class AuthController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6|confirmed',
             'role' => 'nullable|in:penjual,pembeli',
+            'no_telepon' => 'nullable|string|max:50',
         ]);
 
         if ($validator->fails()) {
@@ -70,6 +71,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $role,
+            'no_telepon' => $request->no_telepon,
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
